@@ -65,6 +65,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 584EE5BF23A7F84C0013087A /* Build configuration list for PBXNativeTarget "Map" */;
 			buildPhases = (
+				026BBE3523A7FF0D00ECDEF4 /* SwiftLint */,
 				584EE5A723A7F8490013087A /* Sources */,
 				584EE5A823A7F8490013087A /* Frameworks */,
 				584EE5A923A7F8490013087A /* Resources */,
@@ -121,6 +122,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		026BBE3523A7FF0D00ECDEF4 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		584EE5A723A7F8490013087A /* Sources */ = {
