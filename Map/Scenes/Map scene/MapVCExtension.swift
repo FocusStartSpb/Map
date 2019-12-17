@@ -14,7 +14,7 @@ extension MapViewController: CLLocationManagerDelegate
 		guard let latestLocation = locations.first else { return }
 
 		if self.currentCoordinate == nil {
-			zoomToLatestLocation(with: latestLocation.coordinate)
+			self.zoomToLatestLocation(with: latestLocation.coordinate)
 		}
 		self.currentCoordinate = latestLocation.coordinate
 	}
@@ -23,11 +23,5 @@ extension MapViewController: CLLocationManagerDelegate
 		if status == .authorizedAlways || status == .authorizedWhenInUse {
 			beginLocationUpdates(locationManager: manager)
 		}
-	}
-
-	private func zoomToLatestLocation(with coordinate: CLLocationCoordinate2D) {
-		let zoomRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: self.latitudinalMeters,
-											longitudinalMeters: self.longtitudalMeters)
-		self.mapView.setRegion(zoomRegion, animated: true)
 	}
 }

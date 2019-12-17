@@ -70,6 +70,13 @@ final class MapViewController: UIViewController
 		locationManager.desiredAccuracy = kCLLocationAccuracyBest
 		locationManager.startUpdatingLocation()
 	}
+
+	func zoomToLatestLocation(with coordinate: CLLocationCoordinate2D) {
+		let zoomRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: self.latitudinalMeters,
+											longitudinalMeters: self.longtitudalMeters)
+		self.mapView.setRegion(zoomRegion, animated: true)
+	}
+
 	private func setupMapConstraints() {
 		mapView.translatesAutoresizingMaskIntoConstraints = false
 		mapView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
