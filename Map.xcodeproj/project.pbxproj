@@ -23,6 +23,7 @@
 		584EE5E523A834D60013087A /* SmartTargetListModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5DF23A834D60013087A /* SmartTargetListModels.swift */; };
 		584EE5E623A834D60013087A /* SmartTargetListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5E023A834D60013087A /* SmartTargetListViewController.swift */; };
 		584EE5E723A834D60013087A /* SmartTargetListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5E123A834D60013087A /* SmartTargetListInteractor.swift */; };
+		58A9984123A852AC00CAACE8 /* SmartTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984023A852AC00CAACE8 /* SmartTarget.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		584EE5DF23A834D60013087A /* SmartTargetListModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetListModels.swift; sourceTree = "<group>"; };
 		584EE5E023A834D60013087A /* SmartTargetListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetListViewController.swift; sourceTree = "<group>"; };
 		584EE5E123A834D60013087A /* SmartTargetListInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetListInteractor.swift; sourceTree = "<group>"; };
+		58A9984023A852AC00CAACE8 /* SmartTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTarget.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,8 +135,17 @@
 				5837D01923A838E100A6F125 /* Repository.swift */,
 				5837D01B23A839E000A6F125 /* DecoderService.swift */,
 				584EE5C323A833D70013087A /* DataWorker.swift */,
+				58A9984223A852EE00CAACE8 /* Models */,
 			);
 			path = "Business layer";
+			sourceTree = "<group>";
+		};
+		58A9984223A852EE00CAACE8 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				58A9984023A852AC00CAACE8 /* SmartTarget.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -237,6 +248,7 @@
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
 				584EE5C823A833D70013087A /* MapPresenter.swift in Sources */,
+				58A9984123A852AC00CAACE8 /* SmartTarget.swift in Sources */,
 				584EE5E623A834D60013087A /* SmartTargetListViewController.swift in Sources */,
 				584EE5CB23A833D70013087A /* MapModels.swift in Sources */,
 				584EE5CD23A833D70013087A /* MapInteractor.swift in Sources */,
