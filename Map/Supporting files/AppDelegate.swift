@@ -15,7 +15,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate
 	func application(_ application: UIApplication,
 					didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-		let factory = SceneFactory()
+		let factory = SceneBuilder()
 		let decoderService = DecoderService()
 		let repository = SmartTargetRepository(decoderService: decoderService)
 		let mapViewController = factory.getMapScene(withRepository: repository)

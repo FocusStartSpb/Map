@@ -21,14 +21,14 @@ protocol SmartTargetListDataPassing
 final class SmartTargetListRouter
 {
 	// MARK: ...Private properties
-	private let factory: SceneFactory
+	private let factory: SceneBuilder
 
 	// MARK: ...Internal properties
 	weak var viewController: SmartTargetListViewController?
 	var dataStore: SmartTargetListDataStore?
 
 	// MARK: ...Initialization
-	init(factory: SceneFactory) {
+	init(factory: SceneBuilder) {
 		self.factory = factory
 	}
 }
