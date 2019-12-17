@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MapKit
 
 // MARK: MapDisplayLogic protocol
 protocol MapDisplayLogic: AnyObject
@@ -18,6 +19,8 @@ final class MapViewController: UIViewController
 {
 	// MARK: ...Private properties
 	private var interactor: MapBusinessLogic
+
+	let mapView = MKMapView()
 
 	// MARK: ...Initialization
 	init(interactor: MapBusinessLogic) {
@@ -33,6 +36,8 @@ final class MapViewController: UIViewController
 	// MARK: ...View lifecycle
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		view.addSubview(mapView)
+		setupMapConstraints()
 		doSomething()
 	}
 
@@ -40,6 +45,14 @@ final class MapViewController: UIViewController
 	private func doSomething() {
 		let request = Map.SmartTargets.Request()
 		interactor.getSmartTargets(request: request)
+	}
+
+	private func setupMapConstraints() {
+		mapView.translatesAutoresizingMaskIntoConstraints = false
+		mapView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+		mapView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
+		mapView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
+		mapView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0).isActive = true
 	}
 }
 
