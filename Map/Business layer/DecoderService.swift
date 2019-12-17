@@ -7,11 +7,6 @@
 
 import Foundation
 
-enum ServiceError: Error
-{
-	case decodingError(Error)
-}
-
 typealias SmartTargetsResult = Result<[SmartTarget], ServiceError>
 
 typealias SmartTargetsResultCompletion = (SmartTargetsResult) -> Void
