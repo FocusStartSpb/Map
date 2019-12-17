@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Чтобы сохранять локации в приложении</string>
+	<string>Вы сможете сохранять локации в приложении</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Чтобы сохранять локации в приложении</string>
+	<string>Вы сможете сохранять локации в приложении</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
