@@ -66,7 +66,5 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
-.DS_Store
-Map.xcodeproj/project.pbxproj
 Map.xcodeproj
 .DS_Store
