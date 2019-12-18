@@ -18,6 +18,7 @@ protocol IDecoderService
 }
 protocol IDecoderGeocoder
 {
+	func decodeGeocode(_ data: Data, completion: @escaping (GeoResults) -> Void)
 }
 
 final class DecoderService
