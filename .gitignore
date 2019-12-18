@@ -5,6 +5,7 @@
 ## Build generated
 build/
 DerivedData/
+.DS_Store
 
 ## Various settings
 *.pbxuser
@@ -66,4 +67,5 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+.DS_Store
 .DS_Store
