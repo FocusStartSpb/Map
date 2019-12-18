@@ -5,6 +5,7 @@
 ## Build generated
 build/
 DerivedData/
+.DS_Store
 
 ## Various settings
 *.pbxuser
@@ -67,5 +68,3 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 .DS_Store
-Map.xcodeproj/project.xcworkspace/xcuserdata/ekaterinakhudzhamkulova.xcuserdatad/UserInterfaceState.xcuserstate
-*.xcuserstate
