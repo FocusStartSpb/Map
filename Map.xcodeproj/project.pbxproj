@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */; };
+		3AC77B0023AAA5B400CA1EC5 /* GeocoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */; };
+		3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */; };
 		5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01723A8388700A6F125 /* SceneBuilder.swift */; };
 		5837D01A23A838E100A6F125 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01923A838E100A6F125 /* Repository.swift */; };
 		5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01B23A839E000A6F125 /* DecoderService.swift */; };
@@ -27,6 +30,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderModel.swift; sourceTree = "<group>"; };
+		3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderService.swift; sourceTree = "<group>"; };
+		3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceError.swift; sourceTree = "<group>"; };
 		5837D01723A8388700A6F125 /* SceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneBuilder.swift; sourceTree = "<group>"; };
 		5837D01923A838E100A6F125 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		5837D01B23A839E000A6F125 /* DecoderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecoderService.swift; sourceTree = "<group>"; };
@@ -135,6 +141,8 @@
 				5837D01923A838E100A6F125 /* Repository.swift */,
 				5837D01B23A839E000A6F125 /* DecoderService.swift */,
 				584EE5C323A833D70013087A /* DataWorker.swift */,
+				3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */,
+				3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */,
 				58A9984223A852EE00CAACE8 /* Models */,
 			);
 			path = "Business layer";
@@ -143,6 +151,7 @@
 		58A9984223A852EE00CAACE8 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */,
 				58A9984023A852AC00CAACE8 /* SmartTarget.swift */,
 			);
 			path = Models;
@@ -245,13 +254,16 @@
 				584EE5E423A834D60013087A /* SmartTargetListRouter.swift in Sources */,
 				584EE5E723A834D60013087A /* SmartTargetListInteractor.swift in Sources */,
 				5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */,
+				3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */,
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,
+				3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */,
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
 				584EE5C823A833D70013087A /* MapPresenter.swift in Sources */,
 				58A9984123A852AC00CAACE8 /* SmartTarget.swift in Sources */,
 				584EE5E623A834D60013087A /* SmartTargetListViewController.swift in Sources */,
 				584EE5CB23A833D70013087A /* MapModels.swift in Sources */,
 				584EE5CD23A833D70013087A /* MapInteractor.swift in Sources */,
+				3AC77B0023AAA5B400CA1EC5 /* GeocoderService.swift in Sources */,
 				5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */,
 				584EE5C923A833D70013087A /* DataWorker.swift in Sources */,
 			);
