@@ -7,17 +7,17 @@
 
 import Foundation
 
-typealias GeoObjectResults = Result<GeoDataWrapper, ServiceError>
+typealias GeoResults = Result<GeoDataWrapper, ServiceError>
 typealias DataResult = Result<Data, ServiceError>
 
 protocol IGeocoderServiceProtocol
 {
-	func getGeoObjectByCoordinates(latitude: Double, longitude: Double, callBack: @escaping (DataResult) -> Void)
+	func getGeoData(by geocode: GeocoderService.Geocode, _ callBack: @escaping (DataResult) -> Void)
 }
 
 final class GeocoderService
 {
-	private struct Geocode
+	struct Geocode
 	{
 		let longitude: Double
 		let latitude: Double
@@ -31,7 +31,7 @@ final class GeocoderService
 		static let basicURL = "https://geocode-maps.yandex.ru/1.x/"
 	}
 
-	private func createURL(geocode: String) -> URL? {
+	private func createURL(from geocode: String) -> URL? {
 		var url: URL? {
 			guard var urlComponents = URLComponents(string: KeyAndUrl.basicURL) else { return nil }
 			urlComponents.queryItems = [
@@ -46,9 +46,9 @@ final class GeocoderService
 }
 extension GeocoderService: IGeocoderServiceProtocol
 {
-	func getGeoObjectByCoordinates(latitude: Double, longitude: Double, callBack: @escaping (DataResult) -> Void) {
-		let geocode = Geocode(longitude: longitude, latitude: latitude)
-		guard let url = createURL(geocode: geocode.description) else {
+	func getGeoData(by geocode: GeocoderService.Geocode, _ callBack: @escaping (DataResult) -> Void) {
+		let geocode = geocode.description
+		guard let url = createURL(from: geocode) else {
 			callBack(.failure(.wrongURL))
 			return
 		}
