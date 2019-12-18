@@ -26,7 +26,7 @@ struct Response: Decodable
 // MARK: - GeoCollection
 struct GeoCollection: Decodable
 {
-	let metaDataProperty: GeoObjectCollectionMetaDataProperty?
+	let metaDataProperty: GeoCollectionMetaDataProperty?
 	let featureMember: [FeatureMember]?
 }
 
@@ -44,15 +44,14 @@ struct FeatureMember: Decodable
 // MARK: - Geo
 struct Geo: Decodable
 {
-	let metaDataProperty: GeoObjectMetaDataProperty?
-	let name, geoObjectDescription: String?
+	let metaDataProperty: GeoMetaDataProperty?
+	let name, description: String?
 	let boundedBy: BoundedBy?
 	let point: Point?
 
 	enum CodingKeys: String, CodingKey
 	{
-		case metaDataProperty, name
-		case geoObjectDescription = "description"
+		case metaDataProperty, name, description
 		case boundedBy
 		case point = "Point"
 	}
@@ -76,7 +75,7 @@ struct Envelope: Decodable
 }
 
 // MARK: - GeoObjectMetaDataProperty
-struct GeoObjectMetaDataProperty: Decodable
+struct GeoMetaDataProperty: Decodable
 {
 	let geocoderMetaData: GeocoderMetaData?
 
@@ -244,7 +243,7 @@ struct Point: Decodable
 }
 
 // MARK: - GeoObjectCollectionMetaDataProperty
-struct GeoObjectCollectionMetaDataProperty: Decodable
+struct GeoCollectionMetaDataProperty: Decodable
 {
 	let geocoderResponseMetaData: GeocoderResponseMetaData?
 
