@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		026DCF8623A9579E00F00004 /* MapVCExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026DCF8523A9579E00F00004 /* MapVCExtension.swift */; };
 		5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01723A8388700A6F125 /* SceneBuilder.swift */; };
 		5837D01A23A838E100A6F125 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01923A838E100A6F125 /* Repository.swift */; };
 		5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01B23A839E000A6F125 /* DecoderService.swift */; };
@@ -28,7 +27,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		026DCF8523A9579E00F00004 /* MapVCExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapVCExtension.swift; sourceTree = "<group>"; };
 		5837D01723A8388700A6F125 /* SceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneBuilder.swift; sourceTree = "<group>"; };
 		5837D01923A838E100A6F125 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		5837D01B23A839E000A6F125 /* DecoderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecoderService.swift; sourceTree = "<group>"; };
@@ -94,7 +92,6 @@
 				584EE5C723A833D70013087A /* MapInteractor.swift */,
 				584EE5C223A833D70013087A /* MapPresenter.swift */,
 				584EE5C523A833D70013087A /* MapModels.swift */,
-				026DCF8523A9579E00F00004 /* MapVCExtension.swift */,
 			);
 			path = "Map scene";
 			sourceTree = "<group>";
@@ -245,7 +242,6 @@
 				584EE5E523A834D60013087A /* SmartTargetListModels.swift in Sources */,
 				584EE5AF23A7F8490013087A /* AppDelegate.swift in Sources */,
 				584EE5CC23A833D70013087A /* MapViewController.swift in Sources */,
-				026DCF8623A9579E00F00004 /* MapVCExtension.swift in Sources */,
 				584EE5E423A834D60013087A /* SmartTargetListRouter.swift in Sources */,
 				584EE5E723A834D60013087A /* SmartTargetListInteractor.swift in Sources */,
 				5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */,
