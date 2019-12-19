@@ -242,7 +242,7 @@ struct Point: Decodable
 	let pos: String?
 }
 
-// MARK: - GeoObjectCollectionMetaDataProperty
+// MARK: - GeoCollectionMetaDataProperty
 struct GeoCollectionMetaDataProperty: Decodable
 {
 	let geocoderResponseMetaData: GeocoderResponseMetaData?
