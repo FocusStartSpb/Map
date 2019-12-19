@@ -74,7 +74,7 @@ struct Envelope: Decodable
 	let lowerCorner, upperCorner: String?
 }
 
-// MARK: - GeoObjectMetaDataProperty
+// MARK: - GeoMetaDataProperty
 struct GeoMetaDataProperty: Decodable
 {
 	let geocoderMetaData: GeocoderMetaData?
