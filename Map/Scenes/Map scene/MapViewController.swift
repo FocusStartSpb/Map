@@ -25,8 +25,8 @@ final class MapViewController: UIViewController
 	let mapView = MKMapView()
 	let locationManager = CLLocationManager()
 
-	let latitudalMeters = 5_000.0
-	let longtitudalMeters = 5_000.0
+	private let latitudalMeters = 5_000.0
+	private let longtitudalMeters = 5_000.0
 
 	// MARK: ...Initialization
 	init(interactor: MapBusinessLogic) {
