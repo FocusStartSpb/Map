@@ -5,7 +5,7 @@
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
 
-final class DataWorker
+final class DataBaseWorker
 {
 	// MARK: Private methods
 	private var repository: ISmartTargetRepository
