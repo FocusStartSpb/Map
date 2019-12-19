@@ -25,19 +25,26 @@ final class GeocoderService
 			longitude.description + "," + latitude.description
 		}
 	}
-	private enum KeyAndUrl
+	private enum ParametersValues
 	{
 		static let apiKey = "2be7b489-cc26-414c-85dc-6e189996e226"
 		static let basicURL = "https://geocode-maps.yandex.ru/1.x/"
+		static let json = "json"
+	}
+	private enum ParametersName: String
+	{
+		case apikey
+		case geocode
+		case format
 	}
 
 	private func createURL(from geocode: String) -> URL? {
 		var url: URL? {
-			guard var urlComponents = URLComponents(string: KeyAndUrl.basicURL) else { return nil }
+			guard var urlComponents = URLComponents(string: ParametersValues.basicURL) else { return nil }
 			urlComponents.queryItems = [
-				URLQueryItem(name: "apikey", value: KeyAndUrl.apiKey),
-				URLQueryItem(name: "geocode", value: geocode),
-				URLQueryItem(name: "format", value: "json"),
+				URLQueryItem(name: ParametersName.apikey.rawValue, value: ParametersValues.apiKey),
+				URLQueryItem(name: ParametersName.geocode.rawValue, value: geocode),
+				URLQueryItem(name: ParametersName.format.rawValue, value: ParametersValues.json),
 			]
 			return urlComponents.url
 		}
