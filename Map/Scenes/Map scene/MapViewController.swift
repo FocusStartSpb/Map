@@ -13,6 +13,7 @@ protocol MapDisplayLogic: AnyObject
 {
 	func displaySmartTargets(viewModel: Map.SmartTargets.ViewModel)
 	func showLocation(viewModel: Map.UpdateLocation.ViewModel)
+	func beginLocationUpdates(viewModel: CLLocationManager)
 }
 
 // MARK: Class
@@ -25,8 +26,8 @@ final class MapViewController: UIViewController
 	//var currentCoordinate: CLLocationCoordinate2D?
 	let locationManager = CLLocationManager()
 
-	let latitudinalMeters: Double = 5000
-	let longtitudalMeters: Double = 5000
+	let latitudalMeters: Double = 5_000
+	let longtitudalMeters: Double = 5_000
 
 	// MARK: ...Initialization
 	init(interactor: MapBusinessLogic) {
@@ -61,17 +62,8 @@ final class MapViewController: UIViewController
 			locationManager.requestAlwaysAuthorization()
 		}
 		else if status == .authorizedAlways || status == .authorizedWhenInUse {
-			beginLocationUpdates(locationManager: locationManager)
+			beginLocationUpdates(viewModel: locationManager)
 		}
-	}
-
-	func beginLocationUpdates(locationManager: CLLocationManager) {
-		mapView.showsUserLocation = true
-		locationManager.desiredAccuracy = kCLLocationAccuracyBest
-		locationManager.startUpdatingLocation()
-	}
-
-	func zoomToLatestLocation(with coordinate: CLLocationCoordinate2D) {
 	}
 
 	private func setupMapConstraints() {
@@ -92,9 +84,14 @@ extension MapViewController: MapDisplayLogic
 	}
 
 	func showLocation(viewModel: Map.UpdateLocation.ViewModel) {
-		let zoomRegion = MKCoordinateRegion(center: viewModel.coordinate, latitudinalMeters: self.latitudinalMeters,
+		let zoomRegion = MKCoordinateRegion(center: viewModel.coordinate, latitudinalMeters: self.latitudalMeters,
 											longitudinalMeters: self.longtitudalMeters)
 		self.mapView.setRegion(zoomRegion, animated: true)
+	}
+	func beginLocationUpdates(viewModel: CLLocationManager) {
+		mapView.showsUserLocation = true
+		viewModel.desiredAccuracy = kCLLocationAccuracyBest
+		viewModel.startUpdatingLocation()
 	}
 }
 
@@ -108,7 +105,7 @@ extension MapViewController: CLLocationManagerDelegate
 
 	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
 		if status == .authorizedAlways || status == .authorizedWhenInUse {
-			beginLocationUpdates(locationManager: manager)
+			beginLocationUpdates(viewModel: manager)
 		}
 	}
 }

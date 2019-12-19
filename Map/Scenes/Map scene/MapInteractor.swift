@@ -11,6 +11,7 @@ protocol MapBusinessLogic
 {
 	func getSmartTargets(request: Map.SmartTargets.Request)
 	func getCurrentCoordinate(request: Map.UpdateLocation.Request)
+	func getCurrentStatus(request: Map.UpdateStatus.Request)
 }
 
 // MARK: Class
@@ -53,5 +54,12 @@ extension MapInteractor: MapBusinessLogic
 			presenter.takeCurrentCoordinate(response: Map.UpdateLocation.Response(coordinate: latestLocation.coordinate))
 		}
 		currentCoordinate = latestLocation.coordinate
+	}
+
+	func getCurrentStatus(request: Map.UpdateStatus.Request) {
+		let request = Map.UpdateStatus.Request(status: request.status, manager: request.manager)
+		if request.status == .authorizedAlways || request.status == .authorizedWhenInUse {
+			presenter.didChangeStatus(response: Map.UpdateStatus.Response(manager: request.manager))
+		}
 	}
 }

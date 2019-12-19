@@ -45,4 +45,22 @@ enum Map
 			let coordinate: CLLocationCoordinate2D
 		}
 	}
+	enum UpdateStatus
+	{
+		struct Request
+		{
+			let status: CLAuthorizationStatus
+			let manager: CLLocationManager
+		}
+
+		struct Response
+		{
+			let manager: CLLocationManager
+		}
+
+		struct ViewModel
+		{
+			let manager: CLLocationManager
+		}
+	}
 }
