@@ -23,11 +23,10 @@ final class MapViewController: UIViewController
 	private var interactor: MapBusinessLogic
 
 	let mapView = MKMapView()
-	//var currentCoordinate: CLLocationCoordinate2D?
 	let locationManager = CLLocationManager()
 
-	let latitudalMeters: Double = 5_000
-	let longtitudalMeters: Double = 5_000
+	let latitudalMeters = 5_000.0
+	let longtitudalMeters = 5_000.0
 
 	// MARK: ...Initialization
 	init(interactor: MapBusinessLogic) {
@@ -45,7 +44,7 @@ final class MapViewController: UIViewController
 		super.viewDidLoad()
 		view.addSubview(mapView)
 		setupMapConstraints()
-		configureLocationServices()
+		configureLocationService()
 		doSomething()
 	}
 
@@ -54,15 +53,15 @@ final class MapViewController: UIViewController
 		let request = Map.SmartTargets.Request()
 		interactor.getSmartTargets(request: request)
 	}
-	private func configureLocationServices() {
+	private func configureLocationService() {
 		locationManager.delegate = self
 
 		let status = CLLocationManager.authorizationStatus()
-		if CLLocationManager.authorizationStatus() == .notDetermined {
-			locationManager.requestAlwaysAuthorization()
-		}
-		else if status == .authorizedAlways || status == .authorizedWhenInUse {
+		if status == .authorizedAlways || status == .authorizedWhenInUse {
 			beginLocationUpdates(viewModel: locationManager)
+		}
+		else {
+			locationManager.requestAlwaysAuthorization()
 		}
 	}
 
