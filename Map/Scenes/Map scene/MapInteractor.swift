@@ -16,10 +16,10 @@ final class MapInteractor
 {
 	// MARK: ...Private properties
 	private var presenter: MapPresentationLogic
-	private var worker: DataWorker
+	private var worker: DataBaseWorker
 
 	// MARK: ...Initialization
-	init(presenter: MapPresentationLogic, worker: DataWorker) {
+	init(presenter: MapPresentationLogic, worker: DataBaseWorker) {
 		self.presenter = presenter
 		self.worker = worker
 	}
