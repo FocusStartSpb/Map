@@ -16,10 +16,17 @@ final class MapInteractor<T: ISmartTargetRepository>
 {
 	// MARK: ...Private properties
 	private var presenter: MapPresentationLogic
+<<<<<<< HEAD
 	private var worker: DataWorker<T>
 
 	// MARK: ...Initialization
 	init(presenter: MapPresentationLogic, worker: DataWorker<T>) {
+=======
+	private var worker: DataBaseWorker
+
+	// MARK: ...Initialization
+	init(presenter: MapPresentationLogic, worker: DataBaseWorker) {
+>>>>>>> develop
 		self.presenter = presenter
 		self.worker = worker
 	}
