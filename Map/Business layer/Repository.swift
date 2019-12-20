@@ -8,6 +8,7 @@
 protocol ISmartTargetRepository
 {
 	func fetchSmartTargets(
+	associatedtype Element
 		_ completion: @escaping SmartTargetsResultCompletion)
 }
 
