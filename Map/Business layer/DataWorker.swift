@@ -5,18 +5,18 @@
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
 
-final class DataWorker
+final class DataWorker<T: ISmartTargetRepository>
 {
 	// MARK: Private methods
-	private var repository: ISmartTargetRepository
+	private var repository: T
 
 	// MARK: Initialization
-	init(repository: ISmartTargetRepository) {
+	init(repository: T) {
 		self.repository = repository
 	}
 
 	// MARK: Methods
 	func fetchSmartTargets(_ completion: @escaping SmartTargetsResultCompletion) {
-		repository.fetchSmartTargets(completion)
+		repository.loadSmartTargetCollection(completion)
 	}
 }

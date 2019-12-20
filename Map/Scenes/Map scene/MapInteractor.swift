@@ -12,14 +12,14 @@ protocol MapBusinessLogic
 }
 
 // MARK: Class
-final class MapInteractor
+final class MapInteractor<T: ISmartTargetRepository>
 {
 	// MARK: ...Private properties
 	private var presenter: MapPresentationLogic
-	private var worker: DataWorker
+	private var worker: DataWorker<T>
 
 	// MARK: ...Initialization
-	init(presenter: MapPresentationLogic, worker: DataWorker) {
+	init(presenter: MapPresentationLogic, worker: DataWorker<T>) {
 		self.presenter = presenter
 		self.worker = worker
 	}

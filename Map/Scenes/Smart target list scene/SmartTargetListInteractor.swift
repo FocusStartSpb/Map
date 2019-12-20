@@ -18,14 +18,14 @@ protocol SmartTargetListDataStore
 }
 
 // MARK: - Class
-final class SmartTargetListInteractor
+final class SmartTargetListInteractor<T: ISmartTargetRepository>
 {
 	// MARK: ...Private properties
 	private var presenter: SmartTargetListPresentationLogic
-	private var worker: DataWorker
+	private var worker: DataWorker<T>
 
 	// MARK: ...Initialization
-	init(presenter: SmartTargetListPresentationLogic, worker: DataWorker) {
+	init(presenter: SmartTargetListPresentationLogic, worker: DataWorker<T>) {
 		self.presenter = presenter
 		self.worker = worker
 	}
