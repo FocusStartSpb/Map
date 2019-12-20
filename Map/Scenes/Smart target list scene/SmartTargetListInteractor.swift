@@ -22,10 +22,10 @@ final class SmartTargetListInteractor
 {
 	// MARK: ...Private properties
 	private var presenter: SmartTargetListPresentationLogic
-	private var worker: DataWorker
+	private var worker: DataBaseWorker
 
 	// MARK: ...Initialization
-	init(presenter: SmartTargetListPresentationLogic, worker: DataWorker) {
+	init(presenter: SmartTargetListPresentationLogic, worker: DataBaseWorker) {
 		self.presenter = presenter
 		self.worker = worker
 	}

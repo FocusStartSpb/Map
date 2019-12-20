@@ -17,7 +17,7 @@
 		584EE5B823A7F84C0013087A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 584EE5B723A7F84C0013087A /* Assets.xcassets */; };
 		584EE5BB23A7F84C0013087A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 584EE5B923A7F84C0013087A /* LaunchScreen.storyboard */; };
 		584EE5C823A833D70013087A /* MapPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5C223A833D70013087A /* MapPresenter.swift */; };
-		584EE5C923A833D70013087A /* DataWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5C323A833D70013087A /* DataWorker.swift */; };
+		584EE5C923A833D70013087A /* DataBaseWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5C323A833D70013087A /* DataBaseWorker.swift */; };
 		584EE5CB23A833D70013087A /* MapModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5C523A833D70013087A /* MapModels.swift */; };
 		584EE5CC23A833D70013087A /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5C623A833D70013087A /* MapViewController.swift */; };
 		584EE5CD23A833D70013087A /* MapInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5C723A833D70013087A /* MapInteractor.swift */; };
@@ -42,7 +42,7 @@
 		584EE5BA23A7F84C0013087A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		584EE5BC23A7F84C0013087A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		584EE5C223A833D70013087A /* MapPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPresenter.swift; sourceTree = "<group>"; };
-		584EE5C323A833D70013087A /* DataWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataWorker.swift; sourceTree = "<group>"; };
+		584EE5C323A833D70013087A /* DataBaseWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBaseWorker.swift; sourceTree = "<group>"; };
 		584EE5C523A833D70013087A /* MapModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapModels.swift; sourceTree = "<group>"; };
 		584EE5C623A833D70013087A /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		584EE5C723A833D70013087A /* MapInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapInteractor.swift; sourceTree = "<group>"; };
@@ -140,7 +140,7 @@
 				5837D01723A8388700A6F125 /* SceneBuilder.swift */,
 				5837D01923A838E100A6F125 /* Repository.swift */,
 				5837D01B23A839E000A6F125 /* DecoderService.swift */,
-				584EE5C323A833D70013087A /* DataWorker.swift */,
+				584EE5C323A833D70013087A /* DataBaseWorker.swift */,
 				3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */,
 				3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */,
 				58A9984223A852EE00CAACE8 /* Models */,
@@ -265,7 +265,7 @@
 				584EE5CD23A833D70013087A /* MapInteractor.swift in Sources */,
 				3AC77B0023AAA5B400CA1EC5 /* GeocoderService.swift in Sources */,
 				5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */,
-				584EE5C923A833D70013087A /* DataWorker.swift in Sources */,
+				584EE5C923A833D70013087A /* DataBaseWorker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
