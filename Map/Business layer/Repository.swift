@@ -11,14 +11,18 @@ protocol ISmartTargetRepository
 		_ completion: @escaping SmartTargetsResultCompletion)
 }
 
+// MARK: - Class
 final class SmartTargetRepository
 {
-	// MARK: Private methods
-	private var decoderService: IDecoderService
 
-	// MARK: Initialization
-	init(decoderService: IDecoderService) {
+	// MARK: ...Private properties
+	private var decoderService: IDecoderService
+	private var dataBaseService: DataBaseService<Element>
+
+	// MARK: ...Initialization
+	init(decoderService: IDecoderService, dataBaseService: DataBaseService<Element>) {
 		self.decoderService = decoderService
+		self.dataBaseService = dataBaseService
 	}
 }
 

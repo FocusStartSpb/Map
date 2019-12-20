@@ -17,7 +17,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate
 
 		let factory = SceneBuilder()
 		let decoderService = DecoderService()
-		let repository = SmartTargetRepository(decoderService: decoderService)
+		let dataBaseService = DataBaseService<SmartTargetCollection>()
+		let repository = SmartTargetRepository(decoderService: decoderService, dataBaseService: dataBaseService)
 		let mapViewController = factory.getMapScene(withRepository: repository)
 		let smartTargetListViewVontroller = factory.getSmartTargetListScene(withRepository: repository)
 		let tabBarController = UITabBarController()
