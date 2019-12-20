@@ -7,7 +7,7 @@
 
 import Foundation
 
-typealias SmartTargetsResult = Result<[SmartTarget], ServiceError>
+typealias SmartTargetsResult = Result<ISmartTargetCollection, ServiceError>
 
 typealias SmartTargetsResultCompletion = (SmartTargetsResult) -> Void
 

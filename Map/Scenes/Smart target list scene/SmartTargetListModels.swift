@@ -19,12 +19,12 @@ enum SmartTargetList
 
 		struct Response
 		{
-			let smartTargets: [SmartTarget]
+			let smartTargets: ISmartTargetCollection
 		}
 
 		struct ViewModel
 		{
-			let smartTargets: [SmartTarget]
+			let smartTargets: ISmartTargetCollection
 		}
 	}
 }
