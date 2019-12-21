@@ -22,17 +22,10 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 {
 	// MARK: ...Private properties
 	private var presenter: SmartTargetListPresentationLogic
-<<<<<<< HEAD
-	private var worker: DataWorker<T>
+	private var worker: DataBaseWorker<T>
 
 	// MARK: ...Initialization
-	init(presenter: SmartTargetListPresentationLogic, worker: DataWorker<T>) {
-=======
-	private var worker: DataBaseWorker
-
-	// MARK: ...Initialization
-	init(presenter: SmartTargetListPresentationLogic, worker: DataBaseWorker) {
->>>>>>> develop
+	init(presenter: SmartTargetListPresentationLogic, worker: DataBaseWorker<T>) {
 		self.presenter = presenter
 		self.worker = worker
 	}
