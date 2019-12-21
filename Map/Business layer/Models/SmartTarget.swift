@@ -52,7 +52,7 @@ extension SmartTarget: Codable
 		title = try container.decode(String.self, forKey: .title)
 		coordinates = try container.decode(CLLocationCoordinate2D.self, forKey: .coordinates)
 		dateOfCreated = try container.decode(Date.self, forKey: .dateOfCreated)
-		address = try container.decode(String.self, forKey: .address)
+		address = try? container.decode(String.self, forKey: .address)
 	}
 
 	func encode(to encoder: Encoder) throws {
