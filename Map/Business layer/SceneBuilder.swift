@@ -11,7 +11,7 @@ final class SceneBuilder
 		withRepository repository: ISmartTargetRepository) -> MapViewController {
 
 		let presenter = MapPresenter()
-		let worker = DataWorker(repository: repository)
+		let worker = DataBaseWorker(repository: repository)
 		let interactor = MapInteractor(presenter: presenter, worker: worker)
 		let viewController = MapViewController(interactor: interactor)
 
@@ -24,7 +24,7 @@ final class SceneBuilder
 		withRepository repository: ISmartTargetRepository) -> SmartTargetListViewController {
 
 		let presenter = SmartTargetListPresenter()
-		let worker = DataWorker(repository: repository)
+		let worker = DataBaseWorker(repository: repository)
 		let interactor = SmartTargetListInteractor(presenter: presenter, worker: worker)
 		let router = SmartTargetListRouter(factory: self)
 		let viewController = SmartTargetListViewController(interactor: interactor, router: router)
