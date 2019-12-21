@@ -85,6 +85,7 @@ extension MapInteractor: CLLocationManagerDelegate
 {
 	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 		currentCoordinate = locations.first?.coordinate
+		checkAuthorizationService()
 	}
 
 	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {

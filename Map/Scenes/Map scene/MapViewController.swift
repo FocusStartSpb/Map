@@ -64,7 +64,7 @@ final class MapViewController: UIViewController
 	private func showLocation(coordinate: CLLocationCoordinate2D) {
 		let zoomRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: self.latitudalMeters,
 											longitudinalMeters: self.longtitudalMeters)
-		self.mapView.setRegion(zoomRegion, animated: true)
+		mapView.setRegion(zoomRegion, animated: true)
 	}
 }
 
