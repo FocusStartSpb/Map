@@ -10,16 +10,18 @@ import CoreLocation
 protocol MapBusinessLogic
 {
 	func getSmartTargets(request: Map.SmartTargets.Request)
-	func getCurrentCoordinate(request: Map.UpdateLocation.Request)
-	func getCurrentStatus(request: Map.UpdateStatus.Request)
+	//func getCurrentCoordinate(request: Map.UpdateLocation.Request)
+	func configureLocationService(request: Map.UpdateStatus.Request)
 }
 
 // MARK: Class
-final class MapInteractor
+final class MapInteractor: NSObject
 {
 	// MARK: ...Private properties
 	private var presenter: MapPresentationLogic
 	private var worker: DataWorker
+
+	let locationManager = CLLocationManager()
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
@@ -27,6 +29,22 @@ final class MapInteractor
 	init(presenter: MapPresentationLogic, worker: DataWorker) {
 		self.presenter = presenter
 		self.worker = worker
+	}
+
+	// MARK: ...Private methods
+	private func checkAuthorizationService() {
+		let status = CLLocationManager.authorizationStatus()
+		if status == .authorizedAlways || status == .authorizedWhenInUse {
+			locationManager.desiredAccuracy = kCLLocationAccuracyBest
+			locationManager.startUpdatingLocation()
+			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: true,
+																			   userCoordinate: currentCoordinate))
+		}
+		else {
+			locationManager.requestAlwaysAuthorization()
+			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: false,
+																			   userCoordinate: currentCoordinate))
+		}
 	}
 }
 
@@ -48,18 +66,28 @@ extension MapInteractor: MapBusinessLogic
 		}
 	}
 
-	func getCurrentCoordinate(request: Map.UpdateLocation.Request) {
-		guard let latestLocation = request.locations.first else { return }
-		if currentCoordinate == nil {
-			presenter.takeCurrentCoordinate(response: Map.UpdateLocation.Response(coordinate: latestLocation.coordinate))
-		}
-		currentCoordinate = latestLocation.coordinate
+//	func getCurrentCoordinate(request: Map.UpdateLocation.Request) {
+//		guard let latestLocation = request.locations.first else { return }
+//		if currentCoordinate == nil {
+//			presenter.takeCurrentCoordinate(response: Map.UpdateLocation.Response(coordinate: latestLocation.coordinate))
+//		}
+//		currentCoordinate = latestLocation.coordinate
+//	}
+
+	func configureLocationService(request: Map.UpdateStatus.Request) {
+		locationManager.delegate = self
+		checkAuthorizationService()
+	}
+}
+// MARK: - CLLocationDelegate
+
+extension MapInteractor: CLLocationManagerDelegate
+{
+	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+		currentCoordinate = locations.first?.coordinate
 	}
 
-	func getCurrentStatus(request: Map.UpdateStatus.Request) {
-		let request = Map.UpdateStatus.Request(status: request.status, manager: request.manager)
-		if request.status == .authorizedAlways || request.status == .authorizedWhenInUse {
-			presenter.didChangeStatus(response: Map.UpdateStatus.Response(manager: request.manager))
-		}
+	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+		checkAuthorizationService()
 	}
 }

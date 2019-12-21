@@ -28,39 +28,37 @@ enum Map
 		}
 	}
 
-	enum UpdateLocation
-	{
-		struct Request
-		{
-			let locations: [CLLocation]
-		}
-
-		struct Response
-		{
-			let coordinate: CLLocationCoordinate2D
-		}
-
-		struct ViewModel
-		{
-			let coordinate: CLLocationCoordinate2D
-		}
-	}
+//	enum UpdateLocation
+//	{
+//		struct Request
+//		{
+//			let locations: [CLLocation]
+//		}
+//
+//		struct Response
+//		{
+//			let coordinate: CLLocationCoordinate2D
+//		}
+//
+//		struct ViewModel
+//		{
+//			let coordinate: CLLocationCoordinate2D
+//		}
+//	}
 	enum UpdateStatus
 	{
-		struct Request
-		{
-			let status: CLAuthorizationStatus
-			let manager: CLLocationManager
-		}
+		struct Request {}
 
 		struct Response
 		{
-			let manager: CLLocationManager
+			let accessToLocationApproved: Bool
+			let userCoordinate: CLLocationCoordinate2D?
 		}
 
 		struct ViewModel
 		{
-			let manager: CLLocationManager
+			let isShownUserPosition: Bool
+			let userCoordinate: CLLocationCoordinate2D?
 		}
 	}
 }

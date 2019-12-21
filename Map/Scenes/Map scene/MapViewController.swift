@@ -12,8 +12,8 @@ import MapKit
 protocol MapDisplayLogic: AnyObject
 {
 	func displaySmartTargets(viewModel: Map.SmartTargets.ViewModel)
-	func showLocation(viewModel: Map.UpdateLocation.ViewModel)
-	func beginLocationUpdates(viewModel: CLLocationManager)
+	//func showLocation(viewModel: Map.UpdateLocation.ViewModel)
+	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel)
 }
 
 // MARK: Class
@@ -23,7 +23,6 @@ final class MapViewController: UIViewController
 	private var interactor: MapBusinessLogic
 
 	let mapView = MKMapView()
-	let locationManager = CLLocationManager()
 
 	private let latitudalMeters = 5_000.0
 	private let longtitudalMeters = 5_000.0
@@ -44,7 +43,7 @@ final class MapViewController: UIViewController
 		super.viewDidLoad()
 		view.addSubview(mapView)
 		setupMapConstraints()
-		configureLocationService()
+		interactor.configureLocationService(request: .init())
 		doSomething()
 	}
 
@@ -52,17 +51,6 @@ final class MapViewController: UIViewController
 	private func doSomething() {
 		let request = Map.SmartTargets.Request()
 		interactor.getSmartTargets(request: request)
-	}
-	private func configureLocationService() {
-		locationManager.delegate = self
-
-		let status = CLLocationManager.authorizationStatus()
-		if status == .authorizedAlways || status == .authorizedWhenInUse {
-			beginLocationUpdates(viewModel: locationManager)
-		}
-		else {
-			locationManager.requestAlwaysAuthorization()
-		}
 	}
 
 	private func setupMapConstraints() {
@@ -72,39 +60,28 @@ final class MapViewController: UIViewController
 		mapView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
 		mapView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0).isActive = true
 	}
+
+	private func showLocation(coordinate: CLLocationCoordinate2D) {
+		let zoomRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: self.latitudalMeters,
+											longitudinalMeters: self.longtitudalMeters)
+		self.mapView.setRegion(zoomRegion, animated: true)
+	}
 }
 
 // MARK: Map display logic
 extension MapViewController: MapDisplayLogic
 {
-
 	func displaySmartTargets(viewModel: Map.SmartTargets.ViewModel) {
 		//nameTextField.text = viewModel.name
 	}
 
-	func showLocation(viewModel: Map.UpdateLocation.ViewModel) {
-		let zoomRegion = MKCoordinateRegion(center: viewModel.coordinate, latitudinalMeters: self.latitudalMeters,
-											longitudinalMeters: self.longtitudalMeters)
-		self.mapView.setRegion(zoomRegion, animated: true)
-	}
-	func beginLocationUpdates(viewModel: CLLocationManager) {
-		mapView.showsUserLocation = true
-		viewModel.desiredAccuracy = kCLLocationAccuracyBest
-		viewModel.startUpdatingLocation()
-	}
-}
-
-// MARK: - CLLocationDelegate
-
-extension MapViewController: CLLocationManagerDelegate
-{
-	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-		interactor.getCurrentCoordinate(request: Map.UpdateLocation.Request(locations: locations))
-	}
-
-	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-		if status == .authorizedAlways || status == .authorizedWhenInUse {
-			beginLocationUpdates(viewModel: manager)
+	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel) {
+		mapView.showsUserLocation = viewModel.isShownUserPosition
+		if viewModel.isShownUserPosition {
+			guard let coordinate = viewModel.userCoordinate else {
+				return
+			}
+			showLocation(coordinate: coordinate)
 		}
 	}
 }
