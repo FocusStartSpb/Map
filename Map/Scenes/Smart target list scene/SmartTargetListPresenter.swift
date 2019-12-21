@@ -22,7 +22,7 @@ final class SmartTargetListPresenter
 extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 {
 	func presentSmartTargets(response: SmartTargetList.SmartTargets.Response) {
-		let viewModel = SmartTargetList.SmartTargets.ViewModel(smartTargets: response.smartTargets)
+		let viewModel = SmartTargetList.SmartTargets.ViewModel(smartTargetCollection: response.smartTargetCollection)
 		viewController?.displaySmartTargets(viewModel: viewModel)
 	}
 }

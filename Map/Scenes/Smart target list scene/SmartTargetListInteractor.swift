@@ -39,7 +39,7 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 		worker.fetchSmartTargets { [weak self] result in
 			switch result {
 			case .success(let targets):
-				let response = SmartTargetList.SmartTargets.Response(smartTargets: targets)
+				let response = SmartTargetList.SmartTargets.Response(smartTargetCollection: targets)
 				self?.presenter.presentSmartTargets(response: response)
 			case .failure(let error):
 				print(error)

@@ -33,7 +33,7 @@ extension MapInteractor: MapBusinessLogic
 			switch result {
 			case .success(let targets):
 				// Создаем респонс
-				let response = Map.SmartTargets.Response(smartTargets: targets)
+				let response = Map.SmartTargets.Response(smartTargetCollection: targets)
 				//
 				self?.presenter.presentSmartTargets(response: response)
 			case .failure(let error):
