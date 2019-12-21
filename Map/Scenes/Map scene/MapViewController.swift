@@ -12,7 +12,6 @@ import MapKit
 protocol MapDisplayLogic: AnyObject
 {
 	func displaySmartTargets(viewModel: Map.SmartTargets.ViewModel)
-	//func showLocation(viewModel: Map.UpdateLocation.ViewModel)
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel)
 }
 
@@ -22,7 +21,7 @@ final class MapViewController: UIViewController
 	// MARK: ...Private properties
 	private var interactor: MapBusinessLogic
 
-	let mapView = MKMapView()
+	private let mapView = MKMapView()
 
 	private let latitudalMeters = 5_000.0
 	private let longtitudalMeters = 5_000.0
@@ -78,9 +77,7 @@ extension MapViewController: MapDisplayLogic
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel) {
 		mapView.showsUserLocation = viewModel.isShownUserPosition
 		if viewModel.isShownUserPosition {
-			guard let coordinate = viewModel.userCoordinate else {
-				return
-			}
+			guard let coordinate = viewModel.userCoordinate else { return }
 			showLocation(coordinate: coordinate)
 		}
 	}

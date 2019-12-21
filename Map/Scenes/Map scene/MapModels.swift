@@ -4,8 +4,10 @@
 //
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
-import CoreLocation
 // swiftlint:disable nesting
+
+import CoreLocation
+
 enum Map
 {
 	// MARK: Use cases
@@ -28,23 +30,6 @@ enum Map
 		}
 	}
 
-//	enum UpdateLocation
-//	{
-//		struct Request
-//		{
-//			let locations: [CLLocation]
-//		}
-//
-//		struct Response
-//		{
-//			let coordinate: CLLocationCoordinate2D
-//		}
-//
-//		struct ViewModel
-//		{
-//			let coordinate: CLLocationCoordinate2D
-//		}
-//	}
 	enum UpdateStatus
 	{
 		struct Request {}

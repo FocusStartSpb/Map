@@ -10,7 +10,6 @@ import CoreLocation
 protocol MapBusinessLogic
 {
 	func getSmartTargets(request: Map.SmartTargets.Request)
-	//func getCurrentCoordinate(request: Map.UpdateLocation.Request)
 	func configureLocationService(request: Map.UpdateStatus.Request)
 }
 
@@ -21,7 +20,7 @@ final class MapInteractor: NSObject
 	private var presenter: MapPresentationLogic
 	private var worker: DataBaseWorker
 
-	let locationManager = CLLocationManager()
+	private let locationManager = CLLocationManager()
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
@@ -51,28 +50,18 @@ final class MapInteractor: NSObject
 // MARK: - Map display logic
 extension MapInteractor: MapBusinessLogic
 {
-
 	func getSmartTargets(request: Map.SmartTargets.Request) {
 		worker.fetchSmartTargets { [weak self] result in
 			switch result {
 			case .success(let targets):
 				// Создаем респонс
 				let response = Map.SmartTargets.Response(smartTargets: targets)
-				//
 				self?.presenter.presentSmartTargets(response: response)
 			case .failure(let error):
 				print(error)
 			}
 		}
 	}
-
-//	func getCurrentCoordinate(request: Map.UpdateLocation.Request) {
-//		guard let latestLocation = request.locations.first else { return }
-//		if currentCoordinate == nil {
-//			presenter.takeCurrentCoordinate(response: Map.UpdateLocation.Response(coordinate: latestLocation.coordinate))
-//		}
-//		currentCoordinate = latestLocation.coordinate
-//	}
 
 	func configureLocationService(request: Map.UpdateStatus.Request) {
 		locationManager.delegate = self
