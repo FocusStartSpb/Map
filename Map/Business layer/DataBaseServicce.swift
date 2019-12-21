@@ -48,8 +48,8 @@ final class DataBaseService<Element: Codable>
 				throw ServiceError.canNotLoadSmartTarget(message: "Path error")
 			}
 			let data = try Data(contentsOf: url)
-			let elements = try JSONDecoder().decode(Element.self, from: data)
-			return elements
+			let result = try Element(data: data, decoder: JSONDecoder())
+			return result
 		}
 		catch {
 			throw error

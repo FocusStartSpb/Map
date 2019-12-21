@@ -16,9 +16,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate
 					didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
 		let factory = SceneBuilder()
-		let decoderService = DecoderService()
 		let dataBaseService = DataBaseService<SmartTargetCollection>()
-		let repository = SmartTargetRepository(decoderService: decoderService, dataBaseService: dataBaseService)
+		let repository = SmartTargetRepository(dataBaseService: dataBaseService)
 		let mapViewController = factory.getMapScene(withRepository: repository)
 		let smartTargetListViewVontroller = factory.getSmartTargetListScene(withRepository: repository)
 		let tabBarController = UITabBarController()

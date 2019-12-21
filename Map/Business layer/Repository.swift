@@ -21,12 +21,10 @@ final class SmartTargetRepository
 {
 
 	// MARK: ...Private properties
-	private var decoderService: IDecoderService
 	private var dataBaseService: DataBaseService<Element>
 
 	// MARK: ...Initialization
-	init(decoderService: IDecoderService, dataBaseService: DataBaseService<Element>) {
-		self.decoderService = decoderService
+	init(dataBaseService: DataBaseService<Element>) {
 		self.dataBaseService = dataBaseService
 	}
 }
