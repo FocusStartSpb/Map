@@ -7,15 +7,10 @@
 
 import Foundation
 
-typealias SmartTargetsResult = Result<[SmartTarget], ServiceError>
+typealias SmartTargetsResult = Result<ISmartTargetCollection, ServiceError>
 
 typealias SmartTargetsResultCompletion = (SmartTargetsResult) -> Void
 
-protocol IDecoderService
-{
-	func decodeSmartTargets(_ data: Data,
-							_ completion: @escaping SmartTargetsResultCompletion)
-}
 protocol IDecoderGeocoder
 {
 	func decodeGeocode(_ data: Data, completion: @escaping (GeoResults) -> Void)
@@ -25,11 +20,6 @@ final class DecoderService
 {
 }
 
-extension DecoderService: IDecoderService
-{
-	func decodeSmartTargets(_ data: Data, _ completion: @escaping SmartTargetsResultCompletion) {
-	}
-}
 extension DecoderService: IDecoderGeocoder
 {
 	func decodeGeocode(_ data: Data, completion: @escaping (GeoResults) -> Void) {
