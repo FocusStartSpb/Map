@@ -14,7 +14,7 @@ protocol MapBusinessLogic
 }
 
 // MARK: Class
-final class MapInteractor<T: ISmartTargetRepository>
+final class MapInteractor<T: ISmartTargetRepository>: NSObject, CLLocationManagerDelegate
 {
 	// MARK: ...Private properties
 	private var presenter: MapPresentationLogic
@@ -43,6 +43,20 @@ final class MapInteractor<T: ISmartTargetRepository>
 			locationManager.requestAlwaysAuthorization()
 		}
 	}
+	// MARK: - CLLocationDelegate
+
+	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+		guard let latestCoordinate = locations.first?.coordinate else { return }
+		if currentCoordinate == nil {
+			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: true,
+																			   userCoordinate: latestCoordinate))
+		}
+		currentCoordinate = locations.first?.coordinate
+	}
+
+	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+		checkAuthorizationService()
+	}
 }
 
 // MARK: - Map display logic
@@ -64,23 +78,6 @@ extension MapInteractor: MapBusinessLogic
 
 	func configureLocationService(request: Map.UpdateStatus.Request) {
 		locationManager.delegate = self
-		checkAuthorizationService()
-	}
-}
-// MARK: - CLLocationDelegate
-
-extension MapInteractor: CLLocationManagerDelegate
-{
-	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-		guard let latestCoordinate = locations.first?.coordinate else { return }
-		if currentCoordinate == nil {
-			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: true,
-																			   userCoordinate: latestCoordinate))
-		}
-		currentCoordinate = locations.first?.coordinate
-	}
-
-	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
 		checkAuthorizationService()
 	}
 }
