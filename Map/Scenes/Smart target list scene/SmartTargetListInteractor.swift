@@ -18,14 +18,14 @@ protocol SmartTargetListDataStore
 }
 
 // MARK: - Class
-final class SmartTargetListInteractor
+final class SmartTargetListInteractor<T: ISmartTargetRepository>
 {
 	// MARK: ...Private properties
 	private var presenter: SmartTargetListPresentationLogic
-	private var worker: DataBaseWorker
+	private var worker: DataBaseWorker<T>
 
 	// MARK: ...Initialization
-	init(presenter: SmartTargetListPresentationLogic, worker: DataBaseWorker) {
+	init(presenter: SmartTargetListPresentationLogic, worker: DataBaseWorker<T>) {
 		self.presenter = presenter
 		self.worker = worker
 	}
@@ -39,7 +39,7 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 		worker.fetchSmartTargets { [weak self] result in
 			switch result {
 			case .success(let targets):
-				let response = SmartTargetList.SmartTargets.Response(smartTargets: targets)
+				let response = SmartTargetList.SmartTargets.Response(smartTargetCollection: targets)
 				self?.presenter.presentSmartTargets(response: response)
 			case .failure(let error):
 				print(error)

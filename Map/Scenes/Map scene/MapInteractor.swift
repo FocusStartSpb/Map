@@ -14,18 +14,18 @@ protocol MapBusinessLogic
 }
 
 // MARK: Class
-final class MapInteractor: NSObject
+final class MapInteractor<T: ISmartTargetRepository>: NSObject
 {
 	// MARK: ...Private properties
 	private var presenter: MapPresentationLogic
-	private var worker: DataBaseWorker
+	private var worker: DataBaseWorker<T>
 
 	private let locationManager = CLLocationManager()
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
 	// MARK: ...Initialization
-	init(presenter: MapPresentationLogic, worker: DataBaseWorker) {
+	init(presenter: MapPresentationLogic, worker: DataBaseWorker<T>) {
 		self.presenter = presenter
 		self.worker = worker
 	}
@@ -53,7 +53,8 @@ extension MapInteractor: MapBusinessLogic
 			switch result {
 			case .success(let targets):
 				// Создаем респонс
-				let response = Map.SmartTargets.Response(smartTargets: targets)
+				let response = Map.SmartTargets.Response(smartTargetCollection: targets)
+				//
 				self?.presenter.presentSmartTargets(response: response)
 			case .failure(let error):
 				print(error)
