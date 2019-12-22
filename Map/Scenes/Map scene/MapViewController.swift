@@ -57,7 +57,7 @@ final class MapViewController: UIViewController
 		mapView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
 		mapView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
 		mapView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
-		mapView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0).isActive = true
+		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
 	}
 
 	private func showLocation(coordinate: CLLocationCoordinate2D) {
