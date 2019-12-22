@@ -23,7 +23,7 @@ final class MapPresenter
 extension MapPresenter: MapPresentationLogic
 {
 	func presentSmartTargets(response: Map.SmartTargets.Response) {
-		let viewModel = Map.SmartTargets.ViewModel(smartTargets: response.smartTargets)
+		let viewModel = Map.SmartTargets.ViewModel(smartTargetCollection: response.smartTargetCollection)
 		viewController?.displaySmartTargets(viewModel: viewModel)
 	}
 
