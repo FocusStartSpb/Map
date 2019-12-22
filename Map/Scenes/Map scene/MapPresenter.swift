@@ -9,6 +9,7 @@
 protocol MapPresentationLogic
 {
 	func presentSmartTargets(response: Map.SmartTargets.Response)
+	func beginLocationUpdates(response: Map.UpdateStatus.Response)
 }
 
 // MARK: - Class
@@ -24,5 +25,11 @@ extension MapPresenter: MapPresentationLogic
 	func presentSmartTargets(response: Map.SmartTargets.Response) {
 		let viewModel = Map.SmartTargets.ViewModel(smartTargetCollection: response.smartTargetCollection)
 		viewController?.displaySmartTargets(viewModel: viewModel)
+	}
+
+	func beginLocationUpdates(response: Map.UpdateStatus.Response) {
+		viewController?.showLocationUpdates(viewModel:
+			.init(isShownUserPosition: response.accessToLocationApproved,
+				  userCoordinate: response.userCoordinate))
 	}
 }
