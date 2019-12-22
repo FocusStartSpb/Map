@@ -33,16 +33,14 @@ final class MapInteractor: NSObject
 	// MARK: ...Private methods
 	private func checkAuthorizationService() {
 		let status = CLLocationManager.authorizationStatus()
-		if status == .authorizedAlways || status == .authorizedWhenInUse {
-			locationManager.desiredAccuracy = kCLLocationAccuracyBest
+		switch status {
+		case .notDetermined: locationManager.requestAlwaysAuthorization()
+		case .authorizedAlways, .authorizedWhenInUse:
 			locationManager.startUpdatingLocation()
 			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: true,
 																			   userCoordinate: currentCoordinate))
-		}
-		else {
+		default:
 			locationManager.requestAlwaysAuthorization()
-			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: false,
-																			   userCoordinate: currentCoordinate))
 		}
 	}
 }
@@ -73,8 +71,12 @@ extension MapInteractor: MapBusinessLogic
 extension MapInteractor: CLLocationManagerDelegate
 {
 	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+		guard let latestCoordinate = locations.first?.coordinate else { return }
+		if currentCoordinate == nil {
+			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: true,
+																			   userCoordinate: latestCoordinate))
+		}
 		currentCoordinate = locations.first?.coordinate
-		checkAuthorizationService()
 	}
 
 	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
