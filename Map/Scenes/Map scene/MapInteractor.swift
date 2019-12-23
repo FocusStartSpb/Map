@@ -11,6 +11,7 @@ protocol MapBusinessLogic
 {
 	func getSmartTargets(request: Map.SmartTargets.Request)
 	func configureLocationService(request: Map.UpdateStatus.Request)
+	func returnToCurrentLocation(request: Map.UpdateStatus.Request)
 }
 
 // MARK: Class
