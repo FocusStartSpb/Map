@@ -22,9 +22,12 @@ final class MapViewController: UIViewController
 	private var interactor: MapBusinessLogic
 
 	private let mapView = MKMapView()
+	private let currentLocationButton = UIButton()
 
 	private let latitudalMeters = 5_000.0
 	private let longtitudalMeters = 5_000.0
+	private let currentLocationButtonSize: CGFloat = 40.0
+	private let currentLocationOffset: CGFloat = 20.0
 
 	// MARK: ...Initialization
 	init(interactor: MapBusinessLogic) {
@@ -42,6 +45,9 @@ final class MapViewController: UIViewController
 		super.viewDidLoad()
 		view.addSubview(mapView)
 		setupMapConstraints()
+		view.addSubview(currentLocationButton)
+		setupCurrentLocationButtonConstraints()
+		setupReturnButton()
 		interactor.configureLocationService(request: .init())
 		doSomething()
 	}
@@ -52,12 +58,34 @@ final class MapViewController: UIViewController
 		interactor.getSmartTargets(request: request)
 	}
 
+	@objc private func currentLocationPressed(sender: UIButton) {
+		interactor.returnToCurrentLocation(request: Map.UpdateStatus.Request())
+	}
+
+	private func setupReturnButton() {
+		currentLocationButton.setTitle("➤", for: .normal)
+		currentLocationButton.titleLabel?.font = .systemFont(ofSize: 40)
+		currentLocationButton.setTitleColor(.systemBlue, for: .normal)
+		currentLocationButton.transform = CGAffineTransform(rotationAngle: -45.0)
+		currentLocationButton.addTarget(self, action: #selector(currentLocationPressed), for: .touchUpInside)
+	}
+
 	private func setupMapConstraints() {
 		mapView.translatesAutoresizingMaskIntoConstraints = false
 		mapView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-		mapView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
+		mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
 		mapView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
 		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+	}
+
+	private func setupCurrentLocationButtonConstraints() {
+		currentLocationButton.translatesAutoresizingMaskIntoConstraints = false
+		currentLocationButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
+													  constant: currentLocationOffset).isActive = true
+		currentLocationButton.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+		currentLocationButton.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+		currentLocationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+														constant: -currentLocationOffset).isActive = true
 	}
 
 	private func showLocation(coordinate: CLLocationCoordinate2D) {
