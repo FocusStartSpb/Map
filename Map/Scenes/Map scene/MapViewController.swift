@@ -41,15 +41,10 @@ final class MapViewController: UIViewController
 	}
 
 	// MARK: ...View lifecycle
+
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		view.addSubview(mapView)
-		setupMapConstraints()
-		view.addSubview(currentLocationButton)
-		setupCurrentLocationButtonConstraints()
-		setupReturnButton()
-		interactor.configureLocationService(request: .init())
-		doSomething()
+		setup()
 	}
 
 	override func viewWillAppear(_ animated: Bool) {
@@ -58,6 +53,19 @@ final class MapViewController: UIViewController
 	}
 
 	// MARK: ...Private methods
+	private func setup() {
+		view.addSubview(mapView)
+		view.addSubview(currentLocationButton)
+
+		setupCurrentLocationButton()
+
+		setupMapConstraints()
+		setupCurrentLocationButtonConstraints()
+
+		interactor.configureLocationService(request: .init())
+		doSomething()
+	}
+
 	private func doSomething() {
 		let request = Map.SmartTargets.Request()
 		interactor.getSmartTargets(request: request)
@@ -67,11 +75,12 @@ final class MapViewController: UIViewController
 		interactor.returnToCurrentLocation(request: Map.UpdateStatus.Request())
 	}
 
-	private func setupReturnButton() {
+	private func setupCurrentLocationButton() {
 		currentLocationButton.setTitle("➤", for: .normal)
 		currentLocationButton.titleLabel?.font = .systemFont(ofSize: 40)
 		currentLocationButton.setTitleColor(.systemBlue, for: .normal)
 		currentLocationButton.transform = CGAffineTransform(rotationAngle: -45.0)
+		currentLocationButton.layer.cornerRadius = 20
 		currentLocationButton.addTarget(self, action: #selector(currentLocationPressed), for: .touchUpInside)
 		currentLocationButton.isHidden = true
 	}
@@ -80,7 +89,7 @@ final class MapViewController: UIViewController
 		mapView.translatesAutoresizingMaskIntoConstraints = false
 		mapView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
 		mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
-		mapView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
+		mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
 		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
 	}
 
