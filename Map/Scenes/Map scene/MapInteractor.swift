@@ -81,4 +81,8 @@ extension MapInteractor: MapBusinessLogic
 		locationManager.delegate = self
 		checkAuthorizationService()
 	}
+
+	func returnToCurrentLocation(request: Map.UpdateStatus.Request) {
+		checkAuthorizationService()
+	}
 }
