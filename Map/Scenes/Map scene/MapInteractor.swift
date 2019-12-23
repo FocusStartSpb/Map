@@ -11,6 +11,7 @@ protocol MapBusinessLogic
 {
 	func getSmartTargets(request: Map.SmartTargets.Request)
 	func configureLocationService(request: Map.UpdateStatus.Request)
+	func returnToCurrentLocation(request: Map.UpdateStatus.Request)
 }
 
 // MARK: Class
@@ -78,6 +79,10 @@ extension MapInteractor: MapBusinessLogic
 
 	func configureLocationService(request: Map.UpdateStatus.Request) {
 		locationManager.delegate = self
+		checkAuthorizationService()
+	}
+
+	func returnToCurrentLocation(request: Map.UpdateStatus.Request) {
 		checkAuthorizationService()
 	}
 }
