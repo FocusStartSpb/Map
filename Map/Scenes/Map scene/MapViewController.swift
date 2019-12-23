@@ -52,6 +52,11 @@ final class MapViewController: UIViewController
 		doSomething()
 	}
 
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		currentLocationButton.isHidden = (mapView.showsUserLocation == false)
+	}
+
 	// MARK: ...Private methods
 	private func doSomething() {
 		let request = Map.SmartTargets.Request()
@@ -68,6 +73,7 @@ final class MapViewController: UIViewController
 		currentLocationButton.setTitleColor(.systemBlue, for: .normal)
 		currentLocationButton.transform = CGAffineTransform(rotationAngle: -45.0)
 		currentLocationButton.addTarget(self, action: #selector(currentLocationPressed), for: .touchUpInside)
+		currentLocationButton.isHidden = true
 	}
 
 	private func setupMapConstraints() {
@@ -105,6 +111,7 @@ extension MapViewController: MapDisplayLogic
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel) {
 		mapView.showsUserLocation = viewModel.isShownUserPosition
 		if viewModel.isShownUserPosition {
+			currentLocationButton.isHidden = false
 			guard let coordinate = viewModel.userCoordinate else { return }
 			showLocation(coordinate: coordinate)
 		}
