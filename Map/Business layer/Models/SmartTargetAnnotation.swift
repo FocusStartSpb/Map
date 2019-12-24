@@ -9,6 +9,8 @@ import MapKit
 
 final class SmartTargetAnnotation: NSObject, MKAnnotation
 {
+	static let identifier = "PinIdentifier"
+
 	let title: String?
 	var coordinate: CLLocationCoordinate2D
 

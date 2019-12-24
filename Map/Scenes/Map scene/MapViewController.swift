@@ -262,9 +262,11 @@ extension MapViewController: MKMapViewDelegate
 {
 	func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
 		if annotation is MKUserLocation { return nil }
-		var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: "pin") as? MKPinAnnotationView
+		var pinView =
+			mapView.dequeueReusableAnnotationView(withIdentifier: SmartTargetAnnotation.identifier) as? MKPinAnnotationView
 		if pinView == nil {
-			pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pin")
+			pinView = MKPinAnnotationView(annotation: annotation,
+										  reuseIdentifier: SmartTargetAnnotation.identifier)
 			pinView?.isDraggable = true
 			pinView?.animatesDrop = true
 			pinView?.canShowCallout = true
