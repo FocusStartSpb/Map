@@ -21,14 +21,36 @@ final class MapViewController: UIViewController
 	// MARK: ...Private properties
 	private var interactor: MapBusinessLogic
 
-	private let mapView = MKMapView()
+	private lazy var mapView: MKMapView = {
+		let mapView = MKMapView()
+		mapView.delegate = self
+		return mapView
+	}()
+
 	private let currentLocationButton = UIButton()
-	private lazy var addButtonView = AddButtonView(tapAction: actionAddPin)
+	private lazy var addButtonView = AddButtonView(tapAction: actionCreateSmartTarget)
+
+	private var smartTargetMenu: SmartTargetMenu?
+	private var temptPointer: SmartTargetAnnotation?
+	private var isEditSmartTarget: Bool { temptPointer != nil }
+	private var isDraggedTemptPointer = false
+
+	private var annotations: [SmartTargetAnnotation] {
+		mapView
+			.annotations
+			.filter { $0 is SmartTargetAnnotation }
+			.compactMap { $0 as? SmartTargetAnnotation }
+	}
 
 	private let latitudalMeters = 5_000.0
 	private let longtitudalMeters = 5_000.0
 	private let currentLocationButtonSize: CGFloat = 40.0
 	private let currentLocationOffset: CGFloat = 20.0
+
+	// Constraints of smart target menu
+	private var bottomSmartTargetMenuConstraint: NSLayoutConstraint?
+	private var leadingSmartTargetMenuConstraint: NSLayoutConstraint?
+	private var topSmartTargetMenuConstraint: NSLayoutConstraint?
 
 	// MARK: ...Initialization
 	init(interactor: MapBusinessLogic) {
@@ -117,18 +139,104 @@ final class MapViewController: UIViewController
 		addButtonView.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
 	}
 
+	private func setupSmartTargetMenuConstraints() {
+		smartTargetMenu?.translatesAutoresizingMaskIntoConstraints = false
+
+		bottomSmartTargetMenuConstraint =
+			smartTargetMenu?
+				.bottomAnchor
+				.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+							constant: -currentLocationOffset)
+		bottomSmartTargetMenuConstraint?.isActive = true
+
+		leadingSmartTargetMenuConstraint =
+			smartTargetMenu?
+				.leadingAnchor
+				.constraint(equalTo: addButtonView.leadingAnchor)
+		leadingSmartTargetMenuConstraint?.isActive = true
+
+		smartTargetMenu?
+			.trailingAnchor
+			.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
+						constant: -currentLocationOffset)
+			.isActive = true
+	}
+
 	private func showLocation(coordinate: CLLocationCoordinate2D) {
 		let zoomRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: self.latitudalMeters,
 											longitudinalMeters: self.longtitudalMeters)
 		mapView.setRegion(zoomRegion, animated: true)
+	}
+
+	private func addTemptPointer() {
+		let annotation = SmartTargetAnnotation(title: nil,
+											   coordinate: mapView.centerCoordinate)
+		mapView.addAnnotation(annotation)
+		temptPointer = annotation
+	}
+
+	private func showSmartTargetMenu() {
+		let menu =
+			SmartTargetMenu(radiusValue: 300, radiusRange: (50, 1000), saveAction: { [weak self] _ in
+				self?.temptPointer = nil
+				self?.addButtonView.isHidden = false
+				self?.smartTargetMenu = nil
+			}, cancelAction: { [weak self] _ in
+				guard let temptPointer = self?.temptPointer else { return }
+				self?.mapView.removeAnnotation(temptPointer)
+				self?.temptPointer = nil
+				self?.addButtonView.isHidden = false
+				self?.smartTargetMenu = nil
+			}, radiusChange: { _, radius in
+				print(radius)
+			})
+
+		smartTargetMenu = menu
+
+		view.addSubview(menu)
+
+		setupSmartTargetMenuConstraints()
+		view.layoutIfNeeded()
+
+		UIView.animate(withDuration: 0.3) { [weak self] in
+			guard let self = self else { return }
+			self.bottomSmartTargetMenuConstraint?.constant = -self.currentLocationOffset
+			self.leadingSmartTargetMenuConstraint?.isActive = false
+			self.smartTargetMenu?
+				.leadingAnchor
+				.constraint(equalTo: self.view.leadingAnchor,
+							constant: self.currentLocationOffset)
+				.isActive = true
+			self.view.layoutIfNeeded()
+		}
+	}
+
+	private func hideSmartTargetMenu(_ flag: Bool) {
+		smartTargetMenu?.translucent(flag, value: 0.5)
+		translationSmartTargetMenu(flag)
+	}
+
+	private func translationSmartTargetMenu(_ flag: Bool) {
+		UIView.animate(withDuration: 0.3) { [weak self] in
+			guard
+				let self = self,
+				let bottomSmartTargetMenuConstraint = self.bottomSmartTargetMenuConstraint,
+				let smartTargetMenu = self.smartTargetMenu else { return }
+			let factor: CGFloat = flag ? 1 : -1
+			let offset = smartTargetMenu.frame.height / 2 * factor
+			bottomSmartTargetMenuConstraint.constant += offset
+			self.view.layoutIfNeeded()
+		}
 	}
 }
 
 // MARK: - Actions
 private extension MapViewController
 {
-	func actionAddPin() {
-		print("Tap Action")
+	func actionCreateSmartTarget() {
+		addButtonView.isHidden = true
+		addTemptPointer()
+		showSmartTargetMenu()
 	}
 }
 
@@ -145,6 +253,56 @@ extension MapViewController: MapDisplayLogic
 			currentLocationButton.isHidden = false
 			guard let coordinate = viewModel.userCoordinate else { return }
 			showLocation(coordinate: coordinate)
+		}
+	}
+}
+
+// MARK: - Map view delegate
+extension MapViewController: MKMapViewDelegate
+{
+	func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+		if annotation is MKUserLocation { return nil }
+		var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: "pin") as? MKPinAnnotationView
+		if pinView == nil {
+			pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pin")
+			pinView?.isDraggable = true
+			pinView?.animatesDrop = true
+			pinView?.canShowCallout = true
+		}
+		else {
+			pinView?.annotation = annotation
+		}
+		return pinView
+	}
+
+	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+		hideSmartTargetMenu(true)
+	}
+
+	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+		hideSmartTargetMenu(false)
+		guard let temptPointer = temptPointer, isDraggedTemptPointer == false else {
+			isDraggedTemptPointer = false
+			return
+		}
+		mapView.removeAnnotation(temptPointer)
+		temptPointer.coordinate = mapView.centerCoordinate
+		mapView.addAnnotation(temptPointer)
+	}
+
+	func mapView(_ mapView: MKMapView,
+				 annotationView view: MKAnnotationView,
+				 didChange newState: MKAnnotationView.DragState,
+				 fromOldState oldState: MKAnnotationView.DragState) {
+		switch (newState, oldState) {
+		case (.none, .ending):
+			guard let temptPointer = temptPointer else { return }
+			isDraggedTemptPointer = true
+			showLocation(coordinate: temptPointer.coordinate)
+			hideSmartTargetMenu(false)
+		case (.starting, .none):
+			hideSmartTargetMenu(true)
+		default: break
 		}
 	}
 }
