@@ -23,6 +23,7 @@ final class MapViewController: UIViewController
 
 	private let mapView = MKMapView()
 	private let currentLocationButton = UIButton()
+	private lazy var addButtonView = AddButtonView(tapAction: actionAddPin)
 
 	private let latitudalMeters = 5_000.0
 	private let longtitudalMeters = 5_000.0
@@ -56,11 +57,13 @@ final class MapViewController: UIViewController
 	private func setup() {
 		view.addSubview(mapView)
 		view.addSubview(currentLocationButton)
+		view.addSubview(addButtonView)
 
 		setupCurrentLocationButton()
 
 		setupMapConstraints()
 		setupCurrentLocationButtonConstraints()
+		setupAddButtonViewConstraints()
 
 		interactor.configureLocationService(request: .init())
 		doSomething()
@@ -103,10 +106,29 @@ final class MapViewController: UIViewController
 														constant: -currentLocationOffset).isActive = true
 	}
 
+	private func setupAddButtonViewConstraints() {
+		addButtonView.translatesAutoresizingMaskIntoConstraints = false
+
+		addButtonView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+												constant: -currentLocationOffset).isActive = true
+		addButtonView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+											  constant: -currentLocationOffset).isActive = true
+		addButtonView.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+		addButtonView.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+	}
+
 	private func showLocation(coordinate: CLLocationCoordinate2D) {
 		let zoomRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: self.latitudalMeters,
 											longitudinalMeters: self.longtitudalMeters)
 		mapView.setRegion(zoomRegion, animated: true)
+	}
+}
+
+// MARK: - Actions
+private extension MapViewController
+{
+	func actionAddPin() {
+		print("Tap Action")
 	}
 }
 
