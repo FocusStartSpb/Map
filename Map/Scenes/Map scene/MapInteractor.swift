@@ -50,6 +50,9 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 			locationManager.startUpdatingLocation()
 			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: true,
 																			   userCoordinate: currentCoordinate))
+		case .restricted, .denied:
+			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: false,
+																			   userCoordinate: nil))
 		default:
 			locationManager.requestAlwaysAuthorization()
 		}
