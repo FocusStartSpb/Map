@@ -27,6 +27,9 @@
 		584EE5E523A834D60013087A /* SmartTargetListModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5DF23A834D60013087A /* SmartTargetListModels.swift */; };
 		584EE5E623A834D60013087A /* SmartTargetListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5E023A834D60013087A /* SmartTargetListViewController.swift */; };
 		584EE5E723A834D60013087A /* SmartTargetListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5E123A834D60013087A /* SmartTargetListInteractor.swift */; };
+		585BBB8823B219170001F749 /* AddButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8723B219170001F749 /* AddButtonView.swift */; };
+		585BBB8A23B27DD40001F749 /* UIColor+Adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */; };
+		585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */; };
 		58A9984123A852AC00CAACE8 /* SmartTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984023A852AC00CAACE8 /* SmartTarget.swift */; };
 		58A9984423AC19A500CAACE8 /* DataBaseServicce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984323AC19A500CAACE8 /* DataBaseServicce.swift */; };
 		58A9984623AC1D1700CAACE8 /* Sequence+UniqueElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984523AC1D1700CAACE8 /* Sequence+UniqueElements.swift */; };
@@ -58,6 +61,9 @@
 		584EE5DF23A834D60013087A /* SmartTargetListModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetListModels.swift; sourceTree = "<group>"; };
 		584EE5E023A834D60013087A /* SmartTargetListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetListViewController.swift; sourceTree = "<group>"; };
 		584EE5E123A834D60013087A /* SmartTargetListInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetListInteractor.swift; sourceTree = "<group>"; };
+		585BBB8723B219170001F749 /* AddButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddButtonView.swift; sourceTree = "<group>"; };
+		585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Adjust.swift"; sourceTree = "<group>"; };
+		585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetAnnotation.swift; sourceTree = "<group>"; };
 		58A9984023A852AC00CAACE8 /* SmartTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTarget.swift; sourceTree = "<group>"; };
 		58A9984323AC19A500CAACE8 /* DataBaseServicce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBaseServicce.swift; sourceTree = "<group>"; };
 		58A9984523AC1D1700CAACE8 /* Sequence+UniqueElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+UniqueElements.swift"; sourceTree = "<group>"; };
@@ -81,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				580A076523AFEB1200192969 /* SmartTargetMenu.swift */,
+				585BBB8723B219170001F749 /* AddButtonView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -177,6 +184,7 @@
 				3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */,
 				58A9984023A852AC00CAACE8 /* SmartTarget.swift */,
 				58A9984923AC35E000CAACE8 /* SmartTargetCollection.swift */,
+				585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -187,6 +195,7 @@
 				58A9984523AC1D1700CAACE8 /* Sequence+UniqueElements.swift */,
 				58A9984723AC2BA600CAACE8 /* CLLocationCoordinate2D+Codable.swift */,
 				582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */,
+				585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -285,9 +294,11 @@
 				584EE5E523A834D60013087A /* SmartTargetListModels.swift in Sources */,
 				584EE5AF23A7F8490013087A /* AppDelegate.swift in Sources */,
 				584EE5CC23A833D70013087A /* MapViewController.swift in Sources */,
+				585BBB8823B219170001F749 /* AddButtonView.swift in Sources */,
 				584EE5E423A834D60013087A /* SmartTargetListRouter.swift in Sources */,
 				58A9984A23AC35E000CAACE8 /* SmartTargetCollection.swift in Sources */,
 				584EE5E723A834D60013087A /* SmartTargetListInteractor.swift in Sources */,
+				585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */,
 				5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */,
 				3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */,
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,
@@ -305,6 +316,7 @@
 				3AC77B0023AAA5B400CA1EC5 /* GeocoderService.swift in Sources */,
 				58A9984423AC19A500CAACE8 /* DataBaseServicce.swift in Sources */,
 				5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */,
+				585BBB8A23B27DD40001F749 /* UIColor+Adjust.swift in Sources */,
 				58A9984823AC2BA600CAACE8 /* CLLocationCoordinate2D+Codable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
