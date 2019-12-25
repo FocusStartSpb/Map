@@ -58,10 +58,10 @@ final class SmartTargetMenu: UIView
 
 	private lazy var radiusSlider: UISlider = {
 		let slider = UISlider()
-		slider.value = radius
 		slider.minimumValueImage = #imageLiteral(resourceName: "radius-of-circle")
 		slider.minimumValue = radiusRange.0
 		slider.maximumValue = radiusRange.1
+		slider.value = radius
 		slider.addTarget(self, action: #selector(actionChangeRadius(_:)), for: .valueChanged)
 		return slider
 	}()
