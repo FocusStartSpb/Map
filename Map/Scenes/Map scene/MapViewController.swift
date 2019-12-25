@@ -119,10 +119,12 @@ extension MapViewController: MapDisplayLogic
 
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel) {
 		mapView.showsUserLocation = viewModel.isShownUserPosition
-		if viewModel.isShownUserPosition {
-			currentLocationButton.isHidden = false
-			guard let coordinate = viewModel.userCoordinate else { return }
-			showLocation(coordinate: coordinate)
+		guard viewModel.isShownUserPosition else {
+			currentLocationButton.isHidden = true
+			return
 		}
+		currentLocationButton.isHidden = false
+		guard let coordinate = viewModel.userCoordinate else { return }
+		showLocation(coordinate: coordinate)
 	}
 }
