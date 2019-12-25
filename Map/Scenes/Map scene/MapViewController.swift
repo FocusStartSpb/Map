@@ -24,6 +24,8 @@ final class MapViewController: UIViewController
 	private let mapView = MKMapView()
 	private let currentLocationButton = UIButton()
 
+	private var smartTargetMenu: SmartTargetMenu?
+
 	private let latitudalMeters = 5_000.0
 	private let longtitudalMeters = 5_000.0
 	private let currentLocationButtonSize: CGFloat = 40.0
