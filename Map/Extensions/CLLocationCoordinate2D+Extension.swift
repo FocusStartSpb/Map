@@ -1,5 +1,5 @@
 //
-//  CLLocationCoordinate2D+Codable.swift
+//  CLLocationCoordinate2D+Extension.swift
 //  Map
 //
 //  Created by Arkadiy Grigoryanc on 20.12.2019.
@@ -25,5 +25,12 @@ extension CLLocationCoordinate2D: Codable
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		try container.encode(latitude, forKey: .latitude)
 		try container.encode(longitude, forKey: .longitude)
+	}
+}
+
+extension CLLocationCoordinate2D
+{
+	var geocode: GeocoderService.Geocode {
+		GeocoderService.Geocode(longitude: longitude, latitude: latitude)
 	}
 }

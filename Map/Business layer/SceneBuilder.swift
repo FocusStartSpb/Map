@@ -11,8 +11,14 @@ final class SceneBuilder
 		withRepository repository: T) -> MapViewController {
 
 		let presenter = MapPresenter()
-		let worker = DataBaseWorker(repository: repository)
-		let interactor = MapInteractor(presenter: presenter, worker: worker)
+		let dataBaseWorker = DataBaseWorker(repository: repository)
+		let decoderService = DecoderService()
+		let geocoderService = GeocoderService()
+		let geocoderWorker = GeocoderWorker(service: geocoderService,
+											decoder: decoderService)
+		let interactor = MapInteractor(presenter: presenter,
+									   dataBaseWorker: dataBaseWorker,
+									   geocoderWorker: geocoderWorker)
 		let viewController = MapViewController(interactor: interactor)
 
 		presenter.viewController = viewController

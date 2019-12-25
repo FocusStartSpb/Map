@@ -5,7 +5,6 @@
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
 
-import UIKit
 import MapKit
 
 // MARK: MapDisplayLogic protocol
@@ -13,6 +12,7 @@ protocol MapDisplayLogic: AnyObject
 {
 	func displaySmartTargets(viewModel: Map.SmartTargets.ViewModel)
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel)
+	func displayAddress(viewModel: Map.Address.ViewModel)
 }
 
 // MARK: Class
@@ -256,6 +256,16 @@ extension MapViewController: MapDisplayLogic
 		currentLocationButton.isHidden = false
 		guard let coordinate = viewModel.userCoordinate else { return }
 		showLocation(coordinate: coordinate)
+	}
+
+	func displayAddress(viewModel: Map.Address.ViewModel) {
+		guard let menu = smartTargetMenu else { return }
+		switch viewModel.result {
+		case .success(let address):
+			menu.address = address
+		case .failure(let error):
+			menu.address = error.localizedDescription
+		}
 	}
 }
 
