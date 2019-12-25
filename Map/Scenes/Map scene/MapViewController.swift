@@ -7,7 +7,7 @@
 
 import MapKit
 
-// MARK: MapDisplayLogic protocol
+// MARK: - MapDisplayLogic protocol
 protocol MapDisplayLogic: AnyObject
 {
 	func displaySmartTargets(viewModel: Map.SmartTargets.ViewModel)
@@ -15,7 +15,7 @@ protocol MapDisplayLogic: AnyObject
 	func displayAddress(viewModel: Map.Address.ViewModel)
 }
 
-// MARK: Class
+// MARK: - Class
 final class MapViewController: UIViewController
 {
 	// MARK: ...Private properties
@@ -237,10 +237,11 @@ private extension MapViewController
 		addButtonView.isHidden = true
 		addTemptPointer()
 		showSmartTargetMenu()
+		interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
 	}
 }
 
-// MARK: Map display logic
+// MARK: - Map display logic
 extension MapViewController: MapDisplayLogic
 {
 	func displaySmartTargets(viewModel: Map.SmartTargets.ViewModel) {
@@ -291,6 +292,7 @@ extension MapViewController: MKMapViewDelegate
 
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
 		hideSmartTargetMenu(true)
+		smartTargetMenu?.address = nil
 	}
 
 	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
@@ -302,6 +304,7 @@ extension MapViewController: MKMapViewDelegate
 		mapView.removeAnnotation(temptPointer)
 		temptPointer.coordinate = mapView.centerCoordinate
 		mapView.addAnnotation(temptPointer)
+		interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
 	}
 
 	func mapView(_ mapView: MKMapView,
@@ -314,8 +317,10 @@ extension MapViewController: MKMapViewDelegate
 			isDraggedTemptPointer = true
 			showLocation(coordinate: temptPointer.coordinate)
 			hideSmartTargetMenu(false)
+			interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
 		case (.starting, .none):
 			hideSmartTargetMenu(true)
+			smartTargetMenu?.address = nil
 		default: break
 		}
 	}
