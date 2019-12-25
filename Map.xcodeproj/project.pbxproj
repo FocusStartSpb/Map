@@ -27,6 +27,7 @@
 		584EE5E523A834D60013087A /* SmartTargetListModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5DF23A834D60013087A /* SmartTargetListModels.swift */; };
 		584EE5E623A834D60013087A /* SmartTargetListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5E023A834D60013087A /* SmartTargetListViewController.swift */; };
 		584EE5E723A834D60013087A /* SmartTargetListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5E123A834D60013087A /* SmartTargetListInteractor.swift */; };
+		5891A8EA23B375D700FB1D1C /* GeocoderWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5891A8E923B375D700FB1D1C /* GeocoderWorker.swift */; };
 		58A9984123A852AC00CAACE8 /* SmartTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984023A852AC00CAACE8 /* SmartTarget.swift */; };
 		58A9984423AC19A500CAACE8 /* DataBaseServicce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984323AC19A500CAACE8 /* DataBaseServicce.swift */; };
 		58A9984623AC1D1700CAACE8 /* Sequence+UniqueElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984523AC1D1700CAACE8 /* Sequence+UniqueElements.swift */; };
@@ -58,6 +59,7 @@
 		584EE5DF23A834D60013087A /* SmartTargetListModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetListModels.swift; sourceTree = "<group>"; };
 		584EE5E023A834D60013087A /* SmartTargetListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetListViewController.swift; sourceTree = "<group>"; };
 		584EE5E123A834D60013087A /* SmartTargetListInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetListInteractor.swift; sourceTree = "<group>"; };
+		5891A8E923B375D700FB1D1C /* GeocoderWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocoderWorker.swift; sourceTree = "<group>"; };
 		58A9984023A852AC00CAACE8 /* SmartTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTarget.swift; sourceTree = "<group>"; };
 		58A9984323AC19A500CAACE8 /* DataBaseServicce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBaseServicce.swift; sourceTree = "<group>"; };
 		58A9984523AC1D1700CAACE8 /* Sequence+UniqueElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+UniqueElements.swift"; sourceTree = "<group>"; };
@@ -163,6 +165,7 @@
 				5837D01923A838E100A6F125 /* Repository.swift */,
 				5837D01B23A839E000A6F125 /* DecoderService.swift */,
 				58F7E96C23AD96A600E3859F /* DataBaseWorker.swift */,
+				5891A8E923B375D700FB1D1C /* GeocoderWorker.swift */,
 				58A9984323AC19A500CAACE8 /* DataBaseServicce.swift */,
 				3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */,
 				3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */,
@@ -297,6 +300,7 @@
 				584EE5C823A833D70013087A /* MapPresenter.swift in Sources */,
 				58A9984123A852AC00CAACE8 /* SmartTarget.swift in Sources */,
 				58F7E96D23AD96A600E3859F /* DataBaseWorker.swift in Sources */,
+				5891A8EA23B375D700FB1D1C /* GeocoderWorker.swift in Sources */,
 				58A9984623AC1D1700CAACE8 /* Sequence+UniqueElements.swift in Sources */,
 				584EE5E623A834D60013087A /* SmartTargetListViewController.swift in Sources */,
 				584EE5CB23A833D70013087A /* MapModels.swift in Sources */,
