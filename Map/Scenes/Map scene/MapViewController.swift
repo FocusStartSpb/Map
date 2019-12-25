@@ -5,7 +5,6 @@
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
 
-import UIKit
 import MapKit
 
 // MARK: MapDisplayLogic protocol
