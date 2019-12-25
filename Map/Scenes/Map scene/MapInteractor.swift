@@ -15,20 +15,29 @@ protocol MapBusinessLogic
 }
 
 // MARK: Class
-final class MapInteractor<T: ISmartTargetRepository>: NSObject, CLLocationManagerDelegate
+final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObject, CLLocationManagerDelegate
 {
 	// MARK: ...Private properties
 	private var presenter: MapPresentationLogic
-	private var worker: DataBaseWorker<T>
+	private var dataBaseWorker: DataBaseWorker<T>
+	private var geocoderWorker: GeocoderWorker<G>
 
 	private let locationManager = CLLocationManager()
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
+	private let dispatchQueueGetAddress =
+		DispatchQueue(label: "com.map.getAddress",
+					  qos: .userInitiated,
+					  attributes: .concurrent)
+
 	// MARK: ...Initialization
-	init(presenter: MapPresentationLogic, worker: DataBaseWorker<T>) {
+	init(presenter: MapPresentationLogic,
+		 dataBaseWorker: DataBaseWorker<T>,
+		 geocoderWorker: GeocoderWorker<G>) {
 		self.presenter = presenter
-		self.worker = worker
+		self.dataBaseWorker = dataBaseWorker
+		self.geocoderWorker = geocoderWorker
 	}
 
 	// MARK: ...Private methods
@@ -64,7 +73,7 @@ final class MapInteractor<T: ISmartTargetRepository>: NSObject, CLLocationManage
 extension MapInteractor: MapBusinessLogic
 {
 	func getSmartTargets(request: Map.SmartTargets.Request) {
-		worker.fetchSmartTargets { [weak self] result in
+		dataBaseWorker.fetchSmartTargets { [weak self] result in
 			switch result {
 			case .success(let targets):
 				// Создаем респонс
