@@ -185,7 +185,6 @@ final class MapViewController: UIViewController
 	}
 
 	private func addTemptCircle(at coordinate: CLLocationCoordinate2D, with radius: Double) {
-		removeTemptCircle()
 		temptCircle = MKCircle(center: coordinate, radius: radius)
 		guard let temptCircle = temptCircle else { return }
 		mapView.addOverlay(temptCircle)
@@ -208,6 +207,7 @@ final class MapViewController: UIViewController
 				self?.removeTemptCircle()
 			}, radiusChange: { _, radius in
 				self.circleRadius = Double(radius)
+				self.removeTemptCircle()
 				self.addTemptCircle(at: self.mapView.centerCoordinate, with: Double(radius))
 			})
 		smartTargetMenu = menu
@@ -253,6 +253,7 @@ private extension MapViewController
 	func actionCreateSmartTarget() {
 		addButtonView.isHidden = true
 		addTemptPointer()
+		removeTemptCircle()
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		showSmartTargetMenu()
 		interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
@@ -323,6 +324,7 @@ extension MapViewController: MKMapViewDelegate
 		}
 		mapView.removeAnnotation(temptPointer)
 		temptPointer.coordinate = mapView.centerCoordinate
+		removeTemptCircle()
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		mapView.addAnnotation(temptPointer)
 		interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
@@ -340,6 +342,7 @@ extension MapViewController: MKMapViewDelegate
 			removeTemptCircle()
 			hideSmartTargetMenu(false)
 			interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
+			removeTemptCircle()
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
 		case (.starting, .none):
 			hideSmartTargetMenu(true)
