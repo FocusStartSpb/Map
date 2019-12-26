@@ -57,6 +57,8 @@ final class MapViewController: UIViewController
 	// Constraints of map view
 	private var mapViewBottomLayoutConstraint: NSLayoutConstraint?
 
+	private var translationOfHideSmartTargetMenuOffset: CGFloat?
+
 	// MARK: ...Initialization
 	init(interactor: MapBusinessLogic) {
 		self.interactor = interactor
@@ -260,8 +262,10 @@ final class MapViewController: UIViewController
 			guard
 				let bottomSmartTargetMenuConstraint = self.smartTargetMenuBottomLayoutConstraint,
 				let smartTargetMenu = self.smartTargetMenu else { return }
+			if flag { self.translationOfHideSmartTargetMenuOffset = nil }
 			let factor: CGFloat = flag ? 1 : -1
-			let offset = smartTargetMenu.frame.height / 2 * factor
+			let offset = (self.translationOfHideSmartTargetMenuOffset ?? smartTargetMenu.frame.height / 2) * factor
+			self.translationOfHideSmartTargetMenuOffset = offset
 			bottomSmartTargetMenuConstraint.constant += offset
 			self.view.layoutIfNeeded()
 		}
@@ -384,14 +388,14 @@ extension MapViewController: MKMapViewDelegate
 	}
 
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-		if willTranslateKeyboard == false {
+		if willTranslateKeyboard == false, isDraggedTemptPointer == false {
 			hideSmartTargetMenu(true)
 			smartTargetMenu?.address = nil
 		}
 	}
 
 	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-		if willTranslateKeyboard == false && isAnimateMapView == false {
+		if willTranslateKeyboard == false && isAnimateMapView == false && isDraggedTemptPointer == false {
 			hideSmartTargetMenu(false)
 		}
 		guard let temptPointer = temptPointer,
@@ -411,16 +415,20 @@ extension MapViewController: MKMapViewDelegate
 				 annotationView view: MKAnnotationView,
 				 didChange newState: MKAnnotationView.DragState,
 				 fromOldState oldState: MKAnnotationView.DragState) {
-		switch (newState, oldState) {
-		case (.none, .ending):
+		isDraggedTemptPointer = true
+		print(oldState.rawValue, newState.rawValue)
+		switch (oldState, newState) {
+		case (.none, .starting): // 0 - 1
+			hideSmartTargetMenu(true)
+		case (.starting, .dragging): // 1 - 2
+			smartTargetMenu?.address = nil
+		case (.canceling, .none): // 3 - 0
+			hideSmartTargetMenu(false)
+		case (.ending, .none): // 4 - 0
 			guard let temptPointer = temptPointer else { return }
-			isDraggedTemptPointer = true
 			showLocation(coordinate: temptPointer.coordinate)
 			hideSmartTargetMenu(false)
 			interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
-		case (.starting, .none):
-			hideSmartTargetMenu(true)
-			smartTargetMenu?.address = nil
 		default: break
 		}
 	}
