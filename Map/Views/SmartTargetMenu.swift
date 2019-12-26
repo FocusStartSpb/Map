@@ -45,6 +45,8 @@ final class SmartTargetMenu: UIView
 		textField.text = title
 		textField.textAlignment = .center
 		textField.delegate = self
+		textField.returnKeyType = .done
+		textField.autocorrectionType = .no
 		return textField
 	}()
 
@@ -291,5 +293,10 @@ extension SmartTargetMenu: UITextFieldDelegate
 		}
 		let newString = textField.text?.replacingCharacters(in: range, with: string)
 		return newString?.count ?? 0 <= maxLenghtOfTitle
+	}
+
+	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+		textField.resignFirstResponder()
+		return true
 	}
 }

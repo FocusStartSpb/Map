@@ -4,7 +4,8 @@
 //
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
-
+// swiftlint:disable file_length
+// swiftlint:disable type_body_length
 import MapKit
 
 // MARK: - MapDisplayLogic protocol
@@ -35,6 +36,8 @@ final class MapViewController: UIViewController
 
 	private var isEditSmartTarget: Bool { temptPointer != nil }
 	private var isDraggedTemptPointer = false
+	private var isAnimateMapView = false
+	private var willTranslateKeyboard = false
 	private var circleRadius = 300.0
 	private var temptCircle: MKCircle?
 
@@ -51,9 +54,14 @@ final class MapViewController: UIViewController
 	private let currentLocationOffset: CGFloat = 20.0
 
 	// Constraints of smart target menu
-	private var bottomSmartTargetMenuConstraint: NSLayoutConstraint?
-	private var leadingSmartTargetMenuConstraint: NSLayoutConstraint?
-	private var topSmartTargetMenuConstraint: NSLayoutConstraint?
+	private var smartTargetMenuBottomLayoutConstraint: NSLayoutConstraint?
+	private var smartTargetMenuLeadingLayoutConstraint: NSLayoutConstraint?
+	private var smartTargetMenuTopLayoutConstraint: NSLayoutConstraint?
+
+	// Constraints of map view
+	private var mapViewBottomLayoutConstraint: NSLayoutConstraint?
+
+	private var translationOfHideSmartTargetMenuOffset: CGFloat?
 
 	// MARK: ...Initialization
 	init(interactor: MapBusinessLogic) {
@@ -76,6 +84,12 @@ final class MapViewController: UIViewController
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		currentLocationButton.isHidden = (mapView.showsUserLocation == false)
+		addNotifications()
+	}
+
+	override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+		removeNotifications()
 	}
 
 	// MARK: ...Private methods
@@ -115,10 +129,11 @@ final class MapViewController: UIViewController
 
 	private func setupMapConstraints() {
 		mapView.translatesAutoresizingMaskIntoConstraints = false
-		mapView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-		mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
-		mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+		mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+		mapViewBottomLayoutConstraint = mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+		mapViewBottomLayoutConstraint?.isActive = true
+		mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
 	}
 
 	private func setupCurrentLocationButtonConstraints() {
@@ -145,24 +160,52 @@ final class MapViewController: UIViewController
 	private func setupSmartTargetMenuConstraints() {
 		smartTargetMenu?.translatesAutoresizingMaskIntoConstraints = false
 
-		bottomSmartTargetMenuConstraint =
+		smartTargetMenuBottomLayoutConstraint =
 			smartTargetMenu?
 				.bottomAnchor
 				.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
 							constant: -currentLocationOffset)
-		bottomSmartTargetMenuConstraint?.isActive = true
+		smartTargetMenuBottomLayoutConstraint?.isActive = true
 
-		leadingSmartTargetMenuConstraint =
+		smartTargetMenuLeadingLayoutConstraint =
 			smartTargetMenu?
 				.leadingAnchor
 				.constraint(equalTo: addButtonView.leadingAnchor)
-		leadingSmartTargetMenuConstraint?.isActive = true
+		smartTargetMenuLeadingLayoutConstraint?.isActive = true
 
 		smartTargetMenu?
 			.trailingAnchor
 			.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
 						constant: -currentLocationOffset)
 			.isActive = true
+	}
+
+	private func addNotifications() {
+		// Add keyboard notifications
+		NotificationCenter
+			.default
+			.addObserver(self, selector: #selector(keyboardWillAppear),
+						 name: UIResponder.keyboardWillShowNotification, object: nil)
+		NotificationCenter
+			.default
+			.addObserver(self, selector: #selector(keyboardWillDisappear),
+						 name: UIResponder.keyboardWillHideNotification, object: nil)
+		NotificationCenter
+			.default
+			.addObserver(self, selector: #selector(keyboardDidAppear),
+						 name: UIResponder.keyboardDidShowNotification, object: nil)
+		NotificationCenter
+			.default
+			.addObserver(self, selector: #selector(keyboardDidDisappear),
+						 name: UIResponder.keyboardDidHideNotification, object: nil)
+	}
+
+	private func removeNotifications() {
+		// Remove keyboard notifications
+		NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+		NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+		NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
+		NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
 	}
 
 	private func showLocation(coordinate: CLLocationCoordinate2D) {
@@ -213,10 +256,10 @@ final class MapViewController: UIViewController
 		view.addSubview(menu)
 		setupSmartTargetMenuConstraints()
 		view.layoutIfNeeded()
-		UIView.animate(withDuration: 0.3) { [weak self] in
-			guard let self = self else { return }
-			self.bottomSmartTargetMenuConstraint?.constant = -self.currentLocationOffset
-			self.leadingSmartTargetMenuConstraint?.isActive = false
+
+		UIView.animate(withDuration: 0.3) {
+			self.smartTargetMenuBottomLayoutConstraint?.constant = -self.currentLocationOffset
+			self.smartTargetMenuLeadingLayoutConstraint?.isActive = false
 			self.smartTargetMenu?
 				.leadingAnchor
 				.constraint(equalTo: self.view.leadingAnchor,
@@ -232,15 +275,39 @@ final class MapViewController: UIViewController
 	}
 
 	private func translationSmartTargetMenu(_ flag: Bool) {
-		UIView.animate(withDuration: 0.3) { [weak self] in
+		UIView.animate(withDuration: 0.3) {
 			guard
-				let self = self,
-				let bottomSmartTargetMenuConstraint = self.bottomSmartTargetMenuConstraint,
+				let bottomSmartTargetMenuConstraint = self.smartTargetMenuBottomLayoutConstraint,
 				let smartTargetMenu = self.smartTargetMenu else { return }
+			if flag { self.translationOfHideSmartTargetMenuOffset = nil }
 			let factor: CGFloat = flag ? 1 : -1
-			let offset = smartTargetMenu.frame.height / 2 * factor
+			let offset = (self.translationOfHideSmartTargetMenuOffset ?? smartTargetMenu.frame.height / 2) * factor
+			self.translationOfHideSmartTargetMenuOffset = offset
 			bottomSmartTargetMenuConstraint.constant += offset
 			self.view.layoutIfNeeded()
+		}
+	}
+
+	private func animateMapViewFrame(withBottomOffset constant: CGFloat, layoutIfNeeded: Bool = true) {
+		isAnimateMapView = true
+		UIView.animate(withDuration: 0.5, animations: {
+			self.mapViewBottomLayoutConstraint?.constant = constant
+			if layoutIfNeeded {
+				self.view.layoutIfNeeded()
+			}
+		}, completion: { _ in
+			guard let pointer = self.temptPointer else { return }
+			self.showLocation(coordinate: pointer.coordinate)
+			self.isAnimateMapView = true
+		})
+	}
+
+	private func animateSmartTargetMenu(withBottomOffset constant: CGFloat, layoutIfNeeded: Bool = true) {
+		UIView.animate(withDuration: 0.5) {
+			self.smartTargetMenuBottomLayoutConstraint?.constant += constant
+			if layoutIfNeeded {
+				self.view.layoutIfNeeded()
+			}
 		}
 	}
 }
@@ -255,6 +322,38 @@ private extension MapViewController
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		showSmartTargetMenu()
 		interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
+	}
+}
+
+// MARK: - Notifications
+@objc private extension MapViewController
+{
+	func keyboardWillAppear(notification: NSNotification?) {
+		willTranslateKeyboard = true
+		guard let keyboardFrame = notification?.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
+			return
+		}
+		let keyboardHeight = keyboardFrame.cgRectValue.height
+		animateMapViewFrame(withBottomOffset: -keyboardHeight)
+		animateSmartTargetMenu(withBottomOffset: -keyboardHeight / 3)
+	}
+
+	func keyboardWillDisappear(notification: NSNotification?) {
+		willTranslateKeyboard = true
+		guard let keyboardFrame = notification?.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
+			return
+		}
+		let keyboardHeight = keyboardFrame.cgRectValue.height
+		animateMapViewFrame(withBottomOffset: 0, layoutIfNeeded: false)
+		animateSmartTargetMenu(withBottomOffset: keyboardHeight / 3, layoutIfNeeded: false)
+	}
+
+	func keyboardDidAppear(notification: NSNotification?) {
+		willTranslateKeyboard = false
+	}
+
+	func keyboardDidDisappear(notification: NSNotification?) {
+		willTranslateKeyboard = false
 	}
 }
 
@@ -308,18 +407,24 @@ extension MapViewController: MKMapViewDelegate
 	}
 
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-		removeTemptCircle()
-		hideSmartTargetMenu(true)
-		smartTargetMenu?.address = nil
+		if willTranslateKeyboard == false, isDraggedTemptPointer == false {
+			hideSmartTargetMenu(true)
+			smartTargetMenu?.address = nil
+		}
 	}
 
 	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-		hideSmartTargetMenu(false)
-
-		guard let temptPointer = temptPointer, isDraggedTemptPointer == false else {
-			isDraggedTemptPointer = false
-			return
+		if willTranslateKeyboard == false && isAnimateMapView == false && isDraggedTemptPointer == false {
+			hideSmartTargetMenu(false)
 		}
+		guard let temptPointer = temptPointer,
+			isDraggedTemptPointer == false,
+			isAnimateMapView == false else {
+				isDraggedTemptPointer = false
+				isAnimateMapView = false
+				return
+		}
+
 		mapView.removeAnnotation(temptPointer)
 		temptPointer.coordinate = mapView.centerCoordinate
 		removeTemptCircle()
@@ -332,19 +437,26 @@ extension MapViewController: MKMapViewDelegate
 				 annotationView view: MKAnnotationView,
 				 didChange newState: MKAnnotationView.DragState,
 				 fromOldState oldState: MKAnnotationView.DragState) {
-		switch (newState, oldState) {
-		case (.none, .ending):
-			guard let temptPointer = temptPointer else { return }
-			isDraggedTemptPointer = true
-			showLocation(coordinate: temptPointer.coordinate)
+		isDraggedTemptPointer = true
+		print(oldState.rawValue, newState.rawValue)
+		switch (oldState, newState) {
+		case (.none, .starting): // 0 - 1
+			hideSmartTargetMenu(true)
 			removeTemptCircle()
+		case (.starting, .dragging): // 1 - 2
+			smartTargetMenu?.address = nil
+		case (.canceling, .none): // 3 - 0
+			guard let temptPointer = temptPointer else { return }
+			hideSmartTargetMenu(false)
+			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
+		case (.ending, .none): // 4 - 0
+			guard let temptPointer = temptPointer else { return }
+			showLocation(coordinate: temptPointer.coordinate)
 			hideSmartTargetMenu(false)
 			interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
-			removeTemptCircle()
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
 		case (.starting, .none):
 			hideSmartTargetMenu(true)
-			removeTemptCircle()
 			smartTargetMenu?.address = nil
 		default: break
 		}
