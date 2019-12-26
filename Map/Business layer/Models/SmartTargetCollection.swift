@@ -11,7 +11,7 @@ protocol ISmartTargetCollection: Codable
 	var smartTargets: [SmartTarget] { get }
 
 	func put(_ smartTarget: SmartTarget) -> Int
-	func add(_ smartTarget: [SmartTarget])
+	func add(_ smartTargets: [SmartTarget])
 	func remove(atUID uid: String) -> Int?
 }
 
@@ -48,9 +48,9 @@ extension SmartTargetCollection: ISmartTargetCollection
 
 	/// Add smart targets to the end of the array
 	/// - Parameter smartTarget: added smart targets
-	func add(_ smartTarget: [SmartTarget]) {
-		smartTargets += smartTarget
-		smartTargets.removeDuplicates()
+	func add(_ smartTargets: [SmartTarget]) {
+		self.smartTargets += smartTargets
+		self.smartTargets.removeDuplicates()
 	}
 
 	/// Remove smart target from array
