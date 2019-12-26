@@ -37,14 +37,9 @@ final class SmartTargetListViewController: UIViewController
 	// MARK: ...View lifecycle
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		doSomething()
 	}
 
 	// MARK: ...Private methods
-	func doSomething() {
-		let request = SmartTargetList.SmartTargets.Request()
-		interactor.doSmartTargets(request: request)
-	}
 }
 
 // MARK: - Smart target list display logic
