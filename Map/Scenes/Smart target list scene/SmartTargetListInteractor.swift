@@ -8,11 +8,14 @@
 // MARK: - SmartTargetListBusinessLogic protocol
 protocol SmartTargetListBusinessLogic
 {
+	func loadSmartTargets(_ request: SmartTargetList.LoadSmartTargets.Request)
+	func saveSmartTargets(_ request: SmartTargetList.SaveSmartTargets.Request)
 }
 
 // MARK: - SmartTargetListDataStore protocol
 protocol SmartTargetListDataStore
 {
+	var smartTargetCollection: ISmartTargetCollection? { get }
 }
 
 // MARK: - Class
@@ -21,6 +24,9 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 	// MARK: ...Private properties
 	private var presenter: SmartTargetListPresentationLogic
 	private var worker: DataBaseWorker<T>
+
+	//var collection: T.Element?
+	private(set) var smartTargetCollection: ISmartTargetCollection?
 
 	// MARK: ...Initialization
 	init(presenter: SmartTargetListPresentationLogic, worker: DataBaseWorker<T>) {
@@ -32,15 +38,23 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 // MARK: - Smart target list business logic
 extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 {
+	func loadSmartTargets(_ request: SmartTargetList.LoadSmartTargets.Request) {
 
 		worker.fetchSmartTargets { [weak self] result in
-			switch result {
-			case .success(let targets):
-				let response = SmartTargetList.SmartTargets.Response(smartTargetCollection: targets)
-				self?.presenter.presentSmartTargets(response: response)
-			case .failure(let error):
-				print(error)
+			if case .success(let collection) = result {
+				self?.smartTargetCollection = collection
 			}
+			let response = SmartTargetList.LoadSmartTargets.Response(result: result)
+			self?.presenter.presentLoadSmartTargets(response)
+		}
+	}
+
+	func saveSmartTargets(_ request: SmartTargetList.SaveSmartTargets.Request) {
+		guard let collection = smartTargetCollection as? T.Element else { return }
+
+		worker.saveSmartTargets(collection) { [weak self] result in
+			let response = SmartTargetList.SaveSmartTargets.Response(result: result)
+			self?.presenter.presentSaveSmartTargets(response)
 		}
 	}
 }
