@@ -8,13 +8,11 @@
 // MARK: - SmartTargetListBusinessLogic protocol
 protocol SmartTargetListBusinessLogic
 {
-	func doSmartTargets(request: SmartTargetList.SmartTargets.Request)
 }
 
 // MARK: - SmartTargetListDataStore protocol
 protocol SmartTargetListDataStore
 {
-	//var something: Type { get set }
 }
 
 // MARK: - Class
@@ -34,7 +32,6 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 // MARK: - Smart target list business logic
 extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 {
-	func doSmartTargets(request: SmartTargetList.SmartTargets.Request) {
 
 		worker.fetchSmartTargets { [weak self] result in
 			switch result {
