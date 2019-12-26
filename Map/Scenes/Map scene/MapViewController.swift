@@ -246,7 +246,8 @@ final class MapViewController: UIViewController
 				self?.addButtonView.isHidden = false
 				self?.smartTargetMenu = nil
 				self?.removeTemptCircle()
-			}, radiusChange: { _, radius in
+			}, radiusChange: { [weak self] _, radius in
+				guard let self = self else { return }
 				self.circleRadius = Double(radius)
 				self.removeTemptCircle()
 				self.addTemptCircle(at: self.mapView.centerCoordinate, with: Double(radius))
