@@ -48,9 +48,9 @@ final class MapViewController: UIViewController
 	private let currentLocationOffset: CGFloat = 20.0
 
 	// Constraints of smart target menu
-	private var bottomSmartTargetMenuConstraint: NSLayoutConstraint?
-	private var leadingSmartTargetMenuConstraint: NSLayoutConstraint?
-	private var topSmartTargetMenuConstraint: NSLayoutConstraint?
+	private var smartTargetMenuBottomLayoutConstraint: NSLayoutConstraint?
+	private var smartTargetMenuLeadingLayoutConstraint: NSLayoutConstraint?
+	private var smartTargetMenuTopLayoutConstraint: NSLayoutConstraint?
 
 	// MARK: ...Initialization
 	init(interactor: MapBusinessLogic) {
@@ -142,18 +142,18 @@ final class MapViewController: UIViewController
 	private func setupSmartTargetMenuConstraints() {
 		smartTargetMenu?.translatesAutoresizingMaskIntoConstraints = false
 
-		bottomSmartTargetMenuConstraint =
+		smartTargetMenuBottomLayoutConstraint =
 			smartTargetMenu?
 				.bottomAnchor
 				.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
 							constant: -currentLocationOffset)
-		bottomSmartTargetMenuConstraint?.isActive = true
+		smartTargetMenuBottomLayoutConstraint?.isActive = true
 
-		leadingSmartTargetMenuConstraint =
+		smartTargetMenuLeadingLayoutConstraint =
 			smartTargetMenu?
 				.leadingAnchor
 				.constraint(equalTo: addButtonView.leadingAnchor)
-		leadingSmartTargetMenuConstraint?.isActive = true
+		smartTargetMenuLeadingLayoutConstraint?.isActive = true
 
 		smartTargetMenu?
 			.trailingAnchor
@@ -200,8 +200,8 @@ final class MapViewController: UIViewController
 
 		UIView.animate(withDuration: 0.3) { [weak self] in
 			guard let self = self else { return }
-			self.bottomSmartTargetMenuConstraint?.constant = -self.currentLocationOffset
-			self.leadingSmartTargetMenuConstraint?.isActive = false
+			self.smartTargetMenuBottomLayoutConstraint?.constant = -self.currentLocationOffset
+			self.smartTargetMenuLeadingLayoutConstraint?.isActive = false
 			self.smartTargetMenu?
 				.leadingAnchor
 				.constraint(equalTo: self.view.leadingAnchor,
@@ -220,7 +220,7 @@ final class MapViewController: UIViewController
 		UIView.animate(withDuration: 0.3) { [weak self] in
 			guard
 				let self = self,
-				let bottomSmartTargetMenuConstraint = self.bottomSmartTargetMenuConstraint,
+				let bottomSmartTargetMenuConstraint = self.smartTargetMenuBottomLayoutConstraint,
 				let smartTargetMenu = self.smartTargetMenu else { return }
 			let factor: CGFloat = flag ? 1 : -1
 			let offset = smartTargetMenu.frame.height / 2 * factor
