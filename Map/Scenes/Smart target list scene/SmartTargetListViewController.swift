@@ -18,11 +18,11 @@ protocol SmartTargetListDisplayLogic: AnyObject
 final class SmartTargetListViewController: UIViewController
 {
 	// MARK: ...Private properties
-	private var interactor: SmartTargetListBusinessLogic
+	private var interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore
 	private var router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
 
 	// MARK: ...Initialization
-	init(interactor: SmartTargetListBusinessLogic,
+	init(interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore,
 		 router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)) {
 		self.interactor = interactor
 		self.router = router
