@@ -184,9 +184,9 @@ final class MapViewController: UIViewController
 		self.temptCircle = nil
 	}
 
-	private func addTemptCircle(with radius: Double) {
+	private func addTemptCircle(at coordinate: CLLocationCoordinate2D, with radius: Double) {
 		removeTemptCircle()
-		temptCircle = MKCircle(center: mapView.centerCoordinate, radius: radius)
+		temptCircle = MKCircle(center: coordinate, radius: radius)
 		guard let temptCircle = temptCircle else { return }
 		mapView.addOverlay(temptCircle)
 	}
