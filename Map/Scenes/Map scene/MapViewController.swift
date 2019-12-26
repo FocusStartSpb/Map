@@ -175,20 +175,37 @@ final class MapViewController: UIViewController
 		temptPointer = annotation
 	}
 
+	private func removeTemptCircle() {
+		guard let temptCircle = temptCircle else { return }
+		mapView.removeOverlay(temptCircle)
+		self.temptCircle = nil
+	}
+
+	private func addTemptCircle(with radius: Double) {
+		removeTemptCircle()
+		temptCircle = MKCircle(center: mapView.centerCoordinate, radius: radius)
+		guard let temptCircle = temptCircle else { return }
+		mapView.addOverlay(temptCircle)
+	}
+
 	private func showSmartTargetMenu() {
+		let initialRadius = 300.0
 		let menu =
-			SmartTargetMenu(radiusValue: 300, radiusRange: (50, 1000), saveAction: { [weak self] _ in
+			SmartTargetMenu(radiusValue: Float(initialRadius), radiusRange: (50, 1000), saveAction: { [weak self] _ in
 				self?.temptPointer = nil
 				self?.addButtonView.isHidden = false
 				self?.smartTargetMenu = nil
+				self?.circleRadius = initialRadius
 			}, cancelAction: { [weak self] _ in
 				guard let temptPointer = self?.temptPointer else { return }
 				self?.mapView.removeAnnotation(temptPointer)
 				self?.temptPointer = nil
 				self?.addButtonView.isHidden = false
 				self?.smartTargetMenu = nil
+				self?.removeTemptCircle()
 			}, radiusChange: { _, radius in
-				print(radius)
+				self.circleRadius = Double(radius)
+				self.addTemptCircle(with: Double(radius))
 			})
 
 		smartTargetMenu = menu
