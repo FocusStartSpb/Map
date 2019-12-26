@@ -334,8 +334,9 @@ extension MapViewController: MKMapViewDelegate
 			guard let temptPointer = temptPointer else { return }
 			isDraggedTemptPointer = true
 			showLocation(coordinate: temptPointer.coordinate)
-			addTemptCircle(with: circleRadius)
+			removeTemptCircle()
 			hideSmartTargetMenu(false)
+			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
 		case (.starting, .none):
 			hideSmartTargetMenu(true)
 			removeTemptCircle()
