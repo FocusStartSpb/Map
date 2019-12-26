@@ -76,6 +76,12 @@ final class MapViewController: UIViewController
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		currentLocationButton.isHidden = (mapView.showsUserLocation == false)
+		addNotifications()
+	}
+
+	override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+		removeNotifications()
 	}
 
 	// MARK: ...Private methods
@@ -164,6 +170,34 @@ final class MapViewController: UIViewController
 			.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
 						constant: -currentLocationOffset)
 			.isActive = true
+	}
+
+	private func addNotifications() {
+		// Add keyboard notifications
+		NotificationCenter
+			.default
+			.addObserver(self, selector: #selector(keyboardWillAppear),
+						 name: UIResponder.keyboardWillShowNotification, object: nil)
+		NotificationCenter
+			.default
+			.addObserver(self, selector: #selector(keyboardWillDisappear),
+						 name: UIResponder.keyboardWillHideNotification, object: nil)
+		NotificationCenter
+			.default
+			.addObserver(self, selector: #selector(keyboardDidAppear),
+						 name: UIResponder.keyboardDidShowNotification, object: nil)
+		NotificationCenter
+			.default
+			.addObserver(self, selector: #selector(keyboardDidDisappear),
+						 name: UIResponder.keyboardDidHideNotification, object: nil)
+	}
+
+	private func removeNotifications() {
+		// Remove keyboard notifications
+		NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+		NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+		NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
+		NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
 	}
 
 	private func showLocation(coordinate: CLLocationCoordinate2D) {
