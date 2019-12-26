@@ -11,6 +11,7 @@
 		3AC77B0023AAA5B400CA1EC5 /* GeocoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */; };
 		3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */; };
 		580A076623AFEB1200192969 /* SmartTargetMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 580A076523AFEB1200192969 /* SmartTargetMenu.swift */; };
+		5815996823B52DD900232CE2 /* NotificationCenter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */; };
 		582ED16D23AE8458001AD44E /* Decodable+Initialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */; };
 		5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01723A8388700A6F125 /* SceneBuilder.swift */; };
 		5837D01A23A838E100A6F125 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01923A838E100A6F125 /* Repository.swift */; };
@@ -44,6 +45,7 @@
 		3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderService.swift; sourceTree = "<group>"; };
 		3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceError.swift; sourceTree = "<group>"; };
 		580A076523AFEB1200192969 /* SmartTargetMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetMenu.swift; sourceTree = "<group>"; };
+		5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationCenter+Extension.swift"; sourceTree = "<group>"; };
 		582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decodable+Initialization.swift"; sourceTree = "<group>"; };
 		5837D01723A8388700A6F125 /* SceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneBuilder.swift; sourceTree = "<group>"; };
 		5837D01923A838E100A6F125 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 				58A9984723AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift */,
 				582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */,
 				585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */,
+				5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -299,6 +302,7 @@
 				584EE5CC23A833D70013087A /* MapViewController.swift in Sources */,
 				585BBB8823B219170001F749 /* AddButtonView.swift in Sources */,
 				584EE5E423A834D60013087A /* SmartTargetListRouter.swift in Sources */,
+				5815996823B52DD900232CE2 /* NotificationCenter+Extension.swift in Sources */,
 				58A9984A23AC35E000CAACE8 /* SmartTargetCollection.swift in Sources */,
 				584EE5E723A834D60013087A /* SmartTargetListInteractor.swift in Sources */,
 				585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */,
