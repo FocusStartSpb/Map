@@ -256,6 +256,7 @@ private extension MapViewController
 	func actionCreateSmartTarget() {
 		addButtonView.isHidden = true
 		addTemptPointer()
+		addTemptCircle(with: circleRadius)
 		showSmartTargetMenu()
 	}
 }
@@ -310,17 +311,20 @@ extension MapViewController: MKMapViewDelegate
 	}
 
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+		removeTemptCircle()
 		hideSmartTargetMenu(true)
 	}
 
 	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
 		hideSmartTargetMenu(false)
+
 		guard let temptPointer = temptPointer, isDraggedTemptPointer == false else {
 			isDraggedTemptPointer = false
 			return
 		}
 		mapView.removeAnnotation(temptPointer)
 		temptPointer.coordinate = mapView.centerCoordinate
+		addTemptCircle(with: circleRadius)
 		mapView.addAnnotation(temptPointer)
 	}
 
