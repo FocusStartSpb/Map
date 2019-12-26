@@ -52,6 +52,9 @@ final class MapViewController: UIViewController
 	private var smartTargetMenuLeadingLayoutConstraint: NSLayoutConstraint?
 	private var smartTargetMenuTopLayoutConstraint: NSLayoutConstraint?
 
+	// Constraints of map view
+	private var mapViewBottomLayoutConstraint: NSLayoutConstraint?
+
 	// MARK: ...Initialization
 	init(interactor: MapBusinessLogic) {
 		self.interactor = interactor
@@ -116,6 +119,7 @@ final class MapViewController: UIViewController
 		mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
 		mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
 		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+		mapViewBottomLayoutConstraint = mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
 	}
 
 	private func setupCurrentLocationButtonConstraints() {
