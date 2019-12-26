@@ -337,10 +337,20 @@ extension MapViewController: MKMapViewDelegate
 			guard let temptPointer = temptPointer else { return }
 			isDraggedTemptPointer = true
 			showLocation(coordinate: temptPointer.coordinate)
+			addTemptCircle(with: circleRadius)
 			hideSmartTargetMenu(false)
 		case (.starting, .none):
 			hideSmartTargetMenu(true)
+			removeTemptCircle()
 		default: break
 		}
+	}
+
+	func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+		let renderer = MKCircleRenderer(overlay: overlay)
+		renderer.fillColor = UIColor.black.withAlphaComponent(0.5)
+		renderer.strokeColor = .blue
+		renderer.lineWidth = 2
+		return renderer
 	}
 }
