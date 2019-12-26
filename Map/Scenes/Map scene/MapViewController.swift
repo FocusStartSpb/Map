@@ -438,7 +438,6 @@ extension MapViewController: MKMapViewDelegate
 				 didChange newState: MKAnnotationView.DragState,
 				 fromOldState oldState: MKAnnotationView.DragState) {
 		isDraggedTemptPointer = true
-		print(oldState.rawValue, newState.rawValue)
 		switch (oldState, newState) {
 		case (.none, .starting): // 0 - 1
 			hideSmartTargetMenu(true)
@@ -453,11 +452,8 @@ extension MapViewController: MKMapViewDelegate
 			guard let temptPointer = temptPointer else { return }
 			showLocation(coordinate: temptPointer.coordinate)
 			hideSmartTargetMenu(false)
-			interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
+			interactor.getAddress(request: Map.Address.Request(coordinate: temptPointer.coordinate))
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
-		case (.starting, .none):
-			hideSmartTargetMenu(true)
-			smartTargetMenu?.address = nil
 		default: break
 		}
 	}
