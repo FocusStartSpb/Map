@@ -269,12 +269,9 @@ final class MapViewController: UIViewController
 		}
 	}
 
-	private func hideSmartTargetMenu(_ flag: Bool) {
+	// MARK: ...Animations
+	private func animateSmartTargetMenu(hide flag: Bool) {
 		smartTargetMenu?.translucent(flag, value: 0.5)
-		translationSmartTargetMenu(flag)
-	}
-
-	private func translationSmartTargetMenu(_ flag: Bool) {
 		UIView.animate(withDuration: 0.3) {
 			guard
 				let bottomSmartTargetMenuConstraint = self.smartTargetMenuBottomLayoutConstraint,
@@ -408,14 +405,14 @@ extension MapViewController: MKMapViewDelegate
 
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
 		if willTranslateKeyboard == false, isDraggedTemptPointer == false {
-			hideSmartTargetMenu(true)
+			animateSmartTargetMenu(hide: true)
 			smartTargetMenu?.address = nil
 		}
 	}
 
 	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
 		if willTranslateKeyboard == false && isAnimateMapView == false && isDraggedTemptPointer == false {
-			hideSmartTargetMenu(false)
+			animateSmartTargetMenu(hide: false)
 		}
 		guard let temptPointer = temptPointer,
 			isDraggedTemptPointer == false,
@@ -441,18 +438,18 @@ extension MapViewController: MKMapViewDelegate
 		print(oldState.rawValue, newState.rawValue)
 		switch (oldState, newState) {
 		case (.none, .starting): // 0 - 1
-			hideSmartTargetMenu(true)
+			animateSmartTargetMenu(hide: true)
 			removeTemptCircle()
 		case (.starting, .dragging): // 1 - 2
 			smartTargetMenu?.address = nil
 		case (.canceling, .none): // 3 - 0
 			guard let temptPointer = temptPointer else { return }
-			hideSmartTargetMenu(false)
+			animateSmartTargetMenu(hide: false)
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
 		case (.ending, .none): // 4 - 0
 			guard let temptPointer = temptPointer else { return }
 			showLocation(coordinate: temptPointer.coordinate)
-			hideSmartTargetMenu(false)
+			animateSmartTargetMenu(hide: false)
 			interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
 		default: break
