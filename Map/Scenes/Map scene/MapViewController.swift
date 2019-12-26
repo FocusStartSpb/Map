@@ -455,9 +455,6 @@ extension MapViewController: MKMapViewDelegate
 			hideSmartTargetMenu(false)
 			interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
-		case (.starting, .none):
-			hideSmartTargetMenu(true)
-			smartTargetMenu?.address = nil
 		default: break
 		}
 	}
