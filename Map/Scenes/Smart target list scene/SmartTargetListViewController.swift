@@ -10,7 +10,8 @@ import UIKit
 // MARK: - SmartTargetListDisplayLogic protocol
 protocol SmartTargetListDisplayLogic: AnyObject
 {
-	func displaySmartTargets(viewModel: SmartTargetList.SmartTargets.ViewModel)
+	func displayLoadSmartTargets(_ viewModel: SmartTargetList.LoadSmartTargets.ViewModel)
+	func displaySaveSmartTargets(_ viewModel: SmartTargetList.SaveSmartTargets.ViewModel)
 }
 
 // MARK: - Class
@@ -49,6 +50,9 @@ final class SmartTargetListViewController: UIViewController
 // MARK: - Smart target list display logic
 extension SmartTargetListViewController: SmartTargetListDisplayLogic
 {
-	func displaySmartTargets(viewModel: SmartTargetList.SmartTargets.ViewModel) {
+	func displayLoadSmartTargets(_ viewModel: SmartTargetList.LoadSmartTargets.ViewModel) {
+	}
+
+	func displaySaveSmartTargets(_ viewModel: SmartTargetList.SaveSmartTargets.ViewModel) {
 	}
 }
