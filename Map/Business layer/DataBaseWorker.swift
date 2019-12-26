@@ -19,4 +19,8 @@ final class DataBaseWorker<T: ISmartTargetRepository>
 	func fetchSmartTargets(_ completion: @escaping SmartTargetsResultCompletion) {
 		repository.loadSmartTargetCollection(completion)
 	}
+
+	func saveSmartTargets(_ collection: T.Element, _ completion: @escaping SmartTargetsResultCompletion) {
+		repository.saveSmartTargetCollection(collection, completion)
+	}
 }
