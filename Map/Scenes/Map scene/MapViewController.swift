@@ -115,11 +115,11 @@ final class MapViewController: UIViewController
 
 	private func setupMapConstraints() {
 		mapView.translatesAutoresizingMaskIntoConstraints = false
-		mapView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-		mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
-		mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+		mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
 		mapViewBottomLayoutConstraint = mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+		mapViewBottomLayoutConstraint?.isActive = true
+		mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
 	}
 
 	private func setupCurrentLocationButtonConstraints() {
