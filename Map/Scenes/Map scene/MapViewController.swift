@@ -236,8 +236,7 @@ final class MapViewController: UIViewController
 		setupSmartTargetMenuConstraints()
 		view.layoutIfNeeded()
 
-		UIView.animate(withDuration: 0.3) { [weak self] in
-			guard let self = self else { return }
+		UIView.animate(withDuration: 0.3) {
 			self.smartTargetMenuBottomLayoutConstraint?.constant = -self.currentLocationOffset
 			self.smartTargetMenuLeadingLayoutConstraint?.isActive = false
 			self.smartTargetMenu?
@@ -255,9 +254,8 @@ final class MapViewController: UIViewController
 	}
 
 	private func translationSmartTargetMenu(_ flag: Bool) {
-		UIView.animate(withDuration: 0.3) { [weak self] in
+		UIView.animate(withDuration: 0.3) {
 			guard
-				let self = self,
 				let bottomSmartTargetMenuConstraint = self.smartTargetMenuBottomLayoutConstraint,
 				let smartTargetMenu = self.smartTargetMenu else { return }
 			let factor: CGFloat = flag ? 1 : -1
