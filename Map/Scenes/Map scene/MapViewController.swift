@@ -32,8 +32,11 @@ final class MapViewController: UIViewController
 
 	private var smartTargetMenu: SmartTargetMenu?
 	private var temptPointer: SmartTargetAnnotation?
+
 	private var isEditSmartTarget: Bool { temptPointer != nil }
 	private var isDraggedTemptPointer = false
+	private var circleRadius = 300.0
+	private var temptCircle: MKCircle?
 
 	private var annotations: [SmartTargetAnnotation] {
 		mapView
