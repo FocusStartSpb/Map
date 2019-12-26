@@ -352,9 +352,14 @@ extension MapViewController: MKMapViewDelegate
 
 	func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
 		let renderer = MKCircleRenderer(overlay: overlay)
-		renderer.fillColor = UIColor.black.withAlphaComponent(0.5)
-		renderer.strokeColor = .blue
-		renderer.lineWidth = 2
+		if #available(iOS 13.0, *) {
+			renderer.fillColor = UIColor.systemBackground.withAlphaComponent(0.5)
+		}
+		else {
+			renderer.fillColor = UIColor.black.withAlphaComponent(0.5)
+		}
+		renderer.strokeColor = .systemBlue
+		renderer.lineWidth = 1
 		return renderer
 	}
 }
