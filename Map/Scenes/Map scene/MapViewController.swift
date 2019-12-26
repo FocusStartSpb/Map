@@ -4,7 +4,7 @@
 //
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
-
+// swiftlint:disable file_length
 import MapKit
 
 // MARK: MapDisplayLogic protocol
