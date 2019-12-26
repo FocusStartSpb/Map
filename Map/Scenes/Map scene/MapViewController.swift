@@ -34,6 +34,8 @@ final class MapViewController: UIViewController
 	private var temptPointer: SmartTargetAnnotation?
 	private var isEditSmartTarget: Bool { temptPointer != nil }
 	private var isDraggedTemptPointer = false
+	private var isAnimateMapView = false
+	private var willTranslateKeyboard = false
 
 	private var annotations: [SmartTargetAnnotation] {
 		mapView
@@ -264,6 +266,29 @@ final class MapViewController: UIViewController
 			self.view.layoutIfNeeded()
 		}
 	}
+
+	private func animateMapViewFrame(withBottomOffset constant: CGFloat, layoutIfNeeded: Bool = true) {
+		isAnimateMapView = true
+		UIView.animate(withDuration: 0.5, animations: {
+			self.mapViewBottomLayoutConstraint?.constant = constant
+			if layoutIfNeeded {
+				self.view.layoutIfNeeded()
+			}
+		}, completion: { _ in
+			guard let pointer = self.temptPointer else { return }
+			self.showLocation(coordinate: pointer.coordinate)
+			self.isAnimateMapView = true
+		})
+	}
+
+	private func animateSmartTargetMenu(withBottomOffset constant: CGFloat, layoutIfNeeded: Bool = true) {
+		UIView.animate(withDuration: 0.5) {
+			self.smartTargetMenuBottomLayoutConstraint?.constant += constant
+			if layoutIfNeeded {
+				self.view.layoutIfNeeded()
+			}
+		}
+	}
 }
 
 // MARK: - Actions
@@ -273,6 +298,38 @@ private extension MapViewController
 		addButtonView.isHidden = true
 		addTemptPointer()
 		showSmartTargetMenu()
+	}
+}
+
+// MARK: - Notifications
+@objc private extension MapViewController
+{
+	func keyboardWillAppear(notification: NSNotification?) {
+		willTranslateKeyboard = true
+		guard let keyboardFrame = notification?.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
+			return
+		}
+		let keyboardHeight = keyboardFrame.cgRectValue.height
+		animateMapViewFrame(withBottomOffset: -keyboardHeight)
+		animateSmartTargetMenu(withBottomOffset: -keyboardHeight / 3)
+	}
+
+	func keyboardWillDisappear(notification: NSNotification?) {
+		willTranslateKeyboard = true
+		guard let keyboardFrame = notification?.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
+			return
+		}
+		let keyboardHeight = keyboardFrame.cgRectValue.height
+		animateMapViewFrame(withBottomOffset: 0, layoutIfNeeded: false)
+		animateSmartTargetMenu(withBottomOffset: keyboardHeight / 3, layoutIfNeeded: false)
+	}
+
+	func keyboardDidAppear(notification: NSNotification?) {
+		willTranslateKeyboard = false
+	}
+
+	func keyboardDidDisappear(notification: NSNotification?) {
+		willTranslateKeyboard = false
 	}
 }
 
@@ -326,14 +383,21 @@ extension MapViewController: MKMapViewDelegate
 	}
 
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-		hideSmartTargetMenu(true)
+		if willTranslateKeyboard == false {
+			hideSmartTargetMenu(true)
+		}
 	}
 
 	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-		hideSmartTargetMenu(false)
-		guard let temptPointer = temptPointer, isDraggedTemptPointer == false else {
-			isDraggedTemptPointer = false
-			return
+		if willTranslateKeyboard == false && isAnimateMapView == false {
+			hideSmartTargetMenu(false)
+		}
+		guard let temptPointer = temptPointer,
+			isDraggedTemptPointer == false,
+			isAnimateMapView == false else {
+				isDraggedTemptPointer = false
+				isAnimateMapView = false
+				return
 		}
 		mapView.removeAnnotation(temptPointer)
 		temptPointer.coordinate = mapView.centerCoordinate
