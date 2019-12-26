@@ -32,8 +32,11 @@ final class MapViewController: UIViewController
 
 	private var smartTargetMenu: SmartTargetMenu?
 	private var temptPointer: SmartTargetAnnotation?
+
 	private var isEditSmartTarget: Bool { temptPointer != nil }
 	private var isDraggedTemptPointer = false
+	private var circleRadius = 300.0
+	private var temptCircle: MKCircle?
 
 	private var annotations: [SmartTargetAnnotation] {
 		mapView
@@ -175,9 +178,21 @@ final class MapViewController: UIViewController
 		temptPointer = annotation
 	}
 
+	private func removeTemptCircle() {
+		guard let temptCircle = temptCircle else { return }
+		mapView.removeOverlay(temptCircle)
+		self.temptCircle = nil
+	}
+
+	private func addTemptCircle(at coordinate: CLLocationCoordinate2D, with radius: Double) {
+		temptCircle = MKCircle(center: coordinate, radius: radius)
+		guard let temptCircle = temptCircle else { return }
+		mapView.addOverlay(temptCircle)
+	}
+
 	private func showSmartTargetMenu() {
 		let menu =
-			SmartTargetMenu(radiusValue: 300, radiusRange: (50, 1000), saveAction: { [weak self] _ in
+			SmartTargetMenu(radiusValue: Float(self.circleRadius), radiusRange: (50, 1000), saveAction: { [weak self] _ in
 				self?.temptPointer = nil
 				self?.addButtonView.isHidden = false
 				self?.smartTargetMenu = nil
@@ -187,17 +202,17 @@ final class MapViewController: UIViewController
 				self?.temptPointer = nil
 				self?.addButtonView.isHidden = false
 				self?.smartTargetMenu = nil
+				self?.removeTemptCircle()
 			}, radiusChange: { _, radius in
-				print(radius)
+				self.circleRadius = Double(radius)
+				self.removeTemptCircle()
+				self.addTemptCircle(at: self.mapView.centerCoordinate, with: Double(radius))
 			})
-
 		smartTargetMenu = menu
 
 		view.addSubview(menu)
-
 		setupSmartTargetMenuConstraints()
 		view.layoutIfNeeded()
-
 		UIView.animate(withDuration: 0.3) { [weak self] in
 			guard let self = self else { return }
 			self.bottomSmartTargetMenuConstraint?.constant = -self.currentLocationOffset
@@ -236,6 +251,8 @@ private extension MapViewController
 	func actionCreateSmartTarget() {
 		addButtonView.isHidden = true
 		addTemptPointer()
+		removeTemptCircle()
+		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		showSmartTargetMenu()
 		interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
 	}
@@ -291,18 +308,22 @@ extension MapViewController: MKMapViewDelegate
 	}
 
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+		removeTemptCircle()
 		hideSmartTargetMenu(true)
 		smartTargetMenu?.address = nil
 	}
 
 	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
 		hideSmartTargetMenu(false)
+
 		guard let temptPointer = temptPointer, isDraggedTemptPointer == false else {
 			isDraggedTemptPointer = false
 			return
 		}
 		mapView.removeAnnotation(temptPointer)
 		temptPointer.coordinate = mapView.centerCoordinate
+		removeTemptCircle()
+		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		mapView.addAnnotation(temptPointer)
 		interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
 	}
@@ -316,12 +337,29 @@ extension MapViewController: MKMapViewDelegate
 			guard let temptPointer = temptPointer else { return }
 			isDraggedTemptPointer = true
 			showLocation(coordinate: temptPointer.coordinate)
+			removeTemptCircle()
 			hideSmartTargetMenu(false)
 			interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
+			removeTemptCircle()
+			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
 		case (.starting, .none):
 			hideSmartTargetMenu(true)
+			removeTemptCircle()
 			smartTargetMenu?.address = nil
 		default: break
 		}
+	}
+
+	func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+		let renderer = MKCircleRenderer(overlay: overlay)
+		if #available(iOS 13.0, *) {
+			renderer.fillColor = UIColor.systemBackground.withAlphaComponent(0.5)
+		}
+		else {
+			renderer.fillColor = UIColor.black.withAlphaComponent(0.5)
+		}
+		renderer.strokeColor = .systemBlue
+		renderer.lineWidth = 1
+		return renderer
 	}
 }
