@@ -208,16 +208,13 @@ final class MapViewController: UIViewController
 				self?.removeTemptCircle()
 			}, radiusChange: { _, radius in
 				self.circleRadius = Double(radius)
-				self.addTemptCircle(with: Double(radius))
+				self.addTemptCircle(at: self.mapView.centerCoordinate, with: Double(radius))
 			})
-
 		smartTargetMenu = menu
 
 		view.addSubview(menu)
-
 		setupSmartTargetMenuConstraints()
 		view.layoutIfNeeded()
-
 		UIView.animate(withDuration: 0.3) { [weak self] in
 			guard let self = self else { return }
 			self.bottomSmartTargetMenuConstraint?.constant = -self.currentLocationOffset
@@ -256,7 +253,7 @@ private extension MapViewController
 	func actionCreateSmartTarget() {
 		addButtonView.isHidden = true
 		addTemptPointer()
-		addTemptCircle(with: circleRadius)
+		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		showSmartTargetMenu()
 	}
 }
@@ -324,7 +321,7 @@ extension MapViewController: MKMapViewDelegate
 		}
 		mapView.removeAnnotation(temptPointer)
 		temptPointer.coordinate = mapView.centerCoordinate
-		addTemptCircle(with: circleRadius)
+		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		mapView.addAnnotation(temptPointer)
 	}
 
