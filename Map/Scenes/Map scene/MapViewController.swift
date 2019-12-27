@@ -12,7 +12,7 @@ protocol MapDisplayLogic: AnyObject
 {
 	func displaySmartTargets(viewModel: Map.SmartTargets.ViewModel)
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel)
-	func displayAddress(viewModel: Map.Address.ViewModel)
+	func displayAddress(_ viewModel: Map.Address.ViewModel)
 }
 
 // MARK: - Class
@@ -310,7 +310,7 @@ private extension MapViewController
 		removeTemptCircle()
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		showSmartTargetMenu()
-		interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
+		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
 	}
 }
 
@@ -370,14 +370,9 @@ extension MapViewController: MapDisplayLogic
 		showLocation(coordinate: coordinate)
 	}
 
-	func displayAddress(viewModel: Map.Address.ViewModel) {
+	func displayAddress(_ viewModel: Map.Address.ViewModel) {
 		guard let menu = smartTargetMenu else { return }
-		switch viewModel.result {
-		case .success(let address):
-			menu.address = address
-		case .failure(let error):
-			menu.address = error.localizedDescription
-		}
+		menu.address = viewModel.address
 	}
 }
 
@@ -425,7 +420,7 @@ extension MapViewController: MKMapViewDelegate
 		removeTemptCircle()
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		mapView.addAnnotation(temptPointer)
-		interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
+		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
 	}
 
 	func mapView(_ mapView: MKMapView,
@@ -448,7 +443,7 @@ extension MapViewController: MKMapViewDelegate
 			guard let temptPointer = temptPointer else { return }
 			showLocation(coordinate: temptPointer.coordinate)
 			animateSmartTargetMenu(hide: false)
-			interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
+			interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
 		default: break
 		}
