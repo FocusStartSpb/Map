@@ -10,8 +10,8 @@ enum SmartTargetList
 {
 	// MARK: Use cases
 
-	// MARK: ...SmartTargets
-	enum SmartTargets
+	// MARK: ...LoadSmartTargets
+	enum LoadSmartTargets
 	{
 		struct Request
 		{
@@ -19,12 +19,30 @@ enum SmartTargetList
 
 		struct Response
 		{
-			let smartTargetCollection: ISmartTargetCollection
+			let result: SmartTargetsResult
 		}
 
 		struct ViewModel
 		{
-			let smartTargetCollection: ISmartTargetCollection
+			let didLoad: Bool
+		}
+	}
+
+	// MARK: ...SaveSmartTargets
+	enum SaveSmartTargets
+	{
+		struct Request
+		{
+		}
+
+		struct Response
+		{
+			let result: SmartTargetsResult
+		}
+
+		struct ViewModel
+		{
+			let didSave: Bool
 		}
 	}
 }
