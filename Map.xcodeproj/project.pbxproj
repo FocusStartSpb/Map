@@ -10,6 +10,7 @@
 		3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */; };
 		3AC77B0023AAA5B400CA1EC5 /* GeocoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */; };
 		3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */; };
+		3ADD2F1423B4F7420024304C /* SmartTargetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADD2F1323B4F7420024304C /* SmartTargetTableViewCell.swift */; };
 		580A076623AFEB1200192969 /* SmartTargetMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 580A076523AFEB1200192969 /* SmartTargetMenu.swift */; };
 		5815996823B52DD900232CE2 /* NotificationCenter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */; };
 		582ED16D23AE8458001AD44E /* Decodable+Initialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */; };
@@ -44,6 +45,7 @@
 		3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderModel.swift; sourceTree = "<group>"; };
 		3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderService.swift; sourceTree = "<group>"; };
 		3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceError.swift; sourceTree = "<group>"; };
+		3ADD2F1323B4F7420024304C /* SmartTargetTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetTableViewCell.swift; sourceTree = "<group>"; };
 		580A076523AFEB1200192969 /* SmartTargetMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetMenu.swift; sourceTree = "<group>"; };
 		5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationCenter+Extension.swift"; sourceTree = "<group>"; };
 		582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decodable+Initialization.swift"; sourceTree = "<group>"; };
@@ -87,6 +89,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3ADD2F1523B4F7470024304C /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				3ADD2F1323B4F7420024304C /* SmartTargetTableViewCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
 		580A076423AFEAB900192969 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -152,6 +162,7 @@
 				584EE5DC23A834D60013087A /* SmartTargetListPresenter.swift */,
 				584EE5DE23A834D60013087A /* SmartTargetListRouter.swift */,
 				584EE5DF23A834D60013087A /* SmartTargetListModels.swift */,
+				3ADD2F1523B4F7470024304C /* Cell */,
 			);
 			path = "Smart target list scene";
 			sourceTree = "<group>";
@@ -297,6 +308,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3ADD2F1423B4F7420024304C /* SmartTargetTableViewCell.swift in Sources */,
 				584EE5E523A834D60013087A /* SmartTargetListModels.swift in Sources */,
 				584EE5AF23A7F8490013087A /* AppDelegate.swift in Sources */,
 				584EE5CC23A833D70013087A /* MapViewController.swift in Sources */,
