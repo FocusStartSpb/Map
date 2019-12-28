@@ -16,13 +16,27 @@ final class AddButtonView: UIView
 	private var tapAction: TapAction?
 
 	private let blurredView: UIVisualEffectView = {
-		let blurEffect = UIBlurEffect(style: .light)
+		let style: UIBlurEffect.Style
+		if #available(iOS 13.0, *) {
+			style = .systemUltraThinMaterial
+		}
+		else {
+			style = .light
+		}
+		let blurEffect = UIBlurEffect(style: style)
 		let view = UIVisualEffectView(effect: blurEffect)
 		return view
 	}()
 
 	private let vibrancyView: UIVisualEffectView = {
-		let blurEffect = UIBlurEffect(style: .prominent)
+		let style: UIBlurEffect.Style
+		if #available(iOS 13.0, *) {
+			style = .systemThickMaterial
+		}
+		else {
+			style = .prominent
+		}
+		let blurEffect = UIBlurEffect(style: style)
 		let vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
 		let view = UIVisualEffectView(effect: vibrancyEffect)
 		return view
@@ -30,17 +44,15 @@ final class AddButtonView: UIView
 
 	private let addButton: UIButton = {
 		let button = UIButton()
-		button.layer.cornerRadius = 10
-		button.setTitleColor(.systemRed, for: .normal)
 		if #available(iOS 13.0, *) {
-			button.setImage(#imageLiteral(resourceName: "icons-add").withTintColor(.systemBackground), for: .normal)
-			if let darkerColor = UIColor.systemBackground.darker() {
-				button.setImage(#imageLiteral(resourceName: "icons-add").withTintColor(darkerColor), for: .highlighted)
-			}
+			button.setImage(#imageLiteral(resourceName: "icons8-map-pin-50").withTintColor(.systemFill), for: .normal)
+			button.setImage(#imageLiteral(resourceName: "icons8-map-pin-50-2").withTintColor(.systemFill), for: .highlighted)
 		}
 		else {
-			button.setImage(#imageLiteral(resourceName: "icons-add"), for: .normal)
+			button.setImage(#imageLiteral(resourceName: "icons8-map-pin-50"), for: .normal)
+			button.setImage(#imageLiteral(resourceName: "icons8-map-pin-50-2"), for: .highlighted)
 		}
+		button.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
 		button.addTarget(self, action: #selector(actionTap), for: .touchUpInside)
 		return button
 	}()
@@ -48,7 +60,6 @@ final class AddButtonView: UIView
 	// MARK: ...Initialization
 	init() {
 		super.init(frame: .zero)
-
 		setup()
 	}
 
