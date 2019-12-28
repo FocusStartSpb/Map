@@ -10,7 +10,7 @@ import MapKit
 // MARK: - MapPresentationLogic protocol
 protocol MapPresentationLogic
 {
-	func presentSmartTargets(response: Map.SmartTargets.Response)
+	func presentSmartTargets(_ response: Map.FetchSmartTargets.Response)
 	func beginLocationUpdates(response: Map.UpdateStatus.Response)
 	func presentAddress(response: Map.Address.Response)
 	func presentSaveSmartTarget(_ respose: Map.SaveSmartTarget.Response)
@@ -30,9 +30,10 @@ final class MapPresenter
 // MARK: - Map presentation logic
 extension MapPresenter: MapPresentationLogic
 {
-	func presentSmartTargets(response: Map.SmartTargets.Response) {
-		let viewModel = Map.SmartTargets.ViewModel(smartTargetCollection: response.smartTargetCollection)
-		viewController?.displaySmartTargets(viewModel: viewModel)
+	func presentSmartTargets(_ response: Map.FetchSmartTargets.Response) {
+		let annotationArray = annotations(from: response.smartTargetCollection.smartTargets)
+		let viewModel = Map.FetchSmartTargets.ViewModel(annotations: annotationArray)
+		viewController?.displaySmartTargets(viewModel)
 	}
 
 	func beginLocationUpdates(response: Map.UpdateStatus.Response) {
