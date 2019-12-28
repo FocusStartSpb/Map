@@ -17,7 +17,7 @@ protocol SmartTargetListDataStore
 {
 	var smartTargetsCount: Int { get }
 
-	func getSmartTarget(by index: Int) -> SmartTarget?
+	func getSmartTarget(at index: Int) -> SmartTarget?
 }
 
 // MARK: - Class
@@ -28,7 +28,7 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 	private var worker: DataBaseWorker<T>
 
 	//var collection: T.Element?
-	private(set) var smartTargetCollection: ISmartTargetCollection?
+	private var smartTargetCollection: ISmartTargetCollection?
 
 	// MARK: ...Initialization
 	init(presenter: SmartTargetListPresentationLogic, worker: DataBaseWorker<T>) {
@@ -52,7 +52,7 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 	}
 
 	func saveSmartTargets(_ request: SmartTargetList.SaveSmartTargets.Request) {
-		self.smartTargetCollection = request.request
+		self.smartTargetCollection = request.smartTargetCollection
 		guard let collection = smartTargetCollection as? T.Element else { return }
 
 		worker.saveSmartTargets(collection) { [weak self] result in
@@ -69,7 +69,7 @@ extension SmartTargetListInteractor: SmartTargetListDataStore
 		smartTargetCollection?.count ?? 0
 	}
 
-	func getSmartTarget(by index: Int) -> SmartTarget? {
+	func getSmartTarget(at index: Int) -> SmartTarget? {
 		self.smartTargetCollection?.smartTargets[index]
 	}
 }

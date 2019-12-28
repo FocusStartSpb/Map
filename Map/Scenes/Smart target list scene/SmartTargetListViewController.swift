@@ -21,10 +21,10 @@ final class SmartTargetListViewController: UIViewController
 	private var interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore
 	private var router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
 	private let targetsTableView = UITableView()
-	private let targetsCell = SmartTargetTableViewCell()
 
-	private enum CellBackgroundColor
+	private enum CellSettings
 	{
+		static let reuseIdentifier = "Cell"
 		static let selectedCellBackgroundColor = #colorLiteral(red: 0.5475797056, green: 0.5739227794, blue: 0.6377512708, alpha: 1)
 		static var notSelectedCellBackgroundColor: UIColor {
 			if #available(iOS 13.0, *) {
@@ -70,7 +70,7 @@ final class SmartTargetListViewController: UIViewController
 		self.targetsTableView.delegate = self
 		self.targetsTableView.separatorStyle = .none
 		self.targetsTableView.register(SmartTargetTableViewCell.self,
-									   forCellReuseIdentifier: "Cell")
+									   forCellReuseIdentifier: CellSettings.reuseIdentifier)
 	}
 }
 
@@ -87,14 +87,16 @@ extension SmartTargetListViewController: SmartTargetListDisplayLogic
 extension SmartTargetListViewController: UITableViewDataSource
 {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return interactor.smartTargetsCount
+		interactor.smartTargetsCount
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as? SmartTargetTableViewCell else {
+		guard let cell = tableView.dequeueReusableCell(withIdentifier: CellSettings.reuseIdentifier)
+			as? SmartTargetTableViewCell
+			else {
 			return UITableViewCell()
 		}
-		cell.fillLabels(smartTarget: interactor.getSmartTarget(by: indexPath.row))
+		cell.fillLabels(smartTarget: interactor.getSmartTarget(at: indexPath.row))
 		return cell
 	}
 }
@@ -102,17 +104,17 @@ extension SmartTargetListViewController: UITableViewDataSource
 extension SmartTargetListViewController: UITableViewDelegate
 {
 	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-		return UITableView.automaticDimension
+		UITableView.automaticDimension
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		guard let cell = tableView.cellForRow(at: indexPath) as? SmartTargetTableViewCell else { return }
 		UIView.animate(withDuration: 0.2,
-					   animations: { cell.containerView.backgroundColor = CellBackgroundColor.selectedCellBackgroundColor })
-		tableView.deselectRow(at: indexPath, animated: true)
+					   animations: { cell.containerView.backgroundColor = CellSettings.selectedCellBackgroundColor })
+		tableView.deselectRow(at: indexPath, animated: false)
 		UIView.animate(withDuration: 0.2,
 					   delay: 0.2,
-					   animations: { cell.containerView.backgroundColor = CellBackgroundColor.notSelectedCellBackgroundColor })
+					   animations: { cell.containerView.backgroundColor = CellSettings.notSelectedCellBackgroundColor })
 	}
 
 	func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

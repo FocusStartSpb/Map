@@ -33,7 +33,7 @@ enum SmartTargetList
 	{
 		struct Request
 		{
-			let request: SmartTargetCollection
+			let smartTargetCollection: SmartTargetCollection
 		}
 
 		struct Response
