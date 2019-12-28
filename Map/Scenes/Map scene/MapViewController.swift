@@ -227,12 +227,13 @@ final class MapViewController: UIViewController
 	private func showSmartTargetMenu() {
 		let menu =
 			SmartTargetMenu(radiusValue: Float(self.circleRadius), radiusRange: (50, 1000), saveAction: { [weak self] _ in
+
 				guard let self = self, let temptPointer = self.temptPointer else { return }
 				self.mapView.view(for: temptPointer)?.isDraggable = false
 				self.temptPointer = nil
 				self.addButtonView.isHidden = false
 				self.smartTargetMenu = nil
-			}, cancelAction: { [weak self] _ in
+			}, removeAction: { [weak self] _ in
 				guard let temptPointer = self?.temptPointer else { return }
 				self?.mapView.removeAnnotation(temptPointer)
 				self?.temptPointer = nil
