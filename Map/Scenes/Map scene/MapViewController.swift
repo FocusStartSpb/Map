@@ -412,7 +412,7 @@ extension MapViewController: MKMapViewDelegate
 			pinView?.annotation = annotation
 			pinView?.animatesDrop = false
 		}
-		pinView?.isDraggable = true
+		pinView?.isDraggable = isEditSmartTarget
 		pinView?.canShowCallout = true
 		return pinView
 	}
