@@ -11,9 +11,9 @@ protocol ISmartTargetCollection: Codable
 	var count: Int { get }
 	var smartTargets: [SmartTarget] { get }
 
-	func put(_ smartTarget: SmartTarget) -> Int
+	@discardableResult func put(_ smartTarget: SmartTarget) -> Int
 	func add(_ smartTargets: [SmartTarget])
-	func remove(atUID uid: String) -> Int?
+	@discardableResult func remove(atUID uid: String) -> Int?
 }
 
 // MARK: - Class
@@ -63,6 +63,14 @@ extension SmartTargetCollection: ISmartTargetCollection
 	}
 
 	var count: Int { smartTargets.count }
+
+	static func += (lhs: SmartTargetCollection, rhs: SmartTarget) {
+		lhs.put(rhs)
+	}
+
+	static func += (lhs: SmartTargetCollection, rhs: [SmartTarget]) {
+		lhs.add(rhs)
+	}
 }
 
 // MARK: - Custom string convertible

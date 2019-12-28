@@ -9,14 +9,16 @@ import CoreLocation
 // MARK: MapBusinessLogic protocol
 protocol MapBusinessLogic
 {
-	func getSmartTargets(request: Map.SmartTargets.Request)
+	func getSmartTargets(_ request: Map.FetchSmartTargets.Request)
 	func configureLocationService(request: Map.UpdateStatus.Request)
 	func returnToCurrentLocation(request: Map.UpdateStatus.Request)
+	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request)
 	func getAddress(_ request: Map.Address.Request)
 }
 
 // MARK: Class
 final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObject, CLLocationManagerDelegate
+	where T.Element: ISmartTargetCollection
 {
 	// MARK: ...Private properties
 	private var presenter: MapPresentationLogic
@@ -27,8 +29,16 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
+	//private var smartTargetCollection: ISmartTargetCollection = SmartTargetCollection()
+	private var smartTargetCollection: T.Element? = SmartTargetCollection() as? T.Element
+
 	private let dispatchQueueGetAddress =
 		DispatchQueue(label: "com.map.getAddress",
+					  qos: .userInitiated,
+					  attributes: .concurrent)
+
+	private let dispatchQueueSaveSmartTargets =
+		DispatchQueue(label: "com.map.saveSmartTargets",
 					  qos: .userInitiated,
 					  attributes: .concurrent)
 
@@ -76,14 +86,13 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 // MARK: - Map display logic
 extension MapInteractor: MapBusinessLogic
 {
-	func getSmartTargets(request: Map.SmartTargets.Request) {
+	func getSmartTargets(_ request: Map.FetchSmartTargets.Request) {
 		dataBaseWorker.fetchSmartTargets { [weak self] result in
 			switch result {
-			case .success(let targets):
-				// Создаем респонс
-				let response = Map.SmartTargets.Response(smartTargetCollection: targets)
-				//
-				self?.presenter.presentSmartTargets(response: response)
+			case .success(let collection):
+				self?.smartTargetCollection = collection
+				let response = Map.FetchSmartTargets.Response(smartTargetCollection: collection)
+				self?.presenter.presentSmartTargets(response)
 			case .failure(let error):
 				print(error)
 			}
@@ -105,6 +114,23 @@ extension MapInteractor: MapBusinessLogic
 				let response = Map.Address.Response(result: result,
 													coordinate: request.coordinate)
 				self?.presenter.presentAddress(response)
+			}
+		}
+	}
+
+	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request) {
+		dispatchQueueSaveSmartTargets.async { [weak self] in
+			guard let smartTargetCollection = self?.smartTargetCollection else { return }
+			smartTargetCollection.put(request.smartTarget)
+			self?.dataBaseWorker.saveSmartTargets(smartTargetCollection) { result in
+				let isSaved: Bool
+				if case .success = result {
+					isSaved = true
+				}
+				else {
+					isSaved = false
+				}
+				self?.presenter.presentSaveSmartTarget(Map.SaveSmartTarget.Response(isSaved: isSaved))
 			}
 		}
 	}

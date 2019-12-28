@@ -7,6 +7,8 @@
 
 final class DataBaseWorker<T: ISmartTargetRepository>
 {
+	typealias SmartTargetResult = (Result<T.Element, ServiceError>) -> Void
+
 	// MARK: Private methods
 	private var repository: T
 
@@ -16,11 +18,11 @@ final class DataBaseWorker<T: ISmartTargetRepository>
 	}
 
 	// MARK: Methods
-	func fetchSmartTargets(_ completion: @escaping SmartTargetsResultCompletion) {
+	func fetchSmartTargets(_ completion: @escaping SmartTargetResult) {
 		repository.loadSmartTargetCollection(completion)
 	}
 
-	func saveSmartTargets(_ collection: T.Element, _ completion: @escaping SmartTargetsResultCompletion) {
+	func saveSmartTargets(_ collection: T.Element, _ completion: @escaping SmartTargetResult) {
 		repository.saveSmartTargetCollection(collection, completion)
 	}
 }

@@ -9,15 +9,16 @@
 protocol ISmartTargetRepository
 {
 	associatedtype Element
-	func loadSmartTargetCollection(
-		_ completion: @escaping SmartTargetsResultCompletion)
+	typealias ElementResult = (Result<Element, ServiceError>) -> Void
+
+	func loadSmartTargetCollection(_ completion: @escaping ElementResult)
 
 	func saveSmartTargetCollection(_ collection: Element,
-								   _ completion: @escaping SmartTargetsResultCompletion)
+								   _ completion: @escaping ElementResult)
 }
 
 // MARK: - Class
-final class SmartTargetRepository
+final class SmartTargetRepository<Element: Codable>
 {
 
 	// MARK: ...Private properties
@@ -32,9 +33,8 @@ final class SmartTargetRepository
 // MARK: - ISmartTargetRepository
 extension SmartTargetRepository: ISmartTargetRepository
 {
-
 	func loadSmartTargetCollection(
-		_ completion: @escaping SmartTargetsResultCompletion) {
+		_ completion: @escaping (Result<Element, ServiceError>) -> Void) {
 		do {
 			let smartTargetCollection = try dataBaseService.read()
 			completion(.success(smartTargetCollection))
@@ -47,8 +47,8 @@ extension SmartTargetRepository: ISmartTargetRepository
 		}
 	}
 
-	func saveSmartTargetCollection(_ collection: SmartTargetCollection,
-								   _ completion: @escaping SmartTargetsResultCompletion) {
+	func saveSmartTargetCollection(_ collection: Element,
+								   _ completion: @escaping (Result<Element, ServiceError>) -> Void) {
 		do {
 			try dataBaseService.write(collection)
 			completion(.success(collection))

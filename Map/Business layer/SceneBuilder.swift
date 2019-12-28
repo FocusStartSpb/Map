@@ -7,8 +7,8 @@
 
 final class SceneBuilder
 {
-	func getMapScene<T: ISmartTargetRepository>(
-		withRepository repository: T) -> MapViewController {
+	func getMapScene<T: ISmartTargetRepository>(withRepository repository: T) -> MapViewController
+		where T.Element: ISmartTargetCollection {
 
 		let presenter = MapPresenter()
 		let dataBaseWorker = DataBaseWorker(repository: repository)
@@ -26,8 +26,8 @@ final class SceneBuilder
 		return viewController
 	}
 
-	func getSmartTargetListScene<T: ISmartTargetRepository>(
-		withRepository repository: T) -> SmartTargetListViewController {
+	func getSmartTargetListScene<T: ISmartTargetRepository>(withRepository repository: T) -> SmartTargetListViewController
+		where T.Element: ISmartTargetCollection {
 
 		let presenter = SmartTargetListPresenter()
 		let worker = DataBaseWorker(repository: repository)
