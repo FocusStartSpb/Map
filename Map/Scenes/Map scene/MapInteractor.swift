@@ -13,6 +13,7 @@ protocol MapBusinessLogic
 	func configureLocationService(request: Map.UpdateStatus.Request)
 	func returnToCurrentLocation(request: Map.UpdateStatus.Request)
 	func getAddress(request: Map.Address.Request)
+	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request)
 }
 
 // MARK: Class
@@ -27,8 +28,15 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
+	private var smartTargetCollection: ISmartTargetCollection?
+
 	private let dispatchQueueGetAddress =
 		DispatchQueue(label: "com.map.getAddress",
+					  qos: .userInitiated,
+					  attributes: .concurrent)
+
+	private let dispatchQueueSaveSmartTargets =
+		DispatchQueue(label: "com.map.saveSmartTargets",
 					  qos: .userInitiated,
 					  attributes: .concurrent)
 
@@ -103,6 +111,23 @@ extension MapInteractor: MapBusinessLogic
 		dispatchQueueGetAddress.async { [weak self] in
 			self?.geocoderWorker.getGeocoderMetaData(by: request.coordinate.geocode) { result in
 				self?.presenter.presentAddress(response: Map.Address.Response(result: result))
+			}
+		}
+	}
+
+	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request) {
+		dispatchQueueSaveSmartTargets.async { [weak self] in
+			self?.smartTargetCollection?.put(request.smartTarget)
+			guard let smartTargetCollection = self?.smartTargetCollection as? T.Element else { return }
+			self?.dataBaseWorker.saveSmartTargets(smartTargetCollection) { result in
+				let isSaved: Bool
+				if case .success = result {
+					isSaved = true
+				}
+				else {
+					isSaved = false
+				}
+				self?.presenter.presentSaveSmartTarget(Map.SaveSmartTarget.Response(isSaved: isSaved))
 			}
 		}
 	}
