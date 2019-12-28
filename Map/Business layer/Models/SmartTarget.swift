@@ -16,9 +16,10 @@ struct SmartTarget
 
 	// MARK: ...Properties
 	let uid: String
-	let title: String
+	var title: String
 	let coordinates: CLLocationCoordinate2D
 	var address: String?
+	var radius: Double?
 
 	private enum CodingKeys: String, CodingKey
 	{
