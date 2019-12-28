@@ -5,7 +5,7 @@
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
 
-import Foundation
+import MapKit
 
 // MARK: - MapPresentationLogic protocol
 protocol MapPresentationLogic
@@ -13,6 +13,7 @@ protocol MapPresentationLogic
 	func presentSmartTargets(response: Map.SmartTargets.Response)
 	func beginLocationUpdates(response: Map.UpdateStatus.Response)
 	func presentAddress(response: Map.Address.Response)
+	func presentSaveSmartTarget(_ respose: Map.SaveSmartTarget.Response)
 }
 
 // MARK: - Class
@@ -20,6 +21,10 @@ final class MapPresenter
 {
 	// MARK: ...Internal properties
 	weak var viewController: MapDisplayLogic?
+
+	private func annotations(from targets: [SmartTarget]) -> [SmartTargetAnnotation] {
+		targets.map { SmartTargetAnnotation(uid: $0.uid, title: $0.title, coordinate: $0.coordinates) }
+	}
 }
 
 // MARK: - Map presentation logic
@@ -43,6 +48,12 @@ extension MapPresenter: MapPresentationLogic
 
 		DispatchQueue.main.async { [weak self] in
 			self?.viewController?.displayAddress(viewModel: Map.Address.ViewModel(result: result))
+		}
+	}
+
+	func presentSaveSmartTarget(_ respose: Map.SaveSmartTarget.Response) {
+		DispatchQueue.main.async { [weak self] in
+			self?.viewController?.displaySaveSmartTarget(Map.SaveSmartTarget.ViewModel(isSaved: respose.isSaved))
 		}
 	}
 }
