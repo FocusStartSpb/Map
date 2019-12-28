@@ -232,18 +232,19 @@ final class MapViewController: UIViewController
 	private func showSmartTargetMenu() {
 		let menu =
 			SmartTargetMenu(radiusValue: Float(self.circleRadius), radiusRange: (50, 1000), saveAction: { [weak self] menu in
-				guard let self = self, var temptSmartTarget = self.temptSmartTarget else { return }
-
+				guard let self = self, var temptSmartTarget = self.temptSmartTarget,
+					let temptPointer = self.temptPointer else { return }
 				temptSmartTarget.address = menu.address
 				temptSmartTarget.radius = 1000 //menu.radius
 
+				self.mapView.view(for: temptPointer)?.isDraggable = false
 				let request = Map.SaveSmartTarget.Request(smartTarget: temptSmartTarget)
 				self.interactor.saveSmartTarget(request)
 				self.temptPointer = nil
 				self.temptSmartTarget = nil
 				self.addButtonView.isHidden = false
 				self.smartTargetMenu = nil
-			}, cancelAction: { [weak self] _ in
+			}, removeAction: { [weak self] _ in
 				guard let temptPointer = self?.temptPointer else { return }
 				self?.mapView.removeAnnotation(temptPointer)
 				self?.temptPointer = nil
@@ -278,19 +279,18 @@ final class MapViewController: UIViewController
 
 	// MARK: ...Animations
 	private func animateSmartTargetMenu(hide flag: Bool) {
-		smartTargetMenu?.isEditable = (flag == false)
-		smartTargetMenu?.translucent(flag, value: 0.5)
-		UIView.animate(withDuration: 0.3) {
-			guard
-				let bottomSmartTargetMenuConstraint = self.smartTargetMenuBottomLayoutConstraint,
-				let smartTargetMenu = self.smartTargetMenu else { return }
-			if flag { self.translationOfHideSmartTargetMenuOffset = nil }
-			let factor: CGFloat = flag ? 1 : -1
-			let offset = (self.translationOfHideSmartTargetMenuOffset ?? smartTargetMenu.frame.height / 2) * factor
-			self.translationOfHideSmartTargetMenuOffset = offset
-			bottomSmartTargetMenuConstraint.constant += offset
-			self.view.layoutIfNeeded()
-		}
+		guard
+			let bottomSmartTargetMenuConstraint = smartTargetMenuBottomLayoutConstraint,
+			let smartTargetMenu = smartTargetMenu else { return }
+		if flag { translationOfHideSmartTargetMenuOffset = nil }
+		let factor: CGFloat = flag ? 1 : -1
+		let offset = (translationOfHideSmartTargetMenuOffset ?? smartTargetMenu.frame.height / 2) * factor
+		translationOfHideSmartTargetMenuOffset = offset
+		let constant = bottomSmartTargetMenuConstraint.constant + offset
+
+		smartTargetMenu.isEditable = (flag == false)
+		smartTargetMenu.translucent(flag, value: 0.5)
+		animateSmartTargetMenu(withBottomOffset: constant, layoutIfNeeded: true)
 	}
 
 	private func animateMapViewFrame(withBottomOffset constant: CGFloat, layoutIfNeeded: Bool = true) {
@@ -408,40 +408,49 @@ extension MapViewController: MKMapViewDelegate
 		if pinView == nil {
 			pinView = MKPinAnnotationView(annotation: annotation,
 										  reuseIdentifier: SmartTargetAnnotation.identifier)
-			pinView?.isDraggable = true
 			pinView?.animatesDrop = true
-			pinView?.canShowCallout = true
 		}
 		else {
 			pinView?.annotation = annotation
+			pinView?.animatesDrop = false
 		}
+		pinView?.isDraggable = true
+		pinView?.canShowCallout = true
 		return pinView
 	}
 
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-		if willTranslateKeyboard == false, isDraggedTemptPointer == false {
-			animateSmartTargetMenu(hide: true)
-			smartTargetMenu?.address = nil
-		}
+		guard willTranslateKeyboard == false, isDraggedTemptPointer == false else { return }
+		animateSmartTargetMenu(hide: true)
+		smartTargetMenu?.address = nil
+	}
+
+	func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
+		guard let temptPointer = temptPointer,
+			isDraggedTemptPointer == false,
+			isAnimateMapView == false else { return }
+
+		// Update pointer annotation
+		mapView.removeAnnotation(temptPointer)
+		addTemptPointer(at: mapView.centerCoordinate)
+
+		// Update circe overlay
+		removeTemptCircle()
+		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 	}
 
 	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-		if willTranslateKeyboard == false && isAnimateMapView == false && isDraggedTemptPointer == false {
+		guard let temptPointer = self.temptPointer,
+			isAnimateMapView == false,
+			isDraggedTemptPointer == false else {
+			isAnimateMapView = false
+			isDraggedTemptPointer = false
+			return
+		}
+		if willTranslateKeyboard == false {
 			animateSmartTargetMenu(hide: false)
 		}
-		guard let temptPointer = temptPointer,
-			isDraggedTemptPointer == false,
-			isAnimateMapView == false else {
-				isDraggedTemptPointer = false
-				isAnimateMapView = false
-				return
-		}
-
-		mapView.removeAnnotation(temptPointer)
-		addTemptPointer(at: mapView.centerCoordinate)
-		removeTemptCircle()
-		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
-		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
+		interactor.getAddress(Map.Address.Request(coordinate: temptPointer.coordinate))
 	}
 
 	func mapView(_ mapView: MKMapView,
