@@ -230,7 +230,7 @@ final class MapViewController: UIViewController
 				self?.temptPointer = nil
 				self?.addButtonView.isHidden = false
 				self?.smartTargetMenu = nil
-			}, cancelAction: { [weak self] _ in
+			}, removeAction: { [weak self] _ in
 				guard let temptPointer = self?.temptPointer else { return }
 				self?.mapView.removeAnnotation(temptPointer)
 				self?.temptPointer = nil
