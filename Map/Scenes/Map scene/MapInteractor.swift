@@ -18,6 +18,7 @@ protocol MapBusinessLogic
 
 // MARK: Class
 final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObject, CLLocationManagerDelegate
+	where T.Element: ISmartTargetCollection
 {
 	// MARK: ...Private properties
 	private var presenter: MapPresentationLogic
@@ -28,7 +29,8 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
-	private var smartTargetCollection: ISmartTargetCollection?
+	//private var smartTargetCollection: ISmartTargetCollection = SmartTargetCollection()
+	private var smartTargetCollection: T.Element? = SmartTargetCollection() as? T.Element
 
 	private let dispatchQueueGetAddress =
 		DispatchQueue(label: "com.map.getAddress",
@@ -118,8 +120,8 @@ extension MapInteractor: MapBusinessLogic
 
 	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request) {
 		dispatchQueueSaveSmartTargets.async { [weak self] in
-			self?.smartTargetCollection?.put(request.smartTarget)
-			guard let smartTargetCollection = self?.smartTargetCollection as? T.Element else { return }
+			guard let smartTargetCollection = self?.smartTargetCollection else { return }
+			smartTargetCollection.put(request.smartTarget)
 			self?.dataBaseWorker.saveSmartTargets(smartTargetCollection) { result in
 				let isSaved: Bool
 				if case .success = result {
