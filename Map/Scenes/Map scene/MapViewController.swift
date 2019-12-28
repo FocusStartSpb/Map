@@ -13,7 +13,7 @@ protocol MapDisplayLogic: AnyObject
 {
 	func displaySmartTargets(_ viewModel: Map.FetchSmartTargets.ViewModel)
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel)
-	func displayAddress(viewModel: Map.Address.ViewModel)
+	func displayAddress(_ viewModel: Map.Address.ViewModel)
 	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel)
 }
 
@@ -278,6 +278,7 @@ final class MapViewController: UIViewController
 
 	// MARK: ...Animations
 	private func animateSmartTargetMenu(hide flag: Bool) {
+		smartTargetMenu?.isEditable = (flag == false)
 		smartTargetMenu?.translucent(flag, value: 0.5)
 		UIView.animate(withDuration: 0.3) {
 			guard
@@ -326,7 +327,7 @@ private extension MapViewController
 		removeTemptCircle()
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		showSmartTargetMenu()
-		interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
+		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
 	}
 }
 
@@ -387,14 +388,9 @@ extension MapViewController: MapDisplayLogic
 		showLocation(coordinate: coordinate)
 	}
 
-	func displayAddress(viewModel: Map.Address.ViewModel) {
+	func displayAddress(_ viewModel: Map.Address.ViewModel) {
 		guard let menu = smartTargetMenu else { return }
-		switch viewModel.result {
-		case .success(let address):
-			menu.address = address
-		case .failure(let error):
-			menu.address = error.localizedDescription
-		}
+		menu.address = viewModel.address
 	}
 
 	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel) {
@@ -445,7 +441,7 @@ extension MapViewController: MKMapViewDelegate
 		addTemptPointer(at: mapView.centerCoordinate)
 		removeTemptCircle()
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
-		interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
+		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
 	}
 
 	func mapView(_ mapView: MKMapView,
@@ -453,7 +449,6 @@ extension MapViewController: MKMapViewDelegate
 				 didChange newState: MKAnnotationView.DragState,
 				 fromOldState oldState: MKAnnotationView.DragState) {
 		isDraggedTemptPointer = true
-		print(oldState.rawValue, newState.rawValue)
 		switch (oldState, newState) {
 		case (.none, .starting): // 0 - 1
 			animateSmartTargetMenu(hide: true)
@@ -468,7 +463,7 @@ extension MapViewController: MKMapViewDelegate
 			guard let temptPointer = temptPointer else { return }
 			showLocation(coordinate: temptPointer.coordinate)
 			animateSmartTargetMenu(hide: false)
-			interactor.getAddress(request: Map.Address.Request(coordinate: mapView.centerCoordinate))
+			interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
 		default: break
 		}

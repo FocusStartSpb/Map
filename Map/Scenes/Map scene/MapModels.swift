@@ -8,13 +8,7 @@
 
 import CoreLocation
 
-enum MapDisplayLogicError: Error
-{
-	case cannotGetAddress(message: String)
-}
-
 typealias GeocoderResponseResult = Result<GeoDataWrapper, ServiceError>
-typealias AddressViewModelResult = Result<String, MapDisplayLogicError>
 
 enum Map
 {
@@ -86,11 +80,12 @@ enum Map
 		struct Response
 		{
 			let result: GeocoderResponseResult
+			let coordinate: CLLocationCoordinate2D
 		}
 
 		struct ViewModel
 		{
-			let result: AddressViewModelResult
+			let address: String
 		}
 	}
 }

@@ -12,8 +12,8 @@ protocol MapBusinessLogic
 	func getSmartTargets(_ request: Map.FetchSmartTargets.Request)
 	func configureLocationService(request: Map.UpdateStatus.Request)
 	func returnToCurrentLocation(request: Map.UpdateStatus.Request)
-	func getAddress(request: Map.Address.Request)
 	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request)
+	func getAddress(_ request: Map.Address.Request)
 }
 
 // MARK: Class
@@ -106,10 +106,12 @@ extension MapInteractor: MapBusinessLogic
 		checkAuthorizationService()
 	}
 
-	func getAddress(request: Map.Address.Request) {
+	func getAddress(_ request: Map.Address.Request) {
 		dispatchQueueGetAddress.async { [weak self] in
 			self?.geocoderWorker.getGeocoderMetaData(by: request.coordinate.geocode) { result in
-				self?.presenter.presentAddress(response: Map.Address.Response(result: result))
+				let response = Map.Address.Response(result: result,
+													coordinate: request.coordinate)
+				self?.presenter.presentAddress(response)
 			}
 		}
 	}

@@ -28,6 +28,11 @@ extension CLLocationCoordinate2D: Codable
 	}
 }
 
+extension CLLocationCoordinate2D: CustomStringConvertible
+{
+	public var description: String { "\(latitude)\n\(longitude)" }
+}
+
 extension CLLocationCoordinate2D
 {
 	var geocode: GeocoderService.Geocode {
