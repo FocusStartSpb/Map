@@ -35,6 +35,22 @@ enum Map
 		struct ViewModel
 		{
 			let smartTargetCollection: ISmartTargetCollection
+	// MARK: ...SaveSmartTarget
+	enum SaveSmartTarget
+	{
+		struct Request
+		{
+			let smartTarget: SmartTarget
+		}
+
+		struct Response
+		{
+			let isSaved: Bool
+		}
+
+		struct ViewModel
+		{
+			let isSaved: Bool
 		}
 	}
 
