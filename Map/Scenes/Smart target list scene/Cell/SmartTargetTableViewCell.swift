@@ -9,7 +9,7 @@ import UIKit
 
 protocol ISmartTargetTableViewCell
 {
-	func fillLabels(smartTarget: SmartTarget?)
+	func fillLabels(with smartTarget: SmartTarget?)
 }
 
 final class SmartTargetTableViewCell: UITableViewCell
@@ -121,7 +121,7 @@ final class SmartTargetTableViewCell: UITableViewCell
 // MARK: - ISmartTargetTableViewCell
 extension SmartTargetTableViewCell: ISmartTargetTableViewCell
 {
-	func fillLabels(smartTarget: SmartTarget?) {
+	func fillLabels(with smartTarget: SmartTarget?) {
 		self.titleLabel.text = smartTarget?.title
 		self.addressLabel.text = smartTarget?.address
 		self.timeOfCreationLabel.text = "12.12.2012"

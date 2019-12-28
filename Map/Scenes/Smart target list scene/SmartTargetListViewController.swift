@@ -96,7 +96,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 			else {
 			return UITableViewCell()
 		}
-		cell.fillLabels(smartTarget: interactor.getSmartTarget(at: indexPath.row))
+		cell.fillLabels(with: interactor.getSmartTarget(at: indexPath.row))
 		return cell
 	}
 }
