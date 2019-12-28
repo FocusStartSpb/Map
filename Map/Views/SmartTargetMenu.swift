@@ -115,11 +115,13 @@ final class SmartTargetMenu: UIView
 		}
 	}
 
-//	private(set) var radius: Float {
-//		didSet {
-//			radiusLabel.text = "\(Int(radiusSlider.value))"
-//		}
-//	}
+	var isEditable = true {
+		didSet {
+			radiusSlider.isEnabled = isEditable
+			saveButton.isEnabled = isEditable
+			removeButton.isEnabled = isEditable
+		}
+	}
 
 	// MARK: ...Initialization
 	/// Основной инициализатор
@@ -288,6 +290,7 @@ extension SmartTargetMenu: UITextFieldDelegate
 						  shouldChangeCharactersIn range: NSRange,
 						  replacementString string: String) -> Bool {
 		guard
+			isEditable,
 			let text = textField.text,
 			let range = Range<String.Index>(range, in: text) else {
 				return false
@@ -296,7 +299,12 @@ extension SmartTargetMenu: UITextFieldDelegate
 		return newString?.count ?? 0 <= maxLenghtOfTitle
 	}
 
+	func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+		isEditable
+	}
+
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+		guard isEditable else { return false }
 		textField.resignFirstResponder()
 		return true
 	}
