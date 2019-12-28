@@ -274,6 +274,7 @@ final class MapViewController: UIViewController
 		translationOfHideSmartTargetMenuOffset = offset
 		let constant = bottomSmartTargetMenuConstraint.constant + offset
 
+		smartTargetMenu.isEditable = (flag == false)
 		smartTargetMenu.translucent(flag, value: 0.5)
 		animateSmartTargetMenu(withBottomOffset: constant, layoutIfNeeded: true)
 	}
