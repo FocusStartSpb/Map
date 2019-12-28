@@ -373,7 +373,6 @@ private extension MapViewController
 extension MapViewController: MapDisplayLogic
 {
 	func displaySmartTargets(_ viewModel: Map.FetchSmartTargets.ViewModel) {
-		print(viewModel.annotations)
 		mapView.addAnnotations(viewModel.annotations)
 	}
 
@@ -394,7 +393,6 @@ extension MapViewController: MapDisplayLogic
 	}
 
 	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel) {
-		print("Target is saved: ", viewModel.isSaved)
 	}
 }
 
