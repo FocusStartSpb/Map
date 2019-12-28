@@ -33,7 +33,7 @@ final class MapViewController: UIViewController
 	private var smartTargetMenu: SmartTargetMenu?
 	private var temptPointer: SmartTargetAnnotation?
 
-	private var isEditSmartTarget: Bool { temptPointer != nil }
+	private var isEditSmartTarget = false //: Bool { temptPointer != nil }
 	private var isDraggedTemptPointer = false
 	private var isAnimateMapView = false
 	private var willTranslateKeyboard = false
@@ -206,7 +206,7 @@ final class MapViewController: UIViewController
 	}
 
 	private func addTemptPointer() {
-		let annotation = SmartTargetAnnotation(title: nil,
+		let annotation = SmartTargetAnnotation(title: "Hello, world",
 											   coordinate: mapView.centerCoordinate)
 		mapView.addAnnotation(annotation)
 		temptPointer = annotation
@@ -230,9 +230,12 @@ final class MapViewController: UIViewController
 
 				guard let self = self, let temptPointer = self.temptPointer else { return }
 				self.mapView.view(for: temptPointer)?.isDraggable = false
+				self.mapView.view(for: temptPointer)?.canShowCallout = true
 				self.temptPointer = nil
 				self.addButtonView.isHidden = false
 				self.smartTargetMenu = nil
+				self.removeTemptCircle()
+				self.isEditSmartTarget = false
 			}, removeAction: { [weak self] _ in
 				guard let temptPointer = self?.temptPointer else { return }
 				self?.mapView.removeAnnotation(temptPointer)
@@ -240,6 +243,7 @@ final class MapViewController: UIViewController
 				self?.addButtonView.isHidden = false
 				self?.smartTargetMenu = nil
 				self?.removeTemptCircle()
+				self?.isEditSmartTarget = false
 			}, radiusChange: { [weak self] _, radius in
 				guard let self = self else { return }
 				self.circleRadius = Double(radius)
@@ -308,12 +312,21 @@ final class MapViewController: UIViewController
 private extension MapViewController
 {
 	func actionCreateSmartTarget() {
+		isEditSmartTarget = true
 		addButtonView.isHidden = true
 		addTemptPointer()
-		removeTemptCircle()
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		showSmartTargetMenu()
 		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
+	}
+
+	func actionEditSmartTarget(annotation: SmartTargetAnnotation) {
+		addButtonView.isHidden = true
+		addTemptCircle(at: annotation.coordinate, with: circleRadius)
+		showSmartTargetMenu()
+		// swiftlint:disable todo_fixme
+		// FIXME: - Брать адрес из smartTargetCollection по uid
+		interactor.getAddress(Map.Address.Request(coordinate: annotation.coordinate))
 	}
 }
 
@@ -396,7 +409,8 @@ extension MapViewController: MKMapViewDelegate
 			pinView?.animatesDrop = false
 		}
 		pinView?.isDraggable = true
-		pinView?.canShowCallout = true
+		pinView?.canShowCallout = (isEditSmartTarget == false)
+		pinView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
 		return pinView
 	}
 
@@ -407,7 +421,7 @@ extension MapViewController: MKMapViewDelegate
 	}
 
 	func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
-		guard let temptPointer = temptPointer,
+		guard let temptPointer = temptPointer, isEditSmartTarget,
 			isDraggedTemptPointer == false,
 			isAnimateMapView == false else { return }
 
@@ -425,8 +439,12 @@ extension MapViewController: MKMapViewDelegate
 		guard let temptPointer = self.temptPointer,
 			isAnimateMapView == false,
 			isDraggedTemptPointer == false else {
-			isAnimateMapView = false
-			isDraggedTemptPointer = false
+				isAnimateMapView = false
+				isDraggedTemptPointer = false
+				return
+		}
+		guard isEditSmartTarget else {
+			isEditSmartTarget = true
 			return
 		}
 		if willTranslateKeyboard == false {
@@ -471,5 +489,18 @@ extension MapViewController: MKMapViewDelegate
 		renderer.strokeColor = .systemBlue
 		renderer.lineWidth = 1
 		return renderer
+	}
+
+	func mapView(_ mapView: MKMapView,
+				 annotationView view: MKAnnotationView,
+				 calloutAccessoryControlTapped control: UIControl) {
+		guard let annotation = view.annotation as? SmartTargetAnnotation else { return }
+		showLocation(coordinate: annotation.coordinate)
+		view.setSelected(false, animated: true)
+		view.isSelected = true
+		view.canShowCallout = false
+		view.isDraggable = true
+		temptPointer = annotation
+		actionEditSmartTarget(annotation: annotation)
 	}
 }
