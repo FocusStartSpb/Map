@@ -434,7 +434,6 @@ extension MapViewController: MKMapViewDelegate
 				 didChange newState: MKAnnotationView.DragState,
 				 fromOldState oldState: MKAnnotationView.DragState) {
 		isDraggedTemptPointer = true
-		print(oldState.rawValue, newState.rawValue)
 		switch (oldState, newState) {
 		case (.none, .starting): // 0 - 1
 			animateSmartTargetMenu(hide: true)
