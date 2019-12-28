@@ -12,7 +12,7 @@ protocol MapPresentationLogic
 {
 	func presentSmartTargets(response: Map.SmartTargets.Response)
 	func beginLocationUpdates(response: Map.UpdateStatus.Response)
-	func presentAddress(response: Map.Address.Response)
+	func presentAddress(_ response: Map.Address.Response)
 }
 
 // MARK: - Class
@@ -36,13 +36,22 @@ extension MapPresenter: MapPresentationLogic
 				  userCoordinate: response.userCoordinate))
 	}
 
-	func presentAddress(response: Map.Address.Response) {
+	func presentAddress(_ response: Map.Address.Response) {
 		let result = response.result
 			.map { $0.response?.geoCollection?.featureMember?.first?.geo?.name ?? "Hello" }
-			.mapError { MapDisplayLogicError.cannotGetAddress(message: $0.localizedDescription) }
+
+		let address: String
+		if case .success(let string) = result {
+			address = string
+		}
+		else {
+			address = "\(response.coordinate)"
+		}
+
+		let viewModel = Map.Address.ViewModel(address: address)
 
 		DispatchQueue.main.async { [weak self] in
-			self?.viewController?.displayAddress(viewModel: Map.Address.ViewModel(result: result))
+			self?.viewController?.displayAddress(viewModel)
 		}
 	}
 }

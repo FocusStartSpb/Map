@@ -14,16 +14,10 @@ final class SmartTargetMenu: UIView
 {
 
 	// MARK: ...Private properties
-	private var radius: Float {
-		didSet {
-			radiusLabel.text = "\(Int(radiusSlider.value))"
-		}
-	}
-	private let radiusRange: (Float, Float)
+	private let radiusRange: (min: Float, max: Float)
 	private let maxLenghtOfTitle = 30
-	private var title: String?
 	private let saveAction: Action
-	private let cancelAction: Action
+	private let removeAction: Action
 	private let radiusDidChange: RadiusDidChange
 
 	private let blurredView: UIVisualEffectView = {
@@ -42,7 +36,6 @@ final class SmartTargetMenu: UIView
 	private lazy var titleTextField: UITextField = {
 		let textField = UITextField()
 		textField.placeholder = "type title..."
-		textField.text = title
 		textField.textAlignment = .center
 		textField.delegate = self
 		textField.returnKeyType = .done
@@ -52,7 +45,6 @@ final class SmartTargetMenu: UIView
 
 	private lazy var addressLabel: UILabel = {
 		let label = UILabel()
-		label.text = address
 		label.numberOfLines = 0
 		label.textAlignment = .center
 		return label
@@ -61,9 +53,8 @@ final class SmartTargetMenu: UIView
 	private lazy var radiusSlider: UISlider = {
 		let slider = UISlider()
 		slider.minimumValueImage = #imageLiteral(resourceName: "radius-of-circle")
-		slider.minimumValue = radiusRange.0
-		slider.maximumValue = radiusRange.1
-		slider.value = radius
+		slider.minimumValue = radiusRange.min
+		slider.maximumValue = radiusRange.max
 		slider.addTarget(self, action: #selector(actionChangeRadius(_:)), for: .valueChanged)
 		return slider
 	}()
@@ -82,11 +73,11 @@ final class SmartTargetMenu: UIView
 		return button
 	}()
 
-	private let cancelButton: UIButton = {
+	private let removeButton: UIButton = {
 		let button = UIButton()
 		button.setTitleColor(.systemRed, for: .normal)
-		button.setTitle("Cancel", for: .normal)
-		button.addTarget(self, action: #selector(actionCancel), for: .touchUpInside)
+		button.setTitle("Remove", for: .normal)
+		button.addTarget(self, action: #selector(actionRemove), for: .touchUpInside)
 		return button
 	}()
 
@@ -103,10 +94,32 @@ final class SmartTargetMenu: UIView
 	}()
 
 	// MARK: ...Properties
+	private(set) var title: String? {
+		get { titleTextField.text }
+		set { titleTextField.text = newValue }
+	}
+
 	var address: String? {
-		didSet {
+		get { addressLabel.text }
+		set {
+			addressLabel.text = newValue
 			checkAddress()
-			addressLabel.text = address
+		}
+	}
+
+	private(set) var radius: Float {
+		get { radiusSlider.value }
+		set {
+			radiusLabel.text = "\(Int(newValue)) m"
+			radiusSlider.value = newValue
+		}
+	}
+
+	var isEditable = true {
+		didSet {
+			radiusSlider.isEnabled = isEditable
+			saveButton.isEnabled = isEditable
+			removeButton.isEnabled = isEditable
 		}
 	}
 
@@ -118,24 +131,25 @@ final class SmartTargetMenu: UIView
 	///   - radiusRange: Диапазон значений слайдера
 	///   - address: label c адресом
 	///   - saveAction: Блок кода выполняемый при нажатии на кнопку "Save"
-	///   - cancelAction: Блок кода выполняемый при нажатии на кнопку "Cancel"
+	///   - removeAction: Блок кода выполняемый при нажатии на кнопку "Remove"
 	///   - radiusChange: Блок кода выполняемый при изменении значения слайдера
 	init(title: String? = nil,
 		 radiusValue: Float = 0,
-		 radiusRange: (Float, Float),
+		 radiusRange: (min: Float, max: Float),
 		 address: String? = nil,
 		 saveAction: @escaping Action,
-		 cancelAction: @escaping Action,
+		 removeAction: @escaping Action,
 		 radiusChange: @escaping RadiusDidChange) {
-		self.radius = max(radiusValue, radiusRange.0)
 		self.radiusRange = radiusRange
-		self.title = title
-		self.address = address
 		self.saveAction = saveAction
-		self.cancelAction = cancelAction
+		self.removeAction = removeAction
 		self.radiusDidChange = radiusChange
 
 		super.init(frame: .zero)
+
+		self.title = title
+		self.address = address
+		self.radius = min(max(radiusValue, radiusRange.min), radiusRange.max)
 
 		setup()
 	}
@@ -160,18 +174,13 @@ final class SmartTargetMenu: UIView
 		addSubview(radiusSlider)
 		addSubview(radiusLabel)
 		addSubview(saveButton)
-		addSubview(cancelButton)
+		addSubview(removeButton)
 		addSubview(activityIndicator)
 
 		// Set blurred effect view
 		vibrancyView.contentView.addSubview(titleTextField)
 		vibrancyView.contentView.addSubview(addressLabel)
 		blurredView.contentView.addSubview(vibrancyView)
-
-		// Check title
-		checkAddress()
-
-		radiusLabel.text = "\(Int(radius))"
 
 		// Set constrains
 		setConstraints()
@@ -187,7 +196,7 @@ final class SmartTargetMenu: UIView
 		radiusSlider.translatesAutoresizingMaskIntoConstraints = false
 		radiusLabel.translatesAutoresizingMaskIntoConstraints = false
 		saveButton.translatesAutoresizingMaskIntoConstraints = false
-		cancelButton.translatesAutoresizingMaskIntoConstraints = false
+		removeButton.translatesAutoresizingMaskIntoConstraints = false
 		activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 		blurredView.translatesAutoresizingMaskIntoConstraints = false
 		vibrancyView.translatesAutoresizingMaskIntoConstraints = false
@@ -222,9 +231,9 @@ final class SmartTargetMenu: UIView
 		saveButton.topAnchor.constraint(equalTo: radiusSlider.bottomAnchor, constant: 16).isActive = true
 		saveButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -layoutMargins.right).isActive = true
 
-		// Set constraint for cancelButton
-		cancelButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
-		cancelButton.topAnchor.constraint(equalTo: radiusSlider.bottomAnchor, constant: 16).isActive = true
+		// Set constraint for removeButton
+		removeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
+		removeButton.topAnchor.constraint(equalTo: radiusSlider.bottomAnchor, constant: 16).isActive = true
 
 		// Set constraint for blurredView
 		blurredView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
@@ -240,13 +249,9 @@ final class SmartTargetMenu: UIView
 	}
 
 	private func hide() {
-		UIProgressView.animate(withDuration: 0.3,
-							   animations: { [weak self] in
-								self?.alpha = 0
-			},
-							   completion: { [weak self] _ in
-								self?.isHidden = true
-		})
+		UIView.animate(withDuration: 0.3,
+					   animations: { self.alpha = 0 },
+					   completion: { _ in self.isHidden = true })
 	}
 
 	// MARK: ...Methods
@@ -255,9 +260,7 @@ final class SmartTargetMenu: UIView
 	///   - take: сделать прозрачным или нет
 	///   - value: степень прозрачности от 0 до 1. Значение по умолчанию - 0.5
 	func translucent(_ take: Bool, value: CGFloat = 0.5) {
-		UIProgressView.animate(withDuration: 0.3) { [weak self] in
-			self?.alpha = take ? value : 1
-		}
+		UIView.animate(withDuration: 0.3) { self.alpha = take ? value : 1 }
 	}
 }
 
@@ -269,8 +272,8 @@ final class SmartTargetMenu: UIView
 		hide()
 	}
 
-	private func actionCancel() {
-		cancelAction(self)
+	private func actionRemove() {
+		removeAction(self)
 		hide()
 	}
 
@@ -287,6 +290,7 @@ extension SmartTargetMenu: UITextFieldDelegate
 						  shouldChangeCharactersIn range: NSRange,
 						  replacementString string: String) -> Bool {
 		guard
+			isEditable,
 			let text = textField.text,
 			let range = Range<String.Index>(range, in: text) else {
 				return false
@@ -295,7 +299,12 @@ extension SmartTargetMenu: UITextFieldDelegate
 		return newString?.count ?? 0 <= maxLenghtOfTitle
 	}
 
+	func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+		isEditable
+	}
+
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+		guard isEditable else { return false }
 		textField.resignFirstResponder()
 		return true
 	}
