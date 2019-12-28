@@ -263,6 +263,7 @@ final class MapViewController: UIViewController
 
 	// MARK: ...Animations
 	private func animateSmartTargetMenu(hide flag: Bool) {
+		smartTargetMenu?.isEditable = (flag == false)
 		smartTargetMenu?.translucent(flag, value: 0.5)
 		UIView.animate(withDuration: 0.3) {
 			guard
@@ -428,7 +429,6 @@ extension MapViewController: MKMapViewDelegate
 				 didChange newState: MKAnnotationView.DragState,
 				 fromOldState oldState: MKAnnotationView.DragState) {
 		isDraggedTemptPointer = true
-		print(oldState.rawValue, newState.rawValue)
 		switch (oldState, newState) {
 		case (.none, .starting): // 0 - 1
 			animateSmartTargetMenu(hide: true)
