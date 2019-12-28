@@ -15,7 +15,9 @@ protocol SmartTargetListBusinessLogic
 // MARK: - SmartTargetListDataStore protocol
 protocol SmartTargetListDataStore
 {
-	var smartTargetCollection: ISmartTargetCollection? { get }
+	var smartTargetsCount: Int { get }
+
+	func getSmartTarget(by index: Int) -> SmartTarget?
 }
 
 // MARK: - Class
@@ -50,6 +52,7 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 	}
 
 	func saveSmartTargets(_ request: SmartTargetList.SaveSmartTargets.Request) {
+		self.smartTargetCollection = request.request
 		guard let collection = smartTargetCollection as? T.Element else { return }
 
 		worker.saveSmartTargets(collection) { [weak self] result in
@@ -62,4 +65,11 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 // MARK: - Smart target list data store
 extension SmartTargetListInteractor: SmartTargetListDataStore
 {
+	var smartTargetsCount: Int {
+		smartTargetCollection?.count ?? 0
+	}
+
+	func getSmartTarget(by index: Int) -> SmartTarget? {
+		self.smartTargetCollection?.smartTargets[index]
+	}
 }
