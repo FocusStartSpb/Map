@@ -20,8 +20,8 @@ enum Map
 {
 	// MARK: Use cases
 
-	// MARK: ...SmartTargets
-	enum SmartTargets
+	// MARK: ...FetchSmartTargets
+	enum FetchSmartTargets
 	{
 		struct Request
 		{
@@ -34,7 +34,10 @@ enum Map
 
 		struct ViewModel
 		{
-			let smartTargetCollection: ISmartTargetCollection
+			let annotations: [SmartTargetAnnotation]
+		}
+	}
+
 	// MARK: ...SaveSmartTarget
 	enum SaveSmartTarget
 	{
