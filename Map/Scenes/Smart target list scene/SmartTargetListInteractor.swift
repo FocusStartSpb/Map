@@ -42,8 +42,9 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 
 		worker.fetchSmartTargets { [weak self] result in
 			if case .success(let collection) = result {
-				self?.smartTargetCollection = collection
+				self?.smartTargetCollection = collection as? ISmartTargetCollection
 			}
+			let result = result.map { $0 as? ISmartTargetCollection ?? SmartTargetCollection() }
 			let response = SmartTargetList.LoadSmartTargets.Response(result: result)
 			self?.presenter.presentLoadSmartTargets(response)
 		}
@@ -53,6 +54,7 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 		guard let collection = smartTargetCollection as? T.Element else { return }
 
 		worker.saveSmartTargets(collection) { [weak self] result in
+			let result = result.map { $0 as? ISmartTargetCollection ?? SmartTargetCollection() }
 			let response = SmartTargetList.SaveSmartTargets.Response(result: result)
 			self?.presenter.presentSaveSmartTargets(response)
 		}
