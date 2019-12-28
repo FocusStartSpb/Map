@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3ABCDC8B23B78F8B0050F4B2 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC8A23B78F8B0050F4B2 /* TabBarController.swift */; };
+		3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */; };
+		3ABCDC9323B7B71B0050F4B2 /* SmartTargetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */; };
 		3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */; };
 		3AC77B0023AAA5B400CA1EC5 /* GeocoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */; };
 		3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */; };
@@ -42,7 +43,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3ABCDC8A23B78F8B0050F4B2 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartTargetTableViewCell.swift; sourceTree = "<group>"; };
 		3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderModel.swift; sourceTree = "<group>"; };
 		3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderService.swift; sourceTree = "<group>"; };
 		3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceError.swift; sourceTree = "<group>"; };
@@ -89,12 +91,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3ABCDC8C23B78F910050F4B2 /* TabBarController */ = {
+		3ABCDC8E23B7B6AD0050F4B2 /* TabBarController */ = {
 			isa = PBXGroup;
 			children = (
-				3ABCDC8A23B78F8B0050F4B2 /* TabBarController.swift */,
+				3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */,
 			);
 			path = TabBarController;
+			sourceTree = "<group>";
+		};
+		3ABCDC9123B7B71B0050F4B2 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 		580A076423AFEAB900192969 /* Views */ = {
@@ -150,7 +160,7 @@
 			children = (
 				584EE5CE23A833DD0013087A /* Map scene */,
 				584EE5E823A834E00013087A /* Smart target list scene */,
-				3ABCDC8C23B78F910050F4B2 /* TabBarController */,
+				3ABCDC8E23B7B6AD0050F4B2 /* TabBarController */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -163,6 +173,7 @@
 				584EE5DC23A834D60013087A /* SmartTargetListPresenter.swift */,
 				584EE5DE23A834D60013087A /* SmartTargetListRouter.swift */,
 				584EE5DF23A834D60013087A /* SmartTargetListModels.swift */,
+				3ABCDC9123B7B71B0050F4B2 /* Cell */,
 			);
 			path = "Smart target list scene";
 			sourceTree = "<group>";
@@ -311,7 +322,6 @@
 				584EE5E523A834D60013087A /* SmartTargetListModels.swift in Sources */,
 				584EE5AF23A7F8490013087A /* AppDelegate.swift in Sources */,
 				584EE5CC23A833D70013087A /* MapViewController.swift in Sources */,
-				3ABCDC8B23B78F8B0050F4B2 /* TabBarController.swift in Sources */,
 				585BBB8823B219170001F749 /* AddButtonView.swift in Sources */,
 				584EE5E423A834D60013087A /* SmartTargetListRouter.swift in Sources */,
 				5815996823B52DD900232CE2 /* NotificationCenter+Extension.swift in Sources */,
@@ -323,6 +333,7 @@
 				3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */,
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,
 				3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */,
+				3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */,
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
 				582ED16D23AE8458001AD44E /* Decodable+Initialization.swift in Sources */,
 				584EE5C823A833D70013087A /* MapPresenter.swift in Sources */,
@@ -334,6 +345,7 @@
 				580A076623AFEB1200192969 /* SmartTargetMenu.swift in Sources */,
 				584EE5CD23A833D70013087A /* MapInteractor.swift in Sources */,
 				3AC77B0023AAA5B400CA1EC5 /* GeocoderService.swift in Sources */,
+				3ABCDC9323B7B71B0050F4B2 /* SmartTargetTableViewCell.swift in Sources */,
 				58A9984423AC19A500CAACE8 /* DataBaseService.swift in Sources */,
 				5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */,
 				585BBB8A23B27DD40001F749 /* UIColor+Adjust.swift in Sources */,

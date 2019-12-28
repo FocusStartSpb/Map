@@ -8,6 +8,7 @@
 // MARK: - ISmartTargetCollection protocol
 protocol ISmartTargetCollection: Codable
 {
+	var count: Int { get }
 	var smartTargets: [SmartTarget] { get }
 
 	@discardableResult func put(_ smartTarget: SmartTarget) -> Int
@@ -60,6 +61,8 @@ extension SmartTargetCollection: ISmartTargetCollection
 		smartTargets.remove(at: index)
 		return index
 	}
+
+	var count: Int { smartTargets.count }
 
 	static func += (lhs: SmartTargetCollection, rhs: SmartTarget) {
 		lhs.put(rhs)
