@@ -263,6 +263,7 @@ final class MapViewController: UIViewController
 
 	// MARK: ...Animations
 	private func animateSmartTargetMenu(hide flag: Bool) {
+		smartTargetMenu?.isEditable = (flag == false)
 		smartTargetMenu?.translucent(flag, value: 0.5)
 		UIView.animate(withDuration: 0.3) {
 			guard
