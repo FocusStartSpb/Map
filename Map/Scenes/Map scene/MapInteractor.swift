@@ -9,7 +9,7 @@ import CoreLocation
 // MARK: MapBusinessLogic protocol
 protocol MapBusinessLogic
 {
-	func getSmartTargets(request: Map.SmartTargets.Request)
+	func getSmartTargets(_ request: Map.FetchSmartTargets.Request)
 	func configureLocationService(request: Map.UpdateStatus.Request)
 	func returnToCurrentLocation(request: Map.UpdateStatus.Request)
 	func getAddress(request: Map.Address.Request)
@@ -84,14 +84,13 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 // MARK: - Map display logic
 extension MapInteractor: MapBusinessLogic
 {
-	func getSmartTargets(request: Map.SmartTargets.Request) {
+	func getSmartTargets(_ request: Map.FetchSmartTargets.Request) {
 		dataBaseWorker.fetchSmartTargets { [weak self] result in
 			switch result {
-			case .success(let targets):
-				// Создаем респонс
-				let response = Map.SmartTargets.Response(smartTargetCollection: targets)
-				//
-				self?.presenter.presentSmartTargets(response: response)
+			case .success(let collection):
+				self?.smartTargetCollection = collection
+				let response = Map.FetchSmartTargets.Response(smartTargetCollection: collection)
+				self?.presenter.presentSmartTargets(response)
 			case .failure(let error):
 				print(error)
 			}
