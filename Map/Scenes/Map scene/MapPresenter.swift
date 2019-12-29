@@ -63,7 +63,7 @@ extension MapPresenter: MapPresentationLogic
 
 	func presentSaveSmartTarget(_ response: Map.SaveSmartTarget.Response) {
 		DispatchQueue.main.async { [weak self] in
-			self?.viewController?.displaySaveSmartTarget(Map.SaveSmartTarget.ViewModel(isSaved: respose.isSaved))
+			self?.viewController?.displaySaveSmartTarget(Map.SaveSmartTarget.ViewModel(isSaved: response.isSaved))
 		}
 	}
 }
