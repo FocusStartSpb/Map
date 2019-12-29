@@ -10,10 +10,18 @@ import CoreLocation
 protocol MapBusinessLogic
 {
 	func getSmartTargets(_ request: Map.FetchSmartTargets.Request)
+	func getSmartTarget(_ request: Map.GetSmartTarget.Request)
 	func configureLocationService(request: Map.UpdateStatus.Request)
 	func returnToCurrentLocation(request: Map.UpdateStatus.Request)
 	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request)
+	func removeSmartTarget(_ request: Map.RemoveSmartTarget.Request)
 	func getAddress(_ request: Map.Address.Request)
+}
+
+// MARK: - MapDataStore protocol
+protocol MapDataStore
+{
+	var temptSmartTarget: SmartTarget? { get set }
 }
 
 // MARK: Class
@@ -29,7 +37,6 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
-	//private var smartTargetCollection: ISmartTargetCollection = SmartTargetCollection()
 	private var smartTargetCollection: T.Element? = SmartTargetCollection() as? T.Element
 
 	private let dispatchQueueGetAddress =
@@ -41,6 +48,9 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 		DispatchQueue(label: "com.map.saveSmartTargets",
 					  qos: .userInitiated,
 					  attributes: .concurrent)
+
+	// MARK: ...Map data store
+	var temptSmartTarget: SmartTarget?
 
 	// MARK: ...Initialization
 	init(presenter: MapPresentationLogic,
@@ -67,6 +77,23 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 			locationManager.requestAlwaysAuthorization()
 		}
 	}
+
+	private func saveSmartTargetCollection(_ completion: @escaping (Bool) -> Void) {
+		dispatchQueueSaveSmartTargets.async { [weak self] in
+			guard let smartTargetCollection = self?.smartTargetCollection else { return }
+			self?.dataBaseWorker.saveSmartTargets(smartTargetCollection) { result in
+				let isSaved: Bool
+				if case .success = result {
+					isSaved = true
+				}
+				else {
+					isSaved = false
+				}
+				completion(isSaved)
+			}
+		}
+	}
+
 	// MARK: - CLLocationDelegate
 
 	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -86,6 +113,12 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 // MARK: - Map display logic
 extension MapInteractor: MapBusinessLogic
 {
+	func getSmartTarget(_ request: Map.GetSmartTarget.Request) {
+		guard let smartTarget = smartTargetCollection?[request.uid] else { return }
+		let response = Map.GetSmartTarget.Response(smartTarget: smartTarget)
+		presenter.presentSmartTarget(response)
+	}
+
 	func getSmartTargets(_ request: Map.FetchSmartTargets.Request) {
 		dataBaseWorker.fetchSmartTargets { [weak self] result in
 			switch result {
@@ -119,19 +152,19 @@ extension MapInteractor: MapBusinessLogic
 	}
 
 	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request) {
-		dispatchQueueSaveSmartTargets.async { [weak self] in
-			guard let smartTargetCollection = self?.smartTargetCollection else { return }
-			smartTargetCollection.put(request.smartTarget)
-			self?.dataBaseWorker.saveSmartTargets(smartTargetCollection) { result in
-				let isSaved: Bool
-				if case .success = result {
-					isSaved = true
-				}
-				else {
-					isSaved = false
-				}
-				self?.presenter.presentSaveSmartTarget(Map.SaveSmartTarget.Response(isSaved: isSaved))
-			}
+		smartTargetCollection?.put(request.smartTarget)
+		saveSmartTargetCollection { [weak self] isSaved in
+			self?.presenter.presentSaveSmartTarget(Map.SaveSmartTarget.Response(isSaved: isSaved))
+		}
+	}
+
+	func removeSmartTarget(_ request: Map.RemoveSmartTarget.Request) {
+		smartTargetCollection?.remove(atUID: request.uid)
+		saveSmartTargetCollection { [weak self] isSaved in
+			self?.presenter.presentRemoveSmartTarget(Map.RemoveSmartTarget.Response(isRemoved: isSaved))
 		}
 	}
 }
+
+// MARK: - Map data source
+extension MapInteractor: MapDataStore { }

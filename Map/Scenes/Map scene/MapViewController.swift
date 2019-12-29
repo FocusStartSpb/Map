@@ -5,23 +5,24 @@
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
 // swiftlint:disable file_length
-// swiftlint:disable type_body_length
 import MapKit
 
 // MARK: - MapDisplayLogic protocol
 protocol MapDisplayLogic: AnyObject
 {
 	func displaySmartTargets(_ viewModel: Map.FetchSmartTargets.ViewModel)
+	func displaySmartTarget(_ viewModel: Map.GetSmartTarget.ViewModel)
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel)
 	func displayAddress(_ viewModel: Map.Address.ViewModel)
 	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel)
+	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel)
 }
 
 // MARK: - Class
 final class MapViewController: UIViewController
 {
 	// MARK: ...Private properties
-	private var interactor: MapBusinessLogic
+	private var interactor: MapBusinessLogic & MapDataStore
 
 	private lazy var mapView: MKMapView = {
 		let mapView = MKMapView()
@@ -34,9 +35,8 @@ final class MapViewController: UIViewController
 
 	private var smartTargetMenu: SmartTargetMenu?
 	private var temptPointer: SmartTargetAnnotation?
-	private var temptSmartTarget: SmartTarget?
 
-	private var isEditSmartTarget: Bool { temptPointer != nil }
+	private var isEditSmartTarget = false //: Bool { temptPointer != nil }
 	private var isDraggedTemptPointer = false
 	private var isAnimateMapView = false
 	private var willTranslateKeyboard = false
@@ -83,7 +83,7 @@ final class MapViewController: UIViewController
 	]
 
 	// MARK: ...Initialization
-	init(interactor: MapBusinessLogic) {
+	init(interactor: MapBusinessLogic & MapDataStore) {
 		self.interactor = interactor
 		super.init(nibName: nil, bundle: nil)
 	}
@@ -113,23 +113,26 @@ final class MapViewController: UIViewController
 
 	// MARK: ...Private methods
 	private func setup() {
+
+		// Add subviews
 		view.addSubview(mapView)
 		view.addSubview(currentLocationButton)
 		view.addSubview(addButtonView)
 
+		// Setup UI
 		setupCurrentLocationButton()
 
+		// Constraints
 		setupMapConstraints()
 		setupCurrentLocationButtonConstraints()
 		setupAddButtonViewConstraints()
 
-		interactor.configureLocationService(request: .init())
-		doSomething()
-	}
+		// Requests
+		let updateStatusRequest = Map.UpdateStatus.Request()
+		interactor.configureLocationService(request: updateStatusRequest)
 
-	private func doSomething() {
-		let request = Map.FetchSmartTargets.Request()
-		interactor.getSmartTargets(request)
+		let fetchSmartTardetRequest = Map.FetchSmartTargets.Request()
+		interactor.getSmartTargets(fetchSmartTardetRequest)
 	}
 
 	@objc private func currentLocationPressed(sender: UIButton) {
@@ -201,7 +204,7 @@ final class MapViewController: UIViewController
 			.isActive = true
 	}
 
-	// MARK: ...Ather
+	// MARK: ...Map methods
 	private func showLocation(coordinate: CLLocationCoordinate2D) {
 		let zoomRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: self.latitudalMeters,
 											longitudinalMeters: self.longtitudalMeters)
@@ -209,7 +212,7 @@ final class MapViewController: UIViewController
 	}
 
 	private func addTemptPointer(at coordinate: CLLocationCoordinate2D) {
-		guard let target = temptSmartTarget else { return }
+		guard let target = interactor.temptSmartTarget else { return }
 		let annotation = SmartTargetAnnotation(uid: target.uid,
 											   title: target.title,
 											   coordinate: coordinate)
@@ -229,36 +232,20 @@ final class MapViewController: UIViewController
 		mapView.addOverlay(temptCircle)
 	}
 
-	private func showSmartTargetMenu() {
-		let menu =
-			SmartTargetMenu(radiusValue: Float(self.circleRadius), radiusRange: (50, 1000), saveAction: { [weak self] menu in
-				guard let self = self, var temptSmartTarget = self.temptSmartTarget,
-					let temptPointer = self.temptPointer else { return }
-				temptSmartTarget.address = menu.address
-				temptSmartTarget.radius = 1000 //menu.radius
+	// MARK: ...Menu methods
+	private func createSmartTargetMenu() -> SmartTargetMenu {
+		SmartTargetMenu(title: interactor.temptSmartTarget?.title,
+						radiusValue: Float(interactor.temptSmartTarget?.radius ?? circleRadius),
+						radiusRange: (50, 1000),
+						address: interactor.temptSmartTarget?.address,
+						saveAction: actionSave(_:),
+						removeAction: actionRemove(_:),
+						radiusChange: actionChangeRadius(_:radius:))
+	}
 
-				self.mapView.view(for: temptPointer)?.isDraggable = false
-				let request = Map.SaveSmartTarget.Request(smartTarget: temptSmartTarget)
-				self.interactor.saveSmartTarget(request)
-				self.temptPointer = nil
-				self.temptSmartTarget = nil
-				self.addButtonView.isHidden = false
-				self.smartTargetMenu = nil
-			}, removeAction: { [weak self] _ in
-				guard let temptPointer = self?.temptPointer else { return }
-				self?.mapView.removeAnnotation(temptPointer)
-				self?.temptPointer = nil
-				self?.temptSmartTarget = nil
-				self?.addButtonView.isHidden = false
-				self?.smartTargetMenu = nil
-				self?.removeTemptCircle()
-			}, radiusChange: { [weak self] _, radius in
-				guard let self = self else { return }
-				self.temptSmartTarget?.radius = Double(radius)
-				self.circleRadius = Double(radius)
-				self.removeTemptCircle()
-				self.addTemptCircle(at: self.mapView.centerCoordinate, with: Double(radius))
-			})
+	private func showSmartTargetMenu() {
+
+		let menu = createSmartTargetMenu()
 		smartTargetMenu = menu
 
 		view.addSubview(menu)
@@ -315,6 +302,8 @@ final class MapViewController: UIViewController
 			}
 		}
 	}
+
+	private var pitch: CGFloat = 0
 }
 
 // MARK: - Actions
@@ -322,12 +311,81 @@ private extension MapViewController
 {
 	func actionCreateSmartTarget() {
 		addButtonView.isHidden = true
-		temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate)
+		mapView.selectedAnnotations
+			.filter { $0 !== temptPointer }
+			.forEach { mapView.deselectAnnotation($0, animated: true) }
+		isEditSmartTarget = true
+		interactor.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate)
 		addTemptPointer(at: mapView.centerCoordinate)
-		removeTemptCircle()
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		showSmartTargetMenu()
 		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
+	}
+
+	func actionEditSmartTarget(annotation: SmartTargetAnnotation) {
+		let request = Map.GetSmartTarget.Request(uid: annotation.uid)
+		interactor.getSmartTarget(request)
+		addButtonView.isHidden = true
+		addTemptCircle(at: annotation.coordinate, with: circleRadius)
+		showSmartTargetMenu()
+	}
+
+	func actionSave(_ smartTargetMenu: SmartTargetMenu) {
+		guard
+			var temptSmartTarget = interactor.temptSmartTarget,
+			let temptPointer = temptPointer else { return }
+
+		// Обновляем smart target
+		temptSmartTarget.coordinates = temptPointer.coordinate
+		temptSmartTarget.title = smartTargetMenu.title ?? "Noname"
+		temptSmartTarget.address = smartTargetMenu.address
+		temptSmartTarget.radius = Double(smartTargetMenu.radius)
+
+		// Обновляем аннотацию (pin)
+		temptPointer.title = smartTargetMenu.title
+
+		// Меняем настройки для annotation view
+		let annotationView = mapView.view(for: temptPointer)
+		annotationView?.isDraggable = false
+		annotationView?.canShowCallout = true
+
+		// Сохраняем smartTarget
+		let request = Map.SaveSmartTarget.Request(smartTarget: temptSmartTarget)
+		interactor.saveSmartTarget(request)
+
+		self.temptPointer = nil
+		self.smartTargetMenu = nil
+		interactor.temptSmartTarget = nil
+		removeTemptCircle()
+
+		addButtonView.isHidden = false
+		isEditSmartTarget = false
+	}
+
+	func actionRemove(_ smartTargetMenu: SmartTargetMenu) {
+		guard let temptPointer = temptPointer else { return }
+
+		// Удаляем smartTarget
+		let request = Map.RemoveSmartTarget.Request(uid: temptPointer.uid)
+		interactor.removeSmartTarget(request)
+
+		mapView.removeAnnotation(temptPointer)
+		self.temptPointer = nil
+		self.smartTargetMenu = nil
+		interactor.temptSmartTarget = nil
+		removeTemptCircle()
+
+		addButtonView.isHidden = false
+		isEditSmartTarget = false
+	}
+
+	func actionChangeRadius(_ smartTargetMenu: SmartTargetMenu, radius: Float) {
+		guard let temptPointer = temptPointer else { return }
+
+		circleRadius = Double(radius)
+
+		removeTemptCircle()
+		addTemptCircle(at: temptPointer.coordinate, with: Double(radius))
 	}
 }
 
@@ -376,6 +434,10 @@ extension MapViewController: MapDisplayLogic
 		mapView.addAnnotations(viewModel.annotations)
 	}
 
+	func displaySmartTarget(_ viewModel: Map.GetSmartTarget.ViewModel) {
+		interactor.temptSmartTarget = viewModel.smartTarget
+	}
+
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel) {
 		mapView.showsUserLocation = viewModel.isShownUserPosition
 		guard viewModel.isShownUserPosition else {
@@ -388,12 +450,12 @@ extension MapViewController: MapDisplayLogic
 	}
 
 	func displayAddress(_ viewModel: Map.Address.ViewModel) {
-		guard let menu = smartTargetMenu else { return }
-		menu.address = viewModel.address
+		smartTargetMenu?.address = viewModel.address
 	}
 
-	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel) {
-	}
+	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel) { }
+
+	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel) { }
 }
 
 // MARK: - Map view delegate
@@ -413,7 +475,8 @@ extension MapViewController: MKMapViewDelegate
 			pinView?.animatesDrop = false
 		}
 		pinView?.isDraggable = isEditSmartTarget
-		pinView?.canShowCallout = true
+		pinView?.canShowCallout = (isEditSmartTarget == false)
+		pinView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
 		return pinView
 	}
 
@@ -424,7 +487,7 @@ extension MapViewController: MKMapViewDelegate
 	}
 
 	func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
-		guard let temptPointer = temptPointer,
+		guard let temptPointer = temptPointer, isEditSmartTarget,
 			isDraggedTemptPointer == false,
 			isAnimateMapView == false else { return }
 
@@ -441,8 +504,12 @@ extension MapViewController: MKMapViewDelegate
 		guard let temptPointer = self.temptPointer,
 			isAnimateMapView == false,
 			isDraggedTemptPointer == false else {
-			isAnimateMapView = false
-			isDraggedTemptPointer = false
+				isAnimateMapView = false
+				isDraggedTemptPointer = false
+				return
+		}
+		guard isEditSmartTarget else {
+			isEditSmartTarget = true
 			return
 		}
 		if willTranslateKeyboard == false {
@@ -487,5 +554,37 @@ extension MapViewController: MKMapViewDelegate
 		renderer.strokeColor = .systemBlue
 		renderer.lineWidth = 1
 		return renderer
+	}
+
+	func mapView(_ mapView: MKMapView,
+				 annotationView view: MKAnnotationView,
+				 calloutAccessoryControlTapped control: UIControl) {
+		guard let annotation = view.annotation as? SmartTargetAnnotation else { return }
+		showLocation(coordinate: annotation.coordinate)
+		mapView.deselectAnnotation(view.annotation, animated: true)
+		view.canShowCallout = false
+		view.isDraggable = true
+		temptPointer = annotation
+		actionEditSmartTarget(annotation: annotation)
+	}
+
+	func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+		if isEditSmartTarget == false, let annotation = (view.annotation as? SmartTargetAnnotation) {
+			let request = Map.GetSmartTarget.Request(uid: annotation.uid)
+			interactor.getSmartTarget(request)
+			if let radius = interactor.temptSmartTarget?.radius {
+				addTemptCircle(at: annotation.coordinate, with: radius)
+			}
+			interactor.temptSmartTarget = nil
+		}
+		else if isEditSmartTarget && view.annotation !== temptPointer {
+			mapView.deselectAnnotation(view.annotation, animated: false)
+		}
+	}
+
+	func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+		if isEditSmartTarget == false, view.annotation !== temptPointer {
+			removeTemptCircle()
+		}
 	}
 }

@@ -17,7 +17,7 @@ struct SmartTarget
 	// MARK: ...Properties
 	let uid: String
 	var title: String
-	let coordinates: CLLocationCoordinate2D
+	var coordinates: CLLocationCoordinate2D
 	var address: String?
 	var radius: Double?
 
@@ -28,6 +28,7 @@ struct SmartTarget
 		case coordinates
 		case dateOfCreated
 		case address
+		case radius
 	}
 
 	// MARK: ...Initialization
@@ -54,6 +55,7 @@ extension SmartTarget: Codable
 		coordinates = try container.decode(CLLocationCoordinate2D.self, forKey: .coordinates)
 		dateOfCreated = try container.decode(Date.self, forKey: .dateOfCreated)
 		address = try? container.decode(String.self, forKey: .address)
+		radius = try? container.decode(Double.self, forKey: .radius)
 	}
 
 	func encode(to encoder: Encoder) throws {
@@ -63,6 +65,7 @@ extension SmartTarget: Codable
 		try container.encode(coordinates, forKey: .coordinates)
 		try container.encode(dateOfCreated, forKey: .dateOfCreated)
 		try container.encode(address, forKey: .address)
+		try container.encode(radius, forKey: .radius)
 	}
 }
 
