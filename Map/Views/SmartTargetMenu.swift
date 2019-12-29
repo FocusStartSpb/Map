@@ -214,9 +214,8 @@ final class SmartTargetMenu: UIView
 		vibrancyView.translatesAutoresizingMaskIntoConstraints = false
 
 		// Set constraint for titleTextField
-		titleTextField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
+		titleTextField.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
 		titleTextField.topAnchor.constraint(equalTo: topAnchor, constant: layoutMargins.top).isActive = true
-		titleTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
 
 		// Set constraint for addressLabel
 		addressLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
