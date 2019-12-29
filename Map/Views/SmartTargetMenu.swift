@@ -267,11 +267,28 @@ final class SmartTargetMenu: UIView
 	func translucent(_ take: Bool, value: CGFloat = 0.5) {
 		UIView.animate(withDuration: 0.3) { self.alpha = take ? value : 1 }
 	}
+
 	func hide(_ completion: (() -> Void)? = nil) {
 		UIView.animate(withDuration: 0.3, animations: { self.alpha = 0 }, completion: { _ in
 			self.isHidden = true
 			completion?()
 		})
+	}
+
+	func highlightTextField(_ flag: Bool) {
+		let placeholderColor: UIColor
+		if flag {
+			placeholderColor = .systemRed
+		}
+		else if #available(iOS 13.0, *) {
+			placeholderColor = .placeholderText
+		}
+		else {
+			placeholderColor = .gray
+		}
+		titleTextField.attributedPlaceholder =
+			NSAttributedString(string: titleTextField.placeholder ?? "",
+							   attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
 	}
 }
 
