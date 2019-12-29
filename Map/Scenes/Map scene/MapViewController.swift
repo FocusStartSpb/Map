@@ -314,10 +314,10 @@ private extension MapViewController
 		mapView.selectedAnnotations
 			.filter { $0 !== temptPointer }
 			.forEach { mapView.deselectAnnotation($0, animated: true) }
+		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		isEditSmartTarget = true
 		interactor.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate)
 		addTemptPointer(at: mapView.centerCoordinate)
-		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		showSmartTargetMenu()
 		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
 	}
@@ -554,6 +554,18 @@ extension MapViewController: MKMapViewDelegate
 		renderer.strokeColor = .systemBlue
 		renderer.lineWidth = 1
 		return renderer
+	}
+
+	func mapView(_ mapView: MKMapView, didAdd renderers: [MKOverlayRenderer]) {
+		guard
+			let overlay = temptCircle,
+			(isEditSmartTarget == false && temptPointer == nil ) ||
+			(isEditSmartTarget && isDraggedTemptPointer) else { return }
+		let render = renderers.first { $0.overlay === overlay }
+		render?.alpha = 0
+		UIView.animate(withDuration: 0.3) {
+			render?.alpha = 1
+		}
 	}
 
 	func mapView(_ mapView: MKMapView,
