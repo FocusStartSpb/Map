@@ -21,7 +21,14 @@ final class SmartTargetMenu: UIView
 	private let radiusDidChange: RadiusDidChange
 
 	private let blurredView: UIVisualEffectView = {
-		let blurEffect = UIBlurEffect(style: .light)
+		let style: UIBlurEffect.Style
+		if #available(iOS 13.0, *) {
+			style = .systemUltraThinMaterial
+		}
+		else {
+			style = .light
+		}
+		let blurEffect = UIBlurEffect(style: style)
 		let view = UIVisualEffectView(effect: blurEffect)
 		return view
 	}()
@@ -159,6 +166,11 @@ final class SmartTargetMenu: UIView
 		fatalError("init(coder:) has not been implemented")
 	}
 
+	// MARK: ...Override methods
+	@discardableResult override func becomeFirstResponder() -> Bool {
+		titleTextField.becomeFirstResponder()
+	}
+
 	// MARK: ...Private methods
 	private func setup() {
 
@@ -172,13 +184,13 @@ final class SmartTargetMenu: UIView
 		// Add subviews
 		addSubview(blurredView)
 		addSubview(radiusSlider)
+		addSubview(titleTextField)
 		addSubview(radiusLabel)
 		addSubview(saveButton)
 		addSubview(removeButton)
 		addSubview(activityIndicator)
 
 		// Set blurred effect view
-		vibrancyView.contentView.addSubview(titleTextField)
 		vibrancyView.contentView.addSubview(addressLabel)
 		blurredView.contentView.addSubview(vibrancyView)
 
