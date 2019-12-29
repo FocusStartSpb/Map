@@ -35,7 +35,6 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
-	//private var smartTargetCollection: ISmartTargetCollection = SmartTargetCollection()
 	private var smartTargetCollection: T.Element? = SmartTargetCollection() as? T.Element
 
 	private let dispatchQueueGetAddress =
