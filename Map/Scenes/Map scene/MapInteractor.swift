@@ -75,6 +75,23 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 			locationManager.requestAlwaysAuthorization()
 		}
 	}
+
+	private func saveSmartTargetCollection(_ completion: @escaping (Bool) -> Void) {
+		dispatchQueueSaveSmartTargets.async { [weak self] in
+			guard let smartTargetCollection = self?.smartTargetCollection else { return }
+			self?.dataBaseWorker.saveSmartTargets(smartTargetCollection) { result in
+				let isSaved: Bool
+				if case .success = result {
+					isSaved = true
+				}
+				else {
+					isSaved = false
+				}
+				completion(isSaved)
+			}
+		}
+	}
+
 	// MARK: - CLLocationDelegate
 
 	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -127,19 +144,11 @@ extension MapInteractor: MapBusinessLogic
 	}
 
 	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request) {
-		dispatchQueueSaveSmartTargets.async { [weak self] in
-			guard let smartTargetCollection = self?.smartTargetCollection else { return }
-			smartTargetCollection.put(request.smartTarget)
-			self?.dataBaseWorker.saveSmartTargets(smartTargetCollection) { result in
-				let isSaved: Bool
-				if case .success = result {
-					isSaved = true
-				}
-				else {
-					isSaved = false
-				}
-				self?.presenter.presentSaveSmartTarget(Map.SaveSmartTarget.Response(isSaved: isSaved))
-			}
+		smartTargetCollection?.put(request.smartTarget)
+		saveSmartTargetCollection { [weak self] isSaved in
+			self?.presenter.presentSaveSmartTarget(Map.SaveSmartTarget.Response(isSaved: isSaved))
+		}
+	}
 		}
 	}
 }
