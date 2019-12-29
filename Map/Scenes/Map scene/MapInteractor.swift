@@ -16,6 +16,12 @@ protocol MapBusinessLogic
 	func getAddress(_ request: Map.Address.Request)
 }
 
+// MARK: - MapDataStore protocol
+protocol MapDataStore
+{
+	var temptSmartTarget: SmartTarget? { get set }
+}
+
 // MARK: Class
 final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObject, CLLocationManagerDelegate
 	where T.Element: ISmartTargetCollection
@@ -41,6 +47,9 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 		DispatchQueue(label: "com.map.saveSmartTargets",
 					  qos: .userInitiated,
 					  attributes: .concurrent)
+
+	// MARK: ...Map data store
+	var temptSmartTarget: SmartTarget?
 
 	// MARK: ...Initialization
 	init(presenter: MapPresentationLogic,
@@ -135,3 +144,6 @@ extension MapInteractor: MapBusinessLogic
 		}
 	}
 }
+
+// MARK: - Map data source
+extension MapInteractor: MapDataStore { }
