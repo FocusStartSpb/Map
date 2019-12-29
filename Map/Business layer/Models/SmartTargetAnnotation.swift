@@ -12,7 +12,7 @@ final class SmartTargetAnnotation: NSObject, MKAnnotation
 	static let identifier = "PinIdentifier"
 
 	let uid: String
-	let title: String?
+	var title: String?
 	var coordinate: CLLocationCoordinate2D
 
 	init(uid: String, title: String?, coordinate: CLLocationCoordinate2D) {
