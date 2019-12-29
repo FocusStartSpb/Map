@@ -10,9 +10,11 @@ import CoreLocation
 protocol MapBusinessLogic
 {
 	func getSmartTargets(_ request: Map.FetchSmartTargets.Request)
+	func getSmartTarget(_ request: Map.GetSmartTarget.Request)
 	func configureLocationService(request: Map.UpdateStatus.Request)
 	func returnToCurrentLocation(request: Map.UpdateStatus.Request)
 	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request)
+	func removeSmartTarget(_ request: Map.RemoveSmartTarget.Request)
 	func getAddress(_ request: Map.Address.Request)
 }
 
@@ -111,6 +113,12 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 // MARK: - Map display logic
 extension MapInteractor: MapBusinessLogic
 {
+	func getSmartTarget(_ request: Map.GetSmartTarget.Request) {
+		guard let smartTarget = smartTargetCollection?[request.uid] else { return }
+		let response = Map.GetSmartTarget.Response(smartTarget: smartTarget)
+		presenter.presentSmartTarget(response)
+	}
+
 	func getSmartTargets(_ request: Map.FetchSmartTargets.Request) {
 		dataBaseWorker.fetchSmartTargets { [weak self] result in
 			switch result {
@@ -149,6 +157,11 @@ extension MapInteractor: MapBusinessLogic
 			self?.presenter.presentSaveSmartTarget(Map.SaveSmartTarget.Response(isSaved: isSaved))
 		}
 	}
+
+	func removeSmartTarget(_ request: Map.RemoveSmartTarget.Request) {
+		smartTargetCollection?.remove(atUID: request.uid)
+		saveSmartTargetCollection { [weak self] isSaved in
+			self?.presenter.presentRemoveSmartTarget(Map.RemoveSmartTarget.Response(isRemoved: isSaved))
 		}
 	}
 }
