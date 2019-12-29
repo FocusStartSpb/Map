@@ -330,9 +330,21 @@ private extension MapViewController
 	}
 
 	func actionSave(_ smartTargetMenu: SmartTargetMenu) {
+
+		var checkTitleText: Bool {
+			guard let title = smartTargetMenu.title else { return false }
+			return title.isEmpty == false
+		}
+
 		guard
 			var temptSmartTarget = interactor.temptSmartTarget,
 			let temptPointer = temptPointer else { return }
+
+		guard checkTitleText else {
+			smartTargetMenu.highlightTextField(true)
+			smartTargetMenu.becomeFirstResponder()
+			return
+		}
 
 		// Обновляем smart target
 		temptSmartTarget.coordinates = temptPointer.coordinate
