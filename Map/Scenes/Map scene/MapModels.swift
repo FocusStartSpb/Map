@@ -32,6 +32,25 @@ enum Map
 		}
 	}
 
+	// MARK: ...GetSmartTarget
+	enum GetSmartTarget
+	{
+		struct Request
+		{
+			let uid: String
+		}
+
+		struct Response
+		{
+			let smartTarget: SmartTarget
+		}
+
+		struct ViewModel
+		{
+			let smartTarget: SmartTarget
+		}
+	}
+
 	// MARK: ...SaveSmartTarget
 	enum SaveSmartTarget
 	{
@@ -48,6 +67,25 @@ enum Map
 		struct ViewModel
 		{
 			let isSaved: Bool
+		}
+	}
+
+	// MARK: ...RemoveSmartTarget
+	enum RemoveSmartTarget
+	{
+		struct Request
+		{
+			let uid: String
+		}
+
+		struct Response
+		{
+			let isRemoved: Bool
+		}
+
+		struct ViewModel
+		{
+			let isRemoved: Bool
 		}
 	}
 
