@@ -11,10 +11,12 @@ final class SmartTargetAnnotation: NSObject, MKAnnotation
 {
 	static let identifier = "PinIdentifier"
 
+	let uid: String
 	let title: String?
 	var coordinate: CLLocationCoordinate2D
 
-	init(title: String?, coordinate: CLLocationCoordinate2D) {
+	init(uid: String, title: String?, coordinate: CLLocationCoordinate2D) {
+		self.uid = uid
 		self.title = title
 		self.coordinate = coordinate
 		super.init()

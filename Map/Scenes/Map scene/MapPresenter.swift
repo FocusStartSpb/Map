@@ -5,14 +5,15 @@
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
 
-import Foundation
+import MapKit
 
 // MARK: - MapPresentationLogic protocol
 protocol MapPresentationLogic
 {
-	func presentSmartTargets(response: Map.SmartTargets.Response)
+	func presentSmartTargets(_ response: Map.FetchSmartTargets.Response)
 	func beginLocationUpdates(response: Map.UpdateStatus.Response)
 	func presentAddress(_ response: Map.Address.Response)
+	func presentSaveSmartTarget(_ respose: Map.SaveSmartTarget.Response)
 }
 
 // MARK: - Class
@@ -20,14 +21,19 @@ final class MapPresenter
 {
 	// MARK: ...Internal properties
 	weak var viewController: MapDisplayLogic?
+
+	private func annotations(from targets: [SmartTarget]) -> [SmartTargetAnnotation] {
+		targets.map { SmartTargetAnnotation(uid: $0.uid, title: $0.title, coordinate: $0.coordinates) }
+	}
 }
 
 // MARK: - Map presentation logic
 extension MapPresenter: MapPresentationLogic
 {
-	func presentSmartTargets(response: Map.SmartTargets.Response) {
-		let viewModel = Map.SmartTargets.ViewModel(smartTargetCollection: response.smartTargetCollection)
-		viewController?.displaySmartTargets(viewModel: viewModel)
+	func presentSmartTargets(_ response: Map.FetchSmartTargets.Response) {
+		let annotationArray = annotations(from: response.smartTargetCollection.smartTargets)
+		let viewModel = Map.FetchSmartTargets.ViewModel(annotations: annotationArray)
+		viewController?.displaySmartTargets(viewModel)
 	}
 
 	func beginLocationUpdates(response: Map.UpdateStatus.Response) {
@@ -52,6 +58,12 @@ extension MapPresenter: MapPresentationLogic
 
 		DispatchQueue.main.async { [weak self] in
 			self?.viewController?.displayAddress(viewModel)
+		}
+	}
+
+	func presentSaveSmartTarget(_ respose: Map.SaveSmartTarget.Response) {
+		DispatchQueue.main.async { [weak self] in
+			self?.viewController?.displaySaveSmartTarget(Map.SaveSmartTarget.ViewModel(isSaved: respose.isSaved))
 		}
 	}
 }
