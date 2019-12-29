@@ -13,7 +13,7 @@ protocol MapPresentationLogic
 	func presentSmartTargets(_ response: Map.FetchSmartTargets.Response)
 	func beginLocationUpdates(response: Map.UpdateStatus.Response)
 	func presentAddress(_ response: Map.Address.Response)
-	func presentSaveSmartTarget(_ respose: Map.SaveSmartTarget.Response)
+	func presentSaveSmartTarget(_ response: Map.SaveSmartTarget.Response)
 }
 
 // MARK: - Class
@@ -61,7 +61,7 @@ extension MapPresenter: MapPresentationLogic
 		}
 	}
 
-	func presentSaveSmartTarget(_ respose: Map.SaveSmartTarget.Response) {
+	func presentSaveSmartTarget(_ response: Map.SaveSmartTarget.Response) {
 		DispatchQueue.main.async { [weak self] in
 			self?.viewController?.displaySaveSmartTarget(Map.SaveSmartTarget.ViewModel(isSaved: respose.isSaved))
 		}
