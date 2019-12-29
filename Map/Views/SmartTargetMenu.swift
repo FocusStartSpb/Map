@@ -248,12 +248,6 @@ final class SmartTargetMenu: UIView
 		vibrancyView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
 	}
 
-	private func hide() {
-		UIView.animate(withDuration: 0.3,
-					   animations: { self.alpha = 0 },
-					   completion: { _ in self.isHidden = true })
-	}
-
 	// MARK: ...Methods
 	/// Сделать menu прозрачным
 	/// - Parameters:
@@ -262,6 +256,12 @@ final class SmartTargetMenu: UIView
 	func translucent(_ take: Bool, value: CGFloat = 0.5) {
 		UIView.animate(withDuration: 0.3) { self.alpha = take ? value : 1 }
 	}
+	func hide(_ completion: (() -> Void)? = nil) {
+		UIView.animate(withDuration: 0.3, animations: { self.alpha = 0 }, completion: { _ in
+			self.isHidden = true
+			completion?()
+		})
+	}
 }
 
 // MARK: - Actions
@@ -269,7 +269,6 @@ final class SmartTargetMenu: UIView
 {
 	private func actionSave() {
 		saveAction(self)
-		hide()
 	}
 
 	private func actionRemove() {
