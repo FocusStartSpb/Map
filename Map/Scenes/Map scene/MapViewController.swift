@@ -20,7 +20,7 @@ protocol MapDisplayLogic: AnyObject
 final class MapViewController: UIViewController
 {
 	// MARK: ...Private properties
-	private var interactor: MapBusinessLogic
+	private var interactor: MapBusinessLogic & MapDataStore
 
 	private lazy var mapView: MKMapView = {
 		let mapView = MKMapView()
@@ -82,7 +82,7 @@ final class MapViewController: UIViewController
 	]
 
 	// MARK: ...Initialization
-	init(interactor: MapBusinessLogic) {
+	init(interactor: MapBusinessLogic & MapDataStore) {
 		self.interactor = interactor
 		super.init(nibName: nil, bundle: nil)
 	}
