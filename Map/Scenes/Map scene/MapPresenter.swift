@@ -11,9 +11,11 @@ import MapKit
 protocol MapPresentationLogic
 {
 	func presentSmartTargets(_ response: Map.FetchSmartTargets.Response)
+	func presentSmartTarget(_ response: Map.GetSmartTarget.Response)
 	func beginLocationUpdates(response: Map.UpdateStatus.Response)
 	func presentAddress(_ response: Map.Address.Response)
 	func presentSaveSmartTarget(_ response: Map.SaveSmartTarget.Response)
+	func presentRemoveSmartTarget(_ response: Map.RemoveSmartTarget.Response)
 }
 
 // MARK: - Class
@@ -34,6 +36,11 @@ extension MapPresenter: MapPresentationLogic
 		let annotationArray = annotations(from: response.smartTargetCollection.smartTargets)
 		let viewModel = Map.FetchSmartTargets.ViewModel(annotations: annotationArray)
 		viewController?.displaySmartTargets(viewModel)
+	}
+
+	func presentSmartTarget(_ response: Map.GetSmartTarget.Response) {
+		let viewModel = Map.GetSmartTarget.ViewModel(smartTarget: response.smartTarget)
+		viewController?.displaySmartTarget(viewModel)
 	}
 
 	func beginLocationUpdates(response: Map.UpdateStatus.Response) {
@@ -64,6 +71,12 @@ extension MapPresenter: MapPresentationLogic
 	func presentSaveSmartTarget(_ response: Map.SaveSmartTarget.Response) {
 		DispatchQueue.main.async { [weak self] in
 			self?.viewController?.displaySaveSmartTarget(Map.SaveSmartTarget.ViewModel(isSaved: response.isSaved))
+		}
+	}
+
+	func presentRemoveSmartTarget(_ response: Map.RemoveSmartTarget.Response) {
+		DispatchQueue.main.async { [weak self] in
+			self?.viewController?.displayRemoveSmartTarget(Map.RemoveSmartTarget.ViewModel(isRemoved: response.isRemoved))
 		}
 	}
 }
