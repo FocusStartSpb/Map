@@ -180,7 +180,6 @@ final class MapViewController: UIViewController
 		addButtonView.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
 	}
 
-	// MARK: ...Setup notifications
 	private func setupSmartTargetMenuConstraints() {
 		smartTargetMenu?.translatesAutoresizingMaskIntoConstraints = false
 
