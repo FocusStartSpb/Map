@@ -17,7 +17,7 @@ struct SmartTarget
 	// MARK: ...Properties
 	let uid: String
 	var title: String
-	let coordinates: CLLocationCoordinate2D
+	var coordinates: CLLocationCoordinate2D
 	var address: String?
 	var radius: Double?
 
