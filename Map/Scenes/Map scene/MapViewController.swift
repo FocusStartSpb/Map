@@ -364,6 +364,7 @@ private extension MapViewController
 		let request = Map.SaveSmartTarget.Request(smartTarget: temptSmartTarget)
 		interactor.saveSmartTarget(request)
 
+		smartTargetMenu.hide { smartTargetMenu.removeFromSuperview() }
 		self.temptPointer = nil
 		self.smartTargetMenu = nil
 		interactor.temptSmartTarget = nil
@@ -381,6 +382,7 @@ private extension MapViewController
 		interactor.removeSmartTarget(request)
 
 		mapView.removeAnnotation(temptPointer)
+		smartTargetMenu.removeFromSuperview()
 		self.temptPointer = nil
 		self.smartTargetMenu = nil
 		interactor.temptSmartTarget = nil
