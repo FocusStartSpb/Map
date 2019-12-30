@@ -21,7 +21,14 @@ final class SmartTargetMenu: UIView
 	private let radiusDidChange: RadiusDidChange
 
 	private let blurredView: UIVisualEffectView = {
-		let blurEffect = UIBlurEffect(style: .light)
+		let style: UIBlurEffect.Style
+		if #available(iOS 13.0, *) {
+			style = .systemUltraThinMaterial
+		}
+		else {
+			style = .light
+		}
+		let blurEffect = UIBlurEffect(style: style)
 		let view = UIVisualEffectView(effect: blurEffect)
 		return view
 	}()
@@ -159,6 +166,11 @@ final class SmartTargetMenu: UIView
 		fatalError("init(coder:) has not been implemented")
 	}
 
+	// MARK: ...Override methods
+	@discardableResult override func becomeFirstResponder() -> Bool {
+		titleTextField.becomeFirstResponder()
+	}
+
 	// MARK: ...Private methods
 	private func setup() {
 
@@ -172,13 +184,13 @@ final class SmartTargetMenu: UIView
 		// Add subviews
 		addSubview(blurredView)
 		addSubview(radiusSlider)
+		addSubview(titleTextField)
 		addSubview(radiusLabel)
 		addSubview(saveButton)
 		addSubview(removeButton)
 		addSubview(activityIndicator)
 
 		// Set blurred effect view
-		vibrancyView.contentView.addSubview(titleTextField)
 		vibrancyView.contentView.addSubview(addressLabel)
 		blurredView.contentView.addSubview(vibrancyView)
 
@@ -202,9 +214,8 @@ final class SmartTargetMenu: UIView
 		vibrancyView.translatesAutoresizingMaskIntoConstraints = false
 
 		// Set constraint for titleTextField
-		titleTextField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
+		titleTextField.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
 		titleTextField.topAnchor.constraint(equalTo: topAnchor, constant: layoutMargins.top).isActive = true
-		titleTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
 
 		// Set constraint for addressLabel
 		addressLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
@@ -248,12 +259,6 @@ final class SmartTargetMenu: UIView
 		vibrancyView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
 	}
 
-	private func hide() {
-		UIView.animate(withDuration: 0.3,
-					   animations: { self.alpha = 0 },
-					   completion: { _ in self.isHidden = true })
-	}
-
 	// MARK: ...Methods
 	/// Сделать menu прозрачным
 	/// - Parameters:
@@ -262,6 +267,29 @@ final class SmartTargetMenu: UIView
 	func translucent(_ take: Bool, value: CGFloat = 0.5) {
 		UIView.animate(withDuration: 0.3) { self.alpha = take ? value : 1 }
 	}
+
+	func hide(_ completion: (() -> Void)? = nil) {
+		UIView.animate(withDuration: 0.3, animations: { self.alpha = 0 }, completion: { _ in
+			self.isHidden = true
+			completion?()
+		})
+	}
+
+	func highlightTextField(_ flag: Bool) {
+		let placeholderColor: UIColor
+		if flag {
+			placeholderColor = .systemRed
+		}
+		else if #available(iOS 13.0, *) {
+			placeholderColor = .placeholderText
+		}
+		else {
+			placeholderColor = .gray
+		}
+		titleTextField.attributedPlaceholder =
+			NSAttributedString(string: titleTextField.placeholder ?? "",
+							   attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
+	}
 }
 
 // MARK: - Actions
@@ -269,7 +297,6 @@ final class SmartTargetMenu: UIView
 {
 	private func actionSave() {
 		saveAction(self)
-		hide()
 	}
 
 	private func actionRemove() {

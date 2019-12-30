@@ -30,8 +30,13 @@ final class MapViewController: UIViewController
 		return mapView
 	}()
 
-	private let currentLocationButton = UIButton()
-	private lazy var addButtonView = AddButtonView(tapAction: actionCreateSmartTarget)
+	private lazy var currentLocationButton: ButtonView = {
+		let view = ButtonView(type: .currentLocation, tapAction: actionCurrentLocation)
+		view.isHidden = true
+		return view
+	}()
+	private lazy var addButtonView = ButtonView(type: .add,
+												   tapAction: actionCreateSmartTarget)
 
 	private var smartTargetMenu: SmartTargetMenu?
 	private var temptPointer: SmartTargetAnnotation?
@@ -119,9 +124,6 @@ final class MapViewController: UIViewController
 		view.addSubview(currentLocationButton)
 		view.addSubview(addButtonView)
 
-		// Setup UI
-		setupCurrentLocationButton()
-
 		// Constraints
 		setupMapConstraints()
 		setupCurrentLocationButtonConstraints()
@@ -133,20 +135,6 @@ final class MapViewController: UIViewController
 
 		let fetchSmartTardetRequest = Map.FetchSmartTargets.Request()
 		interactor.getSmartTargets(fetchSmartTardetRequest)
-	}
-
-	@objc private func currentLocationPressed(sender: UIButton) {
-		interactor.returnToCurrentLocation(request: Map.UpdateStatus.Request())
-	}
-
-	private func setupCurrentLocationButton() {
-		currentLocationButton.setTitle("➤", for: .normal)
-		currentLocationButton.titleLabel?.font = .systemFont(ofSize: 40)
-		currentLocationButton.setTitleColor(.systemBlue, for: .normal)
-		currentLocationButton.transform = CGAffineTransform(rotationAngle: -45.0)
-		currentLocationButton.layer.cornerRadius = 20
-		currentLocationButton.addTarget(self, action: #selector(currentLocationPressed), for: .touchUpInside)
-		currentLocationButton.isHidden = true
 	}
 
 	// MARK: ...Setup constraints
@@ -180,7 +168,6 @@ final class MapViewController: UIViewController
 		addButtonView.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
 	}
 
-	// MARK: ...Setup notifications
 	private func setupSmartTargetMenuConstraints() {
 		smartTargetMenu?.translatesAutoresizingMaskIntoConstraints = false
 
@@ -302,13 +289,15 @@ final class MapViewController: UIViewController
 			}
 		}
 	}
-
-	private var pitch: CGFloat = 0
 }
 
 // MARK: - Actions
 private extension MapViewController
 {
+	func actionCurrentLocation() {
+		interactor.returnToCurrentLocation(request: Map.UpdateStatus.Request())
+	}
+
 	func actionCreateSmartTarget() {
 		addButtonView.isHidden = true
 		mapView.selectedAnnotations
@@ -332,9 +321,21 @@ private extension MapViewController
 	}
 
 	func actionSave(_ smartTargetMenu: SmartTargetMenu) {
+
+		var checkTitleText: Bool {
+			guard let title = smartTargetMenu.title else { return false }
+			return title.isEmpty == false
+		}
+
 		guard
 			var temptSmartTarget = interactor.temptSmartTarget,
 			let temptPointer = temptPointer else { return }
+
+		guard checkTitleText else {
+			smartTargetMenu.highlightTextField(true)
+			smartTargetMenu.becomeFirstResponder()
+			return
+		}
 
 		// Обновляем smart target
 		temptSmartTarget.coordinates = temptPointer.coordinate
@@ -354,6 +355,7 @@ private extension MapViewController
 		let request = Map.SaveSmartTarget.Request(smartTarget: temptSmartTarget)
 		interactor.saveSmartTarget(request)
 
+		smartTargetMenu.hide { smartTargetMenu.removeFromSuperview() }
 		self.temptPointer = nil
 		self.smartTargetMenu = nil
 		interactor.temptSmartTarget = nil
@@ -371,6 +373,7 @@ private extension MapViewController
 		interactor.removeSmartTarget(request)
 
 		mapView.removeAnnotation(temptPointer)
+		smartTargetMenu.removeFromSuperview()
 		self.temptPointer = nil
 		self.smartTargetMenu = nil
 		interactor.temptSmartTarget = nil

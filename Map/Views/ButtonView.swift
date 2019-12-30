@@ -1,5 +1,5 @@
 //
-//  AddButtonView.swift
+//  ButtonView.swift
 //  Map
 //
 //  Created by Arkadiy Grigoryanc on 24.12.2019.
@@ -9,10 +9,16 @@ import UIKit
 
 typealias TapAction = () -> Void
 
-final class AddButtonView: UIView
+final class ButtonView: UIView
 {
 
+	enum `Type`
+	{
+		case add, currentLocation
+	}
+
 	// MARK: ...Private properties
+	private let type: Type
 	private var tapAction: TapAction?
 
 	private let blurredView: UIVisualEffectView = {
@@ -42,15 +48,17 @@ final class AddButtonView: UIView
 		return view
 	}()
 
-	private let addButton: UIButton = {
+	private lazy var addButton: UIButton = {
 		let button = UIButton()
 		if #available(iOS 13.0, *) {
-			button.setImage(#imageLiteral(resourceName: "icons8-map-pin-50").withTintColor(.systemFill), for: .normal)
-			button.setImage(#imageLiteral(resourceName: "icons8-map-pin-50-2").withTintColor(.systemFill), for: .highlighted)
+			button.setImage(type.image(for: .normal).withTintColor(.systemFill),
+							for: .normal)
+			button.setImage(type.image(for: .highlighted).withTintColor(.systemFill),
+							for: .highlighted)
 		}
 		else {
-			button.setImage(#imageLiteral(resourceName: "icons8-map-pin-50"), for: .normal)
-			button.setImage(#imageLiteral(resourceName: "icons8-map-pin-50-2"), for: .highlighted)
+			button.setImage(type.image(for: .normal), for: .normal)
+			button.setImage(type.image(for: .highlighted), for: .highlighted)
 		}
 		button.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
 		button.addTarget(self, action: #selector(actionTap), for: .touchUpInside)
@@ -58,13 +66,14 @@ final class AddButtonView: UIView
 	}()
 
 	// MARK: ...Initialization
-	init() {
+	init(type: Type) {
+		self.type = type
 		super.init(frame: .zero)
 		setup()
 	}
 
-	convenience init(tapAction: @escaping TapAction) {
-		self.init()
+	convenience init(type: Type, tapAction: @escaping TapAction) {
+		self.init(type: type)
 		self.addAction(tapAction)
 		setup()
 	}
@@ -122,9 +131,25 @@ final class AddButtonView: UIView
 }
 
 // MARK: - Actions
-@objc extension AddButtonView
+@objc private extension ButtonView
 {
-	private func actionTap() {
+	func actionTap() {
 		tapAction?()
+	}
+}
+
+private extension ButtonView.`Type`
+{
+	func image(for state: UIButton.State) -> UIImage {
+		switch (self, state) {
+		case (.add, .normal):
+			return #imageLiteral(resourceName: "icons8-map-pin-50")
+		case (.add, .highlighted):
+			return #imageLiteral(resourceName: "icons8-map-pin-50")
+		case (.currentLocation, state) where state == .normal || state == .highlighted:
+			return #imageLiteral(resourceName: "icons8-near-me-48")
+		default:
+			return UIImage()
+		}
 	}
 }
