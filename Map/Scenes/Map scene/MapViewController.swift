@@ -180,7 +180,6 @@ final class MapViewController: UIViewController
 		addButtonView.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
 	}
 
-	// MARK: ...Setup notifications
 	private func setupSmartTargetMenuConstraints() {
 		smartTargetMenu?.translatesAutoresizingMaskIntoConstraints = false
 
@@ -331,9 +330,21 @@ private extension MapViewController
 	}
 
 	func actionSave(_ smartTargetMenu: SmartTargetMenu) {
+
+		var checkTitleText: Bool {
+			guard let title = smartTargetMenu.title else { return false }
+			return title.isEmpty == false
+		}
+
 		guard
 			var temptSmartTarget = interactor.temptSmartTarget,
 			let temptPointer = temptPointer else { return }
+
+		guard checkTitleText else {
+			smartTargetMenu.highlightTextField(true)
+			smartTargetMenu.becomeFirstResponder()
+			return
+		}
 
 		// Обновляем smart target
 		temptSmartTarget.coordinates = temptPointer.coordinate
@@ -353,6 +364,7 @@ private extension MapViewController
 		let request = Map.SaveSmartTarget.Request(smartTarget: temptSmartTarget)
 		interactor.saveSmartTarget(request)
 
+		smartTargetMenu.hide { smartTargetMenu.removeFromSuperview() }
 		self.temptPointer = nil
 		self.smartTargetMenu = nil
 		interactor.temptSmartTarget = nil
@@ -370,6 +382,7 @@ private extension MapViewController
 		interactor.removeSmartTarget(request)
 
 		mapView.removeAnnotation(temptPointer)
+		smartTargetMenu.removeFromSuperview()
 		self.temptPointer = nil
 		self.smartTargetMenu = nil
 		interactor.temptSmartTarget = nil
