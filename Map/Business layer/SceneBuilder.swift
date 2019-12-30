@@ -41,4 +41,16 @@ final class SceneBuilder
 
 		return viewController
 	}
+
+	func getSettingsScene() -> SettingsViewController {
+
+		let presenter = SettingsPresenter()
+		let worker = SettingsWorker()
+		let interactor = SettingsInteractor(presenter: presenter, worker: worker)
+		let viewController = SettingsViewController(interactor: interactor)
+
+		presenter.viewController = viewController
+
+		return viewController
+	}
 }
