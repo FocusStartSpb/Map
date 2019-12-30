@@ -17,24 +17,17 @@ final class DataBaseService<Element: Codable>
 	}
 
 	// MARK: ...Private static properties
-	private static var url: URL? {
-		FileManager
-			.default
-			.urls(for: .documentDirectory, in: .userDomainMask)
-			.first?
-			.appendingPathComponent(Path.component.rawValue)
-			.appendingPathExtension(Path.extension.rawValue)
-	}
+	private let fileManager = FilesManager()
 
 	// MARK: ...Methods
 	/// Write to file
 	func write(_ element: Element) throws {
 		do {
-			guard let url = Self.url else {
-				throw ServiceError.canNotSaveSmartTarget(message: "Path error")
-			}
 			let data = try JSONEncoder().encode(element)
-			try data.write(to: url, options: .noFileProtection)
+			try fileManager.save(fileNamed: Path.component.rawValue,
+								 extension: Path.extension.rawValue,
+								 data: data,
+								 overwrite: true)
 		}
 		catch {
 			throw error
@@ -44,12 +37,9 @@ final class DataBaseService<Element: Codable>
 	/// Read from file
 	func read() throws -> Element {
 		do {
-			guard let url = Self.url else {
-				throw ServiceError.canNotLoadSmartTarget(message: "Path error")
-			}
-			let data = try Data(contentsOf: url)
-			let result = try Element(data: data, decoder: JSONDecoder())
-			return result
+			let data = try fileManager.read(fileNamed: Path.component.rawValue,
+											extension: Path.extension.rawValue)
+			return try Element(data: data, decoder: JSONDecoder())
 		}
 		catch {
 			throw error
