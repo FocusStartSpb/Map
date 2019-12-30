@@ -363,20 +363,31 @@ private extension MapViewController
 	}
 
 	func actionRemove(_ smartTargetMenu: SmartTargetMenu) {
-		guard let temptPointer = temptPointer else { return }
+		let alert = UIAlertController(title: "Remove?",
+									  message: "You can always add a new pin again.", preferredStyle: UIAlertController.Style.alert)
 
-		// Удаляем smartTarget
-		let request = Map.RemoveSmartTarget.Request(uid: temptPointer.uid)
-		interactor.removeSmartTarget(request)
+		alert.addAction(UIAlertAction(title: "Save pin", style: UIAlertAction.Style.default, handler: { _ in
+			self.actionSave(_: smartTargetMenu)
+		}))
+		alert.addAction(UIAlertAction(title: "Remove",
+									  style: UIAlertAction.Style.destructive,
+									  handler: {(_: UIAlertAction) in
+										guard let temptPointer = self.temptPointer else { return }
 
-		mapView.removeAnnotation(temptPointer)
-		self.temptPointer = nil
-		self.smartTargetMenu = nil
-		interactor.temptSmartTarget = nil
-		removeTemptCircle()
+										// Удаляем smartTarget
+										let request = Map.RemoveSmartTarget.Request(uid: temptPointer.uid)
+										self.interactor.removeSmartTarget(request)
 
-		addButtonView.isHidden = false
-		isEditSmartTarget = false
+										self.mapView.removeAnnotation(temptPointer)
+										self.temptPointer = nil
+										self.smartTargetMenu = nil
+										self.interactor.temptSmartTarget = nil
+										self.removeTemptCircle()
+
+										self.addButtonView.isHidden = false
+										self.isEditSmartTarget = false
+		}))
+		self.present(alert, animated: true, completion: nil)
 	}
 
 	func actionChangeRadius(_ smartTargetMenu: SmartTargetMenu, radius: Float) {
