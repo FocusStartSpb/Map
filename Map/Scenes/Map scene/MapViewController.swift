@@ -589,6 +589,9 @@ extension MapViewController: MKMapViewDelegate
 			let request = Map.GetSmartTarget.Request(uid: annotation.uid)
 			interactor.getSmartTarget(request)
 			if let radius = interactor.temptSmartTarget?.radius {
+				// Update radius
+				circleRadius = radius
+				// Add overlay
 				addTemptCircle(at: annotation.coordinate, with: radius)
 			}
 			interactor.temptSmartTarget = nil
