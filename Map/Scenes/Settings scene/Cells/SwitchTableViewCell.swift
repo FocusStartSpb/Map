@@ -10,14 +10,30 @@ import UIKit
 final class SwitchTableViewCell: UITableViewCell
 {
 
+	// MARK: ...Private properties
 	private let label = UILabel()
+	private lazy var `switch`: UISwitch = {
+		let `switch` = UISwitch()
+		`switch`.addTarget(self, action: #selector(actionToggleSwitch(_:)), for: .valueChanged)
+		return `switch`
+	}()
+	private let actionToggle: (Bool) -> Void
 
-	let `switch` = UISwitch()
+	// MARK: ...Internal properties
+	var isOn: Bool {
+		get { `switch`.isOn }
+		set { `switch`.isOn = newValue }
+	}
+	var title: String? {
+		get { label.text }
+		set { label.text = newValue }
+	}
 
-	init(title: String, isOn: Bool) {
+	// MARK: ...Initialization
+	init(actionToggle: @escaping (Bool) -> Void) {
+		self.actionToggle = actionToggle
 		super.init(style: .default, reuseIdentifier: nil)
-		label.text = title
-		`switch`.isOn = isOn
+		selectionStyle = .none
 		setup()
 	}
 
@@ -26,6 +42,7 @@ final class SwitchTableViewCell: UITableViewCell
 		fatalError("init(coder:) has not been implemented")
 	}
 
+	// MARK: ...Private methods
 	private func setup() {
 		contentView.addSubview(label)
 		contentView.addSubview(`switch`)
@@ -45,7 +62,7 @@ final class SwitchTableViewCell: UITableViewCell
 		label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
 									  constant: -8).isActive = true
 
-		// Set constraint for segmentedControl
+		// Set constraint for switch
 		`switch`.leadingAnchor.constraint(equalTo: label.trailingAnchor,
 										  constant: 8).isActive = true
 		`switch`.topAnchor.constraint(equalTo: contentView.topAnchor,
@@ -55,8 +72,12 @@ final class SwitchTableViewCell: UITableViewCell
 		`switch`.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
 										 constant: -8).isActive = true
 	}
+}
 
-	override func setSelected(_ selected: Bool, animated: Bool) {
-		super.setSelected(selected, animated: animated)
+// MARK: - Actions
+@objc private extension SwitchTableViewCell
+{
+	func actionToggleSwitch(_ sender: UISwitch) {
+		actionToggle(sender.isOn)
 	}
 }

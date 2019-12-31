@@ -10,17 +10,30 @@ import UIKit
 final class SegmentedControlTableViewCell: UITableViewCell
 {
 
+	// MARK: ...Private properties
 	private let label = UILabel()
+	private lazy var segmentedControl: UISegmentedControl = {
+		let segmentedControl = UISegmentedControl()
+		segmentedControl.addTarget(self, action: #selector(actionChangeValue(_:)), for: .valueChanged)
+		return segmentedControl
+	}()
+	private let actionChangeValue: ((String) -> Void)
 
-	let segmentedControl = UISegmentedControl()
+	// MARK: ...Internal properties
+	var selectedSegmentIndex: Int {
+		get { segmentedControl.selectedSegmentIndex }
+		set { segmentedControl.selectedSegmentIndex = newValue }
+	}
+	var title: String? {
+		get { label.text }
+		set { label.text = newValue }
+	}
 
-	init(title: String, items: [String]) {
+	// MARK: ...Initialization
+	init(actionChangeValue: @escaping (String) -> Void) {
+		self.actionChangeValue = actionChangeValue
 		super.init(style: .default, reuseIdentifier: nil)
-		label.text = title
-		items.reversed().forEach {
-			segmentedControl.insertSegment(withTitle: $0, at: 0, animated: false)
-		}
-
+		selectionStyle = .none
 		setup()
 	}
 
@@ -29,6 +42,7 @@ final class SegmentedControlTableViewCell: UITableViewCell
 		fatalError("init(coder:) has not been implemented")
 	}
 
+	// MARK: ...Private methods
 	private func setup() {
 		contentView.addSubview(label)
 		contentView.addSubview(segmentedControl)
@@ -59,7 +73,18 @@ final class SegmentedControlTableViewCell: UITableViewCell
 												 constant: -8).isActive = true
 	}
 
-	override func setSelected(_ selected: Bool, animated: Bool) {
-		super.setSelected(selected, animated: animated)
+	// MARK: ...Internal methods
+	func setItems(_ items: [String]) {
+		items.reversed().forEach {
+			segmentedControl.insertSegment(withTitle: $0, at: 0, animated: false)
+		}
+	}
+}
+
+// MARK: - Actions
+@objc private extension SegmentedControlTableViewCell
+{
+	func actionChangeValue(_ sender: UISegmentedControl) {
+		actionChangeValue(sender.titleForSegment(at: sender.selectedSegmentIndex) ?? "")
 	}
 }
