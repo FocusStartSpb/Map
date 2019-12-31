@@ -24,6 +24,15 @@ final class MapViewController: UIViewController
 	// MARK: ...Private properties
 	private var interactor: MapBusinessLogic & MapDataStore
 
+	private let impactFeedbackGenerator: UIImpactFeedbackGenerator = {
+		if #available(iOS 13.0, *) {
+			return UIImpactFeedbackGenerator(style: .soft)
+		}
+		else {
+			return UIImpactFeedbackGenerator(style: .light)
+		}
+	}()
+
 	private lazy var mapView: MKMapView = {
 		let mapView = MKMapView()
 		mapView.delegate = self
@@ -43,6 +52,7 @@ final class MapViewController: UIViewController
 
 	private var isEditSmartTarget = false //: Bool { temptPointer != nil }
 	private var isDraggedTemptPointer = false
+	private var isNewPointer = false
 	private var isAnimateMapView = false
 	private var willTranslateKeyboard = false
 	private var circleRadius = 300.0
@@ -299,6 +309,7 @@ private extension MapViewController
 	}
 
 	func actionCreateSmartTarget() {
+		isNewPointer = true
 		addButtonView.isHidden = true
 		mapView.selectedAnnotations
 			.filter { $0 !== temptPointer }
@@ -309,6 +320,7 @@ private extension MapViewController
 		addTemptPointer(at: mapView.centerCoordinate)
 		showSmartTargetMenu()
 		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
+		impactFeedbackGenerator.prepare()
 	}
 
 	func actionEditSmartTarget(annotation: SmartTargetAnnotation) {
@@ -472,15 +484,22 @@ extension MapViewController: MKMapViewDelegate
 		if pinView == nil {
 			pinView = MKPinAnnotationView(annotation: annotation,
 										  reuseIdentifier: SmartTargetAnnotation.identifier)
-			pinView?.animatesDrop = true
 		}
 		else {
 			pinView?.annotation = annotation
-			pinView?.animatesDrop = false
 		}
+		pinView?.animatesDrop = isNewPointer
 		pinView?.isDraggable = isEditSmartTarget
 		pinView?.canShowCallout = (isEditSmartTarget == false)
 		pinView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+
+		if isNewPointer {
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
+				self?.impactFeedbackGenerator.impactOccurred()
+			}
+			isNewPointer = false
+		}
+
 		return pinView
 	}
 
@@ -533,11 +552,18 @@ extension MapViewController: MKMapViewDelegate
 			removeTemptCircle()
 		case (.starting, .dragging): // 1 - 2
 			smartTargetMenu?.address = nil
+		case (.dragging, .ending), // 2 - 4
+			 (.dragging, .canceling), // 2 - 3
+			 (.starting, .canceling), // 1 - 3
+			 (.starting, .ending): // 1 - 4
+			impactFeedbackGenerator.prepare()
 		case (.canceling, .none): // 3 - 0
+			impactFeedbackGenerator.impactOccurred()
 			guard let temptPointer = temptPointer else { return }
 			animateSmartTargetMenu(hide: false)
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
 		case (.ending, .none): // 4 - 0
+			impactFeedbackGenerator.impactOccurred()
 			guard let temptPointer = temptPointer else { return }
 			showLocation(coordinate: temptPointer.coordinate)
 			animateSmartTargetMenu(hide: false)
@@ -576,6 +602,7 @@ extension MapViewController: MKMapViewDelegate
 				 annotationView view: MKAnnotationView,
 				 calloutAccessoryControlTapped control: UIControl) {
 		guard let annotation = view.annotation as? SmartTargetAnnotation else { return }
+		isNewPointer = false
 		showLocation(coordinate: annotation.coordinate)
 		mapView.deselectAnnotation(view.annotation, animated: true)
 		view.canShowCallout = false
