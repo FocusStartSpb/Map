@@ -24,6 +24,7 @@ final class MapViewController: UIViewController
 	// MARK: ...Private properties
 	private var interactor: MapBusinessLogic & MapDataStore
 
+	// UI elements
 	private lazy var mapView: MKMapView = {
 		let mapView = MKMapView()
 		mapView.delegate = self
@@ -35,19 +36,23 @@ final class MapViewController: UIViewController
 		view.isHidden = true
 		return view
 	}()
-	private lazy var addButtonView = ButtonView(type: .add,
-												   tapAction: actionCreateSmartTarget)
+	private lazy var addButtonView = ButtonView(type: .add, tapAction: actionCreateSmartTarget)
 
 	private var smartTargetMenu: SmartTargetMenu?
-	private var temptPointer: SmartTargetAnnotation?
 
-	private var isEditSmartTarget = false //: Bool { temptPointer != nil }
+	// Tempt annotation
+	private var temptPointer: SmartTargetAnnotation?
+	// Tempt overlay
+	private var temptCircle: MKCircle?
+
+	// Editing properties
+	private var isEditSmartTarget = false
 	private var isDraggedTemptPointer = false
 	private var isAnimateMapView = false
 	private var willTranslateKeyboard = false
 	private var circleRadius = 300.0
-	private var temptCircle: MKCircle?
 
+	// Calculated properties
 	private var annotations: [SmartTargetAnnotation] {
 		mapView
 			.annotations
@@ -55,6 +60,7 @@ final class MapViewController: UIViewController
 			.compactMap { $0 as? SmartTargetAnnotation }
 	}
 
+	// Constants
 	private let latitudalMeters = 5_000.0
 	private let longtitudalMeters = 5_000.0
 	private let currentLocationButtonSize: CGFloat = 40.0
@@ -137,60 +143,6 @@ final class MapViewController: UIViewController
 		interactor.getSmartTargets(fetchSmartTardetRequest)
 	}
 
-	// MARK: ...Setup constraints
-	private func setupMapConstraints() {
-		mapView.translatesAutoresizingMaskIntoConstraints = false
-		mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-		mapViewBottomLayoutConstraint = mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-		mapViewBottomLayoutConstraint?.isActive = true
-		mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-	}
-
-	private func setupCurrentLocationButtonConstraints() {
-		currentLocationButton.translatesAutoresizingMaskIntoConstraints = false
-		currentLocationButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-													  constant: currentLocationOffset).isActive = true
-		currentLocationButton.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
-		currentLocationButton.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
-		currentLocationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-														constant: -currentLocationOffset).isActive = true
-	}
-
-	private func setupAddButtonViewConstraints() {
-		addButtonView.translatesAutoresizingMaskIntoConstraints = false
-
-		addButtonView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-												constant: -currentLocationOffset).isActive = true
-		addButtonView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-											  constant: -currentLocationOffset).isActive = true
-		addButtonView.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
-		addButtonView.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
-	}
-
-	private func setupSmartTargetMenuConstraints() {
-		smartTargetMenu?.translatesAutoresizingMaskIntoConstraints = false
-
-		smartTargetMenuBottomLayoutConstraint =
-			smartTargetMenu?
-				.bottomAnchor
-				.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-							constant: -currentLocationOffset)
-		smartTargetMenuBottomLayoutConstraint?.isActive = true
-
-		smartTargetMenuLeadingLayoutConstraint =
-			smartTargetMenu?
-				.leadingAnchor
-				.constraint(equalTo: addButtonView.leadingAnchor)
-		smartTargetMenuLeadingLayoutConstraint?.isActive = true
-
-		smartTargetMenu?
-			.trailingAnchor
-			.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
-						constant: -currentLocationOffset)
-			.isActive = true
-	}
-
 	// MARK: ...Map methods
 	private func showLocation(coordinate: CLLocationCoordinate2D) {
 		let zoomRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: self.latitudalMeters,
@@ -225,9 +177,9 @@ final class MapViewController: UIViewController
 						radiusValue: Float(interactor.temptSmartTarget?.radius ?? circleRadius),
 						radiusRange: (50, 1000),
 						address: interactor.temptSmartTarget?.address,
-						saveAction: actionSave(_:),
-						removeAction: actionRemove(_:),
-						radiusChange: actionChangeRadius(_:radius:))
+						saveAction: actionSave,
+						removeAction: actionRemove,
+						radiusChange: actionChangeRadius)
 	}
 
 	private func showSmartTargetMenu() {
@@ -605,5 +557,62 @@ extension MapViewController: MKMapViewDelegate
 		if isEditSmartTarget == false, view.annotation !== temptPointer {
 			removeTemptCircle()
 		}
+	}
+}
+
+// MARK: Constraints
+private extension MapViewController
+{
+	func setupMapConstraints() {
+		mapView.translatesAutoresizingMaskIntoConstraints = false
+		mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+		mapViewBottomLayoutConstraint = mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+		mapViewBottomLayoutConstraint?.isActive = true
+		mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+	}
+
+	func setupCurrentLocationButtonConstraints() {
+		currentLocationButton.translatesAutoresizingMaskIntoConstraints = false
+		currentLocationButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
+													  constant: currentLocationOffset).isActive = true
+		currentLocationButton.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+		currentLocationButton.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+		currentLocationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+														constant: -currentLocationOffset).isActive = true
+	}
+
+	func setupAddButtonViewConstraints() {
+		addButtonView.translatesAutoresizingMaskIntoConstraints = false
+
+		addButtonView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+												constant: -currentLocationOffset).isActive = true
+		addButtonView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+											  constant: -currentLocationOffset).isActive = true
+		addButtonView.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+		addButtonView.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+	}
+
+	func setupSmartTargetMenuConstraints() {
+		smartTargetMenu?.translatesAutoresizingMaskIntoConstraints = false
+
+		smartTargetMenuBottomLayoutConstraint =
+			smartTargetMenu?
+				.bottomAnchor
+				.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+							constant: -currentLocationOffset)
+		smartTargetMenuBottomLayoutConstraint?.isActive = true
+
+		smartTargetMenuLeadingLayoutConstraint =
+			smartTargetMenu?
+				.leadingAnchor
+				.constraint(equalTo: addButtonView.leadingAnchor)
+		smartTargetMenuLeadingLayoutConstraint?.isActive = true
+
+		smartTargetMenu?
+			.trailingAnchor
+			.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
+						constant: -currentLocationOffset)
+			.isActive = true
 	}
 }
