@@ -126,4 +126,40 @@ enum Map
 			let address: String
 		}
 	}
+
+	// MARK: ...GetCurrentRadius
+	enum GetCurrentRadius
+	{
+		struct Request
+		{
+			let currentRadius: Double
+		}
+
+		struct Response
+		{
+			let currentRadius: Double
+			let userValues: (lower: Double, upper: Double)
+		}
+
+		struct ViewModel
+		{
+			let radius: Double
+		}
+	}
+
+	// MARK: ...GetRangeRadius
+	enum GetRangeRadius
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let userValues: (lower: Double, upper: Double)
+		}
+
+		struct ViewModel
+		{
+			let userValues: (lower: Double, upper: Double)
+		}
+	}
 }
