@@ -18,6 +18,7 @@ protocol MapPresentationLogic
 	func presentRemoveSmartTarget(_ response: Map.RemoveSmartTarget.Response)
 	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response)
 	func presentGetRangeRadius(_ response: Map.GetRangeRadius.Response)
+	func presentGetMeasuringSystem(_ response: Map.GetMeasuringSystem.Response)
 }
 
 // MARK: - Class
@@ -99,5 +100,13 @@ extension MapPresenter: MapPresentationLogic
 	func presentGetRangeRadius(_ response: Map.GetRangeRadius.Response) {
 		let viewModel = Map.GetRangeRadius.ViewModel(userValues: response.userValues)
 		viewController?.displayGetRangeRadius(viewModel)
+	}
+
+	func presentGetMeasuringSystem(_ response: Map.GetMeasuringSystem.Response) {
+		let symbol = response.measuringSystem.symbol
+		let factor = response.measuringSystem.factor
+		let viewModel = Map.GetMeasuringSystem.ViewModel(measuringSymbol: symbol,
+														 measuringFactor: factor)
+		viewController?.displayGetMeasuringSystem(viewModel)
 	}
 }

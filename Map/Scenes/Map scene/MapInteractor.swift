@@ -19,6 +19,7 @@ protocol MapBusinessLogic
 	func getAddress(_ request: Map.Address.Request)
 	func getCurrentRadius(_ request: Map.GetCurrentRadius.Request)
 	func getRangeRadius(_ request: Map.GetRangeRadius.Request)
+	func getMeasuringSystem(_ request: Map.GetMeasuringSystem.Request)
 }
 
 // MARK: - MapDataStore protocol
@@ -187,6 +188,12 @@ extension MapInteractor: MapBusinessLogic
 	func getRangeRadius(_ request: Map.GetRangeRadius.Request) {
 		let response = Map.GetRangeRadius.Response(userValues: userValues)
 		presenter.presentGetRangeRadius(response)
+	}
+
+	func getMeasuringSystem(_ request: Map.GetMeasuringSystem.Request) {
+		let measuringSystem = settingsWorker.measuringSystem ?? .kilometer
+		let response = Map.GetMeasuringSystem.Response(measuringSystem: measuringSystem)
+		presenter.presentGetMeasuringSystem(response)
 	}
 }
 

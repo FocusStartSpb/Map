@@ -18,6 +18,7 @@ protocol MapDisplayLogic: AnyObject
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel)
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel)
 	func displayGetRangeRadius(_ viewModel: Map.GetRangeRadius.ViewModel)
+	func displayGetMeasuringSystem(_ viewModel: Map.GetMeasuringSystem.ViewModel)
 }
 
 // MARK: - Class
@@ -121,14 +122,18 @@ final class MapViewController: UIViewController
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		currentLocationButton.isHidden = (mapView.showsUserLocation == false)
+
+		// Add notifications
 		notificationCenter.addObserver(self, notifications: applicationNotifications)
 
-		let request = Map.GetCurrentRadius.Request(currentRadius: circleRadius)
-		interactor.getCurrentRadius(request)
+		// Send Requests
+		interactor.getMeasuringSystem(.init())
 	}
 
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
+
+		// Remove notifications
 		notificationCenter.removeObserver(self, names: Set(applicationNotifications.keys))
 	}
 
@@ -151,6 +156,22 @@ final class MapViewController: UIViewController
 
 		let fetchSmartTardetRequest = Map.FetchSmartTargets.Request()
 		interactor.getSmartTargets(fetchSmartTardetRequest)
+
+		let request = Map.GetCurrentRadius.Request(currentRadius: circleRadius)
+		interactor.getCurrentRadius(request)
+	}
+
+	private func setupDefaultSettings() {
+		currentPointer = nil
+		smartTargetMenu = nil
+		temptLastPointer = nil
+		interactor.temptSmartTarget = nil
+		removeTemptCircle()
+
+		addButtonView.isHidden = false
+		isEditSmartTarget = false
+
+		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
 	}
 
 	// MARK: ...Map methods
@@ -200,6 +221,7 @@ final class MapViewController: UIViewController
 
 		interactor.getRangeRadius(.init())
 		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
+		interactor.getMeasuringSystem(.init())
 
 		smartTargetMenu?.sliderValue = Float(circleRadius)
 
@@ -326,14 +348,7 @@ private extension MapViewController
 		interactor.saveSmartTarget(request)
 
 		smartTargetMenu.hide { smartTargetMenu.removeFromSuperview() }
-		self.currentPointer = nil
-		self.smartTargetMenu = nil
-		temptLastPointer = nil
-		interactor.temptSmartTarget = nil
-		removeTemptCircle()
-
-		addButtonView.isHidden = false
-		isEditSmartTarget = false
+		setupDefaultSettings()
 	}
 
 	func actionShooseAnAction(_ sender: Any) {
@@ -365,14 +380,7 @@ private extension MapViewController
 
 		mapView.removeAnnotation(temptPointer)
 		smartTargetMenu?.removeFromSuperview()
-		self.currentPointer = nil
-		self.smartTargetMenu = nil
-		temptLastPointer = nil
-		interactor.temptSmartTarget = nil
-		removeTemptCircle()
-
-		addButtonView.isHidden = false
-		isEditSmartTarget = false
+		setupDefaultSettings()
 	}
 
 	func actionCancelChanges(_ sender: Any) {
@@ -392,14 +400,7 @@ private extension MapViewController
 
 		// swiftlint:disable:next todo_fixme
 		// TODO: - Вынести этот блок кода из методов в отдельный метод (setupDefault)
-		self.currentPointer = nil
-		self.smartTargetMenu = nil
-		self.temptLastPointer = nil
-		interactor.temptSmartTarget = nil
-		removeTemptCircle()
-
-		addButtonView.isHidden = false
-		isEditSmartTarget = false
+		setupDefaultSettings()
 	}
 
 	func actionCancel(_ sender: Any) {
@@ -496,8 +497,8 @@ extension MapViewController: MapDisplayLogic
 
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel) {
 		if temptLastPointer == nil {
-			smartTargetMenu?.sliderValue = Float(viewModel.radius)
 			circleRadius = viewModel.radius
+			smartTargetMenu?.sliderValue = Float(circleRadius)
 		}
 	}
 
@@ -511,6 +512,11 @@ extension MapViewController: MapDisplayLogic
 									  max(menu.sliderValuesRange.max, circleRadius))
 			menu.sliderValue = Float(smartTarget.radius ?? menu.sliderValuesRange.min)
 		}
+	}
+
+	func displayGetMeasuringSystem(_ viewModel: Map.GetMeasuringSystem.ViewModel) {
+		smartTargetMenu?.sliderFactor = Float(viewModel.measuringFactor)
+		smartTargetMenu?.sliderValueMeasuringSymbol = viewModel.measuringSymbol
 	}
 }
 
