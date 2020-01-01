@@ -16,9 +16,11 @@ final class SceneBuilder
 		let geocoderService = GeocoderService()
 		let geocoderWorker = GeocoderWorker(service: geocoderService,
 											decoder: decoderService)
+		let settingsWorker = SettingsWorker()
 		let interactor = MapInteractor(presenter: presenter,
 									   dataBaseWorker: dataBaseWorker,
-									   geocoderWorker: geocoderWorker)
+									   geocoderWorker: geocoderWorker,
+									   settingsWorker: settingsWorker)
 		let viewController = MapViewController(interactor: interactor)
 
 		presenter.viewController = viewController
