@@ -8,14 +8,15 @@
 import UIKit
 
 typealias SliderAction = (_ menu: SmartTargetMenu, _ value: Float) -> Void
+typealias TextFieldAction = (_ menu: SmartTargetMenu, _ value: String) -> Void
 
 final class SmartTargetMenu: UIView
 {
 
 	// MARK: ...Private properties
-	private let sliderValuesRange: (min: Float, max: Float)
 	private let maxLenghtOfTitle = 30
 	private let sliderValueDidChange: SliderAction
+	private let textFieldAction: TextFieldAction
 
 	private let blurredView: UIVisualEffectView = {
 		let style: UIBlurEffect.Style
@@ -57,8 +58,6 @@ final class SmartTargetMenu: UIView
 	private lazy var slider: UISlider = {
 		let slider = UISlider()
 		slider.minimumValueImage = #imageLiteral(resourceName: "radius-of-circle")
-		slider.minimumValue = sliderValuesRange.min
-		slider.maximumValue = sliderValuesRange.max
 		slider.addTarget(self, action: #selector(actionSliderValueChanged), for: .valueChanged)
 		return slider
 	}()
@@ -116,7 +115,15 @@ final class SmartTargetMenu: UIView
 		}
 	}
 
-	private(set) var sliderValue: Float {
+	var sliderValuesRange: (min: Double, max: Double) {
+		get { (Double(slider.minimumValue), Double(slider.maximumValue)) }
+		set {
+			slider.minimumValue = Float(newValue.min)
+			slider.maximumValue = Float(newValue.max)
+		}
+	}
+
+	var sliderValue: Float {
 		get { slider.value }
 		set {
 			radiusLabel.text = "\(Int(newValue)) m"
@@ -143,22 +150,24 @@ final class SmartTargetMenu: UIView
 	///   - removeAction: Блок кода выполняемый при нажатии на кнопку "Remove"
 	///   - sliderAction: Блок кода выполняемый при изменении значения слайдера
 	init(textField: String? = nil,
-		 sliderValue: Float = 0,
-		 sliderValuesRange: (min: Float, max: Float),
+		 sliderValue: Double = 0,
+		 sliderValuesRange: (min: Double, max: Double),
 		 title: String? = nil,
 		 leftAction: MenuAction,
 		 rightAction: MenuAction,
-		 sliderAction: @escaping SliderAction) {
-		self.sliderValuesRange = sliderValuesRange
+		 sliderAction: @escaping SliderAction,
+		 textFieldAction: @escaping TextFieldAction) {
 		self.leftMenuAction = leftAction
 		self.rightMenuAction = rightAction
 		self.sliderValueDidChange = sliderAction
+		self.textFieldAction = textFieldAction
 
 		super.init(frame: .zero)
 
 		self.text = textField
 		self.title = title
-		self.sliderValue = min(max(sliderValue, sliderValuesRange.min), sliderValuesRange.max)
+		self.sliderValuesRange = sliderValuesRange
+		self.sliderValue = Float(min(max(sliderValue, sliderValuesRange.min), sliderValuesRange.max))
 
 		setup()
 	}
@@ -334,8 +343,8 @@ final class SmartTargetMenu: UIView
 extension SmartTargetMenu: UITextFieldDelegate
 {
 	func textField(_ textField: UITextField,
-						  shouldChangeCharactersIn range: NSRange,
-						  replacementString string: String) -> Bool {
+				   shouldChangeCharactersIn range: NSRange,
+				   replacementString string: String) -> Bool {
 		guard
 			isEditable,
 			let text = textField.text,
@@ -343,7 +352,12 @@ extension SmartTargetMenu: UITextFieldDelegate
 				return false
 		}
 		let newString = textField.text?.replacingCharacters(in: range, with: string)
-		return newString?.count ?? 0 <= maxLenghtOfTitle
+
+		let didEdit = newString?.count ?? 0 <= maxLenghtOfTitle
+		if let newString = newString, didEdit {
+			textFieldAction(self, newString)
+		}
+		return didEdit
 	}
 
 	func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
