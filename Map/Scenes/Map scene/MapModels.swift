@@ -127,6 +127,8 @@ enum Map
 		}
 	}
 
+	// MARK: - Settings
+
 	// MARK: ...GetCurrentRadius
 	enum GetCurrentRadius
 	{
@@ -160,6 +162,23 @@ enum Map
 		struct ViewModel
 		{
 			let userValues: (lower: Double, upper: Double)
+		}
+	}
+
+	// MARK: ...GetMeasuringSystem
+	enum GetMeasuringSystem
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let measuringSystem: UserPreferences.MeasuringSystem
+		}
+
+		struct ViewModel
+		{
+			let measuringSymbol: String
+			let measuringFactor: Double
 		}
 	}
 }
