@@ -32,6 +32,7 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 	private var presenter: MapPresentationLogic
 	private var dataBaseWorker: DataBaseWorker<T>
 	private var geocoderWorker: GeocoderWorker<G>
+	private var settingsWorker: SettingsWorker
 
 	private let locationManager = CLLocationManager()
 
@@ -55,10 +56,12 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 	// MARK: ...Initialization
 	init(presenter: MapPresentationLogic,
 		 dataBaseWorker: DataBaseWorker<T>,
-		 geocoderWorker: GeocoderWorker<G>) {
+		 geocoderWorker: GeocoderWorker<G>,
+		 settingsWorker: SettingsWorker) {
 		self.presenter = presenter
 		self.dataBaseWorker = dataBaseWorker
 		self.geocoderWorker = geocoderWorker
+		self.settingsWorker = settingsWorker
 	}
 
 	// MARK: ...Private methods
