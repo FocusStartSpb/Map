@@ -93,15 +93,11 @@ extension MapPresenter: MapPresentationLogic
 		}
 
 		let viewModel = Map.GetCurrentRadius.ViewModel(radius: radius)
-		DispatchQueue.main.async { [weak self] in
-			self?.viewController?.displayGetCurrentRadius(viewModel)
-		}
+		viewController?.displayGetCurrentRadius(viewModel)
 	}
 
 	func presentGetRangeRadius(_ response: Map.GetRangeRadius.Response) {
 		let viewModel = Map.GetRangeRadius.ViewModel(userValues: response.userValues)
-		DispatchQueue.main.async { [weak self] in
-			self?.viewController?.displayGetRangeRadius(viewModel)
-		}
+		viewController?.displayGetRangeRadius(viewModel)
 	}
 }

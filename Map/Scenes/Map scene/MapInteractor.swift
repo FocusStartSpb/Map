@@ -53,11 +53,6 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 					  qos: .userInitiated,
 					  attributes: .concurrent)
 
-	private let dispatchQueueSaveSettings =
-		DispatchQueue(label: "com.map.saveSettings",
-					  qos: .utility,
-					  attributes: .concurrent)
-
 	private var userValues: (lower: Double, upper: Double) {
 		(lower: settingsWorker.lowerValueOfRadius ?? 0,
 		 upper: settingsWorker.upperValueOfRadius ?? 0)
@@ -170,32 +165,28 @@ extension MapInteractor: MapBusinessLogic
 	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request) {
 		smartTargetCollection?.put(request.smartTarget)
 		saveSmartTargetCollection { [weak self] isSaved in
-			self?.presenter.presentSaveSmartTarget(Map.SaveSmartTarget.Response(isSaved: isSaved))
+			let response = Map.SaveSmartTarget.Response(isSaved: isSaved)
+			self?.presenter.presentSaveSmartTarget(response)
 		}
 	}
 
 	func removeSmartTarget(_ request: Map.RemoveSmartTarget.Request) {
 		smartTargetCollection?.remove(atUID: request.uid)
 		saveSmartTargetCollection { [weak self] isSaved in
-			self?.presenter.presentRemoveSmartTarget(Map.RemoveSmartTarget.Response(isRemoved: isSaved))
+			let response = Map.RemoveSmartTarget.Response(isRemoved: isSaved)
+			self?.presenter.presentRemoveSmartTarget(response)
 		}
 	}
 
 	func getCurrentRadius(_ request: Map.GetCurrentRadius.Request) {
-		dispatchQueueSaveSettings.async { [weak self] in
-			guard let self = self else { return }
-			let response = Map.GetCurrentRadius.Response(currentRadius: request.currentRadius,
-														 userValues: self.userValues)
-			self.presenter.presentGetCurrentRadius(response)
-		}
+		let response = Map.GetCurrentRadius.Response(currentRadius: request.currentRadius,
+													 userValues: userValues)
+		presenter.presentGetCurrentRadius(response)
 	}
 
 	func getRangeRadius(_ request: Map.GetRangeRadius.Request) {
-		dispatchQueueSaveSettings.async { [weak self] in
-			guard let self = self else { return }
-			let response = Map.GetRangeRadius.Response(userValues: self.userValues)
-			self.presenter.presentGetRangeRadius(response)
-		}
+		let response = Map.GetRangeRadius.Response(userValues: userValues)
+		presenter.presentGetRangeRadius(response)
 	}
 }
 
