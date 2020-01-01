@@ -17,6 +17,7 @@ protocol MapPresentationLogic
 	func presentSaveSmartTarget(_ response: Map.SaveSmartTarget.Response)
 	func presentRemoveSmartTarget(_ response: Map.RemoveSmartTarget.Response)
 	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response)
+	func presentGetRangeRadius(_ response: Map.GetRangeRadius.Response)
 }
 
 // MARK: - Class
@@ -94,6 +95,13 @@ extension MapPresenter: MapPresentationLogic
 		let viewModel = Map.GetCurrentRadius.ViewModel(radius: radius)
 		DispatchQueue.main.async { [weak self] in
 			self?.viewController?.displayGetCurrentRadius(viewModel)
+		}
+	}
+
+	func presentGetRangeRadius(_ response: Map.GetRangeRadius.Response) {
+		let viewModel = Map.GetRangeRadius.ViewModel(userValues: response.userValues)
+		DispatchQueue.main.async { [weak self] in
+			self?.viewController?.displayGetRangeRadius(viewModel)
 		}
 	}
 }

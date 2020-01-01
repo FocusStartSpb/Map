@@ -184,18 +184,24 @@ final class MapViewController: UIViewController
 	// MARK: ...Menu methods
 	private func createSmartTargetMenu(isEditing: Bool) -> SmartTargetMenu {
 		return SmartTargetMenu(textField: interactor.temptSmartTarget?.title,
-							   sliderValue: Float(interactor.temptSmartTarget?.radius ?? circleRadius),
+							   sliderValue: interactor.temptSmartTarget?.radius ?? circleRadius,
 							   sliderValuesRange: (50, 1000),
 							   title: interactor.temptSmartTarget?.address,
 							   leftAction: isEditing ? removeAction /*cancelAction*/ : removeAction,
 							   rightAction: saveAction,
-							   sliderAction: actionChangeRadius)
+							   sliderAction: actionChangeRadius,
+							   textFieldAction: actionChangeTitle)
 	}
 
 	private func showSmartTargetMenu(isEditing: Bool) {
 
 		let menu = createSmartTargetMenu(isEditing: isEditing)
 		smartTargetMenu = menu
+
+		interactor.getRangeRadius(.init())
+		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
+
+		smartTargetMenu?.sliderValue = Float(circleRadius)
 
 		view.addSubview(menu)
 		setupSmartTargetMenuConstraints()
@@ -407,6 +413,16 @@ private extension MapViewController
 
 		removeTemptCircle()
 		addTemptCircle(at: temptPointer.coordinate, with: Double(radius))
+
+		if temptLastPointer != nil, smartTargetMenu.leftMenuAction == removeAction {
+			smartTargetMenu.leftMenuAction = cancelAction
+		}
+	}
+
+	func actionChangeTitle(_ smartTargetMenu: SmartTargetMenu, text: String) {
+		if temptLastPointer != nil, smartTargetMenu.leftMenuAction == removeAction {
+			smartTargetMenu.leftMenuAction = cancelAction
+		}
 	}
 }
 
@@ -479,10 +495,22 @@ extension MapViewController: MapDisplayLogic
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel) { }
 
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel) {
-		circleRadius = viewModel.radius
+		if temptLastPointer == nil {
+			smartTargetMenu?.sliderValue = Float(viewModel.radius)
+			circleRadius = viewModel.radius
+		}
 	}
 
 	func displayGetRangeRadius(_ viewModel: Map.GetRangeRadius.ViewModel) {
+		smartTargetMenu?.sliderValuesRange = (viewModel.userValues.lower, viewModel.userValues.upper)
+		if
+			let menu = smartTargetMenu,
+			let smartTarget = interactor.temptSmartTarget,
+			temptLastPointer != nil {
+			menu.sliderValuesRange = (min(menu.sliderValuesRange.min, circleRadius),
+									  max(menu.sliderValuesRange.max, circleRadius))
+			menu.sliderValue = Float(smartTarget.radius ?? menu.sliderValuesRange.min)
+		}
 	}
 }
 

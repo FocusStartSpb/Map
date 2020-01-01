@@ -18,6 +18,7 @@ protocol MapBusinessLogic
 	func removeSmartTarget(_ request: Map.RemoveSmartTarget.Request)
 	func getAddress(_ request: Map.Address.Request)
 	func getCurrentRadius(_ request: Map.GetCurrentRadius.Request)
+	func getRangeRadius(_ request: Map.GetRangeRadius.Request)
 }
 
 // MARK: - MapDataStore protocol
@@ -56,6 +57,11 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 		DispatchQueue(label: "com.map.saveSettings",
 					  qos: .utility,
 					  attributes: .concurrent)
+
+	private var userValues: (lower: Double, upper: Double) {
+		(lower: settingsWorker.lowerValueOfRadius ?? 0,
+		 upper: settingsWorker.upperValueOfRadius ?? 0)
+	}
 
 	// MARK: ...Map data store
 	var temptSmartTarget: SmartTarget?
@@ -177,11 +183,18 @@ extension MapInteractor: MapBusinessLogic
 
 	func getCurrentRadius(_ request: Map.GetCurrentRadius.Request) {
 		dispatchQueueSaveSettings.async { [weak self] in
-			let userValues = (lower: self?.settingsWorker.lowerValueOfRadius ?? 0,
-							  upper: self?.settingsWorker.upperValueOfRadius ?? 0)
+			guard let self = self else { return }
 			let response = Map.GetCurrentRadius.Response(currentRadius: request.currentRadius,
-														 userValues: userValues)
-			self?.presenter.presentGetCurrentRadius(response)
+														 userValues: self.userValues)
+			self.presenter.presentGetCurrentRadius(response)
+		}
+	}
+
+	func getRangeRadius(_ request: Map.GetRangeRadius.Request) {
+		dispatchQueueSaveSettings.async { [weak self] in
+			guard let self = self else { return }
+			let response = Map.GetRangeRadius.Response(userValues: self.userValues)
+			self.presenter.presentGetRangeRadius(response)
 		}
 	}
 }
