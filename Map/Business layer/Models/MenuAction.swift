@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct MenuAction
+struct MenuAction: Equatable
 {
 	let title: String?
 	let style: UIAlertAction.Style
@@ -17,5 +17,9 @@ struct MenuAction
 		self.title = title
 		self.style = style
 		self.handler = handler
+	}
+
+	static func == (lhs: MenuAction, rhs: MenuAction) -> Bool {
+		lhs.title == rhs.title
 	}
 }
