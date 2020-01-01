@@ -16,6 +16,8 @@ protocol MapDisplayLogic: AnyObject
 	func displayAddress(_ viewModel: Map.Address.ViewModel)
 	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel)
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel)
+	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel)
+	func displayGetRangeRadius(_ viewModel: Map.GetRangeRadius.ViewModel)
 }
 
 // MARK: - Class
@@ -115,6 +117,9 @@ final class MapViewController: UIViewController
 		super.viewWillAppear(animated)
 		currentLocationButton.isHidden = (mapView.showsUserLocation == false)
 		notificationCenter.addObserver(self, notifications: applicationNotifications)
+
+		let request = Map.GetCurrentRadius.Request(currentRadius: circleRadius)
+		interactor.getCurrentRadius(request)
 	}
 
 	override func viewWillDisappear(_ animated: Bool) {
@@ -412,6 +417,13 @@ extension MapViewController: MapDisplayLogic
 	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel) { }
 
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel) { }
+
+	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel) {
+		circleRadius = viewModel.radius
+	}
+
+	func displayGetRangeRadius(_ viewModel: Map.GetRangeRadius.ViewModel) {
+	}
 }
 
 // MARK: - Map view delegate
