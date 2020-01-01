@@ -25,6 +25,7 @@ final class SettingsInteractor
 	private var presenter: SettingsPresentationLogic?
 	private var settingsWorker: SettingsSceneWorker?
 
+	private var pendingRequesrWorkItem: DispatchWorkItem?
 	private let dispatchQueueSaveSettings =
 		DispatchQueue(label: "com.map.saveSettings",
 					  qos: .utility,
@@ -34,6 +35,18 @@ final class SettingsInteractor
 	init(presenter: SettingsPresentationLogic, settingsWorker: SettingsSceneWorker) {
 		self.presenter = presenter
 		self.settingsWorker = settingsWorker
+	}
+
+	// MARK: ...Private methods
+	private func perform(after: TimeInterval, _ block: @escaping () -> Void) {
+		pendingRequesrWorkItem?.cancel()
+
+		let requestWorkItem = DispatchWorkItem(block: block)
+
+		pendingRequesrWorkItem = requestWorkItem
+
+		dispatchQueueSaveSettings.asyncAfter(deadline: .now() + after,
+											 execute: requestWorkItem)
 	}
 }
 
@@ -72,7 +85,7 @@ extension SettingsInteractor: SettingsBusinessLogic
 	func getRangeSliderValues(_ request: Settings.RangeSlider.Request) {
 		var response: Settings.RangeSlider.Response?
 		switch request.typeItems {
-		case .minRangeOfRadius, .minValueOfRadius, .maxValueOfRadius:
+		case .minRangeOfRadius, .minValueOfRadius, .maxValueOfRadius, .lowerValueOfRadius, .upperValueOfRadius:
 			let range = settingsWorker?.minRangeOfRadius ?? 0
 			let minValue = settingsWorker?.minValueOfRadius ?? 0
 			let maxValue = settingsWorker?.maxValueOfRadius ?? 0
@@ -117,7 +130,7 @@ extension SettingsInteractor: SettingsBusinessLogic
 	}
 
 	func changeValueSlider(_ request: Settings.ChangeValueRangeSlider.Request) {
-		dispatchQueueSaveSettings.async { [weak self] in
+		perform(after: 0.1) { [weak self] in
 			switch request.typeItems {
 			case .lowerValueOfRadius, .upperValueOfRadius:
 				self?.settingsWorker?.lowerValueOfRadius = request.values.lower
