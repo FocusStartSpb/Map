@@ -32,17 +32,24 @@ final class RangeSlider: UIControl
 		}
 		else { return .systemGray }
 		}() {
-		didSet { updateLayerFrames() }
+		didSet { trackLayer.setNeedsDisplay() }
 	}
 	var trackHighlightTintColor = UIColor(red: 0, green: 0.45, blue: 0.94, alpha: 1) {
-		didSet { updateLayerFrames() }
+		didSet { trackLayer.setNeedsDisplay() }
 	}
 	var thumbTintColor = UIColor.white {
-		didSet { updateLayerFrames() }
+		didSet {
+			lowerThumbLayer.setNeedsDisplay()
+			upperThumbLayer.setNeedsDisplay()
+		}
 	}
 
 	var curvaceousness: CGFloat = 1 {
-		didSet { updateLayerFrames() }
+		didSet {
+			trackLayer.setNeedsDisplay()
+			lowerThumbLayer.setNeedsDisplay()
+			upperThumbLayer.setNeedsDisplay()
+		}
 	}
 
 	private let trackLayer = RangeSliderTrackLayer()
@@ -80,6 +87,9 @@ final class RangeSlider: UIControl
 	}
 
 	func updateLayerFrames() {
+		CATransaction.begin()
+		CATransaction.setDisableActions(true)
+
 		trackLayer.frame = bounds.insetBy(dx: 0, dy: bounds.height / 2.2)
 		trackLayer.setNeedsDisplay()
 
@@ -97,6 +107,8 @@ final class RangeSlider: UIControl
 									   width: thumbWidth,
 									   height: thumbWidth)
 		upperThumbLayer.setNeedsDisplay()
+
+		CATransaction.commit()
 	}
 
 	func position(for value: Double) -> Double {
@@ -148,14 +160,6 @@ final class RangeSlider: UIControl
 				upperValue = boundValue(upperValue, toLowerValue: lowerValue, upperValue: maximumValue)
 			}
 		}
-
-		// 3. Update the UI
-		CATransaction.begin()
-		CATransaction.setDisableActions(true)
-
-		updateLayerFrames()
-
-		CATransaction.commit()
 
 		sendActions(for: .valueChanged)
 
