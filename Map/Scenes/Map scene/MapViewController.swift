@@ -170,6 +170,8 @@ final class MapViewController: UIViewController
 
 		addButtonView.isHidden = false
 		isEditSmartTarget = false
+		isAnimateMapView = false
+		isDraggedTemptPointer = false
 
 		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
 	}
@@ -310,7 +312,7 @@ private extension MapViewController
 		}
 		addTemptCircle(at: annotation.coordinate,
 					   with: interactor.temptSmartTarget?.radius ?? circleRadius)
-		temptLastPointer = currentPointer
+		temptLastPointer = currentPointer?.copy()
 		showSmartTargetMenu(isEditing: true)
 	}
 
@@ -607,6 +609,9 @@ extension MapViewController: MKMapViewDelegate
 			animateSmartTargetMenu(hide: false)
 			interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
+			if temptLastPointer != nil {
+				smartTargetMenu?.leftMenuAction = cancelAction
+			}
 		default: break
 		}
 	}
