@@ -305,6 +305,9 @@ private extension MapViewController
 		let request = Map.GetSmartTarget.Request(uid: annotation.uid)
 		interactor.getSmartTarget(request)
 		addButtonView.isHidden = true
+		if currentPointer?.coordinate == mapView.centerCoordinate {
+			isEditSmartTarget = true
+		}
 		addTemptCircle(at: annotation.coordinate,
 					   with: interactor.temptSmartTarget?.radius ?? circleRadius)
 		temptLastPointer = currentPointer
