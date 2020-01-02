@@ -51,8 +51,8 @@ enum Map
 		}
 	}
 
-	// MARK: ...SaveSmartTarget
-	enum SaveSmartTarget
+	// MARK: ...AddSmartTarget
+	enum AddSmartTarget
 	{
 		struct Request
 		{
@@ -61,12 +61,12 @@ enum Map
 
 		struct Response
 		{
-			let isSaved: Bool
+			let isAdded: Bool
 		}
 
 		struct ViewModel
 		{
-			let isSaved: Bool
+			let isAdded: Bool
 		}
 	}
 
@@ -86,6 +86,46 @@ enum Map
 		struct ViewModel
 		{
 			let isRemoved: Bool
+		}
+	}
+
+	// MARK: ...UpdateSmartTarget
+	enum UpdateSmartTarget
+	{
+		struct Request
+		{
+			let smartTarget: SmartTarget
+		}
+
+		struct Response
+		{
+			let isUpdated: Bool
+		}
+
+		struct ViewModel
+		{
+			let isUpdated: Bool
+		}
+	}
+
+	// MARK: ...UpdateSmartTargets
+	enum UpdateSmartTargets
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let collection: ISmartTargetCollection
+			let addedSmartTargets: [SmartTarget]
+			let removedSmartTargets: [SmartTarget]
+			let updatedSmartTargets: [SmartTarget]
+		}
+
+		struct ViewModel
+		{
+			let addedUIDs: [String]
+			let removedUIDs: [String]
+			let updatedUIDs: [String]
 		}
 	}
 

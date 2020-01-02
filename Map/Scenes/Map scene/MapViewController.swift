@@ -14,8 +14,10 @@ protocol MapDisplayLogic: AnyObject
 	func displaySmartTarget(_ viewModel: Map.GetSmartTarget.ViewModel)
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel)
 	func displayAddress(_ viewModel: Map.Address.ViewModel)
-	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel)
+	func displayAddSmartTarget(_ viewModel: Map.AddSmartTarget.ViewModel)
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel)
+	func displayUpdateSmartTarget(_ viewModel: Map.UpdateSmartTarget.ViewModel)
+	func displayUpdateSmartTargets(_ viewModel: Map.UpdateSmartTargets.ViewModel)
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel)
 	func displayGetRangeRadius(_ viewModel: Map.GetRangeRadius.ViewModel)
 	func displayGetMeasuringSystem(_ viewModel: Map.GetMeasuringSystem.ViewModel)
@@ -26,6 +28,7 @@ final class MapViewController: UIViewController
 {
 	// MARK: ...Private properties
 	private var interactor: MapBusinessLogic & MapDataStore
+	let router: MapRoutingLogic & MapDataPassing
 
 	// UI elements
 	private lazy var mapView: MKMapView = {
@@ -102,8 +105,9 @@ final class MapViewController: UIViewController
 	]
 
 	// MARK: ...Initialization
-	init(interactor: MapBusinessLogic & MapDataStore) {
+	init(interactor: MapBusinessLogic & MapDataStore, router: MapRoutingLogic & MapDataPassing) {
 		self.interactor = interactor
+		self.router = router
 		super.init(nibName: nil, bundle: nil)
 	}
 
@@ -123,10 +127,13 @@ final class MapViewController: UIViewController
 		super.viewWillAppear(animated)
 		currentLocationButton.isHidden = (mapView.showsUserLocation == false)
 
+		tabBarController?.delegate = self
+
 		// Add notifications
 		notificationCenter.addObserver(self, notifications: applicationNotifications)
 
 		// Send Requests
+		interactor.updateSmartTargets(.init())
 		interactor.getMeasuringSystem(.init())
 	}
 
@@ -349,8 +356,14 @@ private extension MapViewController
 		annotationView?.canShowCallout = true
 
 		// Сохраняем smartTarget
-		let request = Map.SaveSmartTarget.Request(smartTarget: temptSmartTarget)
-		interactor.saveSmartTarget(request)
+		if temptLastPointer != nil {
+			let request = Map.UpdateSmartTarget.Request(smartTarget: temptSmartTarget)
+			interactor.updateSmartTarget(request)
+		}
+		else {
+			let request = Map.AddSmartTarget.Request(smartTarget: temptSmartTarget)
+			interactor.addSmartTarget(request)
+		}
 
 		smartTargetMenu.hide { smartTargetMenu.removeFromSuperview() }
 		setupDefaultSettings()
@@ -496,9 +509,23 @@ extension MapViewController: MapDisplayLogic
 		smartTargetMenu?.title = viewModel.address
 	}
 
-	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel) { }
+	func displayAddSmartTarget(_ viewModel: Map.AddSmartTarget.ViewModel) { }
 
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel) { }
+
+	func displayUpdateSmartTarget(_ viewModel: Map.UpdateSmartTarget.ViewModel) { }
+
+	func displayUpdateSmartTargets(_ viewModel: Map.UpdateSmartTargets.ViewModel) {
+		let removedAnnotations = annotations.filter {
+			viewModel.removedUIDs.contains($0.uid) || viewModel.updatedUIDs.contains($0.uid)
+		}
+		let addedAnnotations = annotations.filter {
+			viewModel.addedUIDs.contains($0.uid) || viewModel.updatedUIDs.contains($0.uid)
+		}
+
+		mapView.removeAnnotations(removedAnnotations)
+		mapView.addAnnotations(addedAnnotations)
+	}
 
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel) {
 		if temptLastPointer == nil {
@@ -731,5 +758,17 @@ private extension MapViewController
 			.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
 						constant: -currentLocationOffset)
 			.isActive = true
+	}
+}
+
+extension MapViewController: UITabBarControllerDelegate
+{
+	func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+		tabBarController.delegate = nil
+		guard let viewController = viewController as? SmartTargetListViewController else {
+			return true
+		}
+		router.routeToSmartTargetList(viewController)
+		return false
 	}
 }
