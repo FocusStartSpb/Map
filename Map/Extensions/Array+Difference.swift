@@ -19,7 +19,6 @@ extension Array where Element: Hashable & Identity
 	func difference(from other: [Element]) -> [Element] {
 		let thisSet = Set(self)
 		let otherSet = Set(other)
-		print((self + other).uniqueElements)
 		let newFromThisSet = thisSet.reduce(into: [Element]()) { result, element in
 			if otherSet.contains(where: { element === $0 }) == false {
 				result.append(element)
