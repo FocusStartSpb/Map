@@ -18,6 +18,8 @@
 		5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01723A8388700A6F125 /* SceneBuilder.swift */; };
 		5837D01A23A838E100A6F125 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01923A838E100A6F125 /* Repository.swift */; };
 		5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01B23A839E000A6F125 /* DecoderService.swift */; };
+		58454F2F23BE875C00EE0D71 /* Identity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58454F2E23BE875C00EE0D71 /* Identity.swift */; };
+		58454F3223BE87C400EE0D71 /* Array+Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58454F3123BE87C400EE0D71 /* Array+Difference.swift */; };
 		584EE5AF23A7F8490013087A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5AE23A7F8490013087A /* AppDelegate.swift */; };
 		584EE5B823A7F84C0013087A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 584EE5B723A7F84C0013087A /* Assets.xcassets */; };
 		584EE5BB23A7F84C0013087A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 584EE5B923A7F84C0013087A /* LaunchScreen.storyboard */; };
@@ -32,6 +34,7 @@
 		584EE5E723A834D60013087A /* SmartTargetListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5E123A834D60013087A /* SmartTargetListInteractor.swift */; };
 		58551DD623BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58551DD523BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift */; };
 		58551DD823BD854300E76885 /* TabBarControllerBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58551DD723BD854300E76885 /* TabBarControllerBuilder.swift */; };
+		58551DDA23BDA38A00E76885 /* MapRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58551DD923BDA38A00E76885 /* MapRouter.swift */; };
 		585BBB8823B219170001F749 /* ButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8723B219170001F749 /* ButtonView.swift */; };
 		585BBB8A23B27DD40001F749 /* UIColor+Adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */; };
 		585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */; };
@@ -72,6 +75,8 @@
 		5837D01723A8388700A6F125 /* SceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneBuilder.swift; sourceTree = "<group>"; };
 		5837D01923A838E100A6F125 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		5837D01B23A839E000A6F125 /* DecoderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecoderService.swift; sourceTree = "<group>"; };
+		58454F2E23BE875C00EE0D71 /* Identity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identity.swift; sourceTree = "<group>"; };
+		58454F3123BE87C400EE0D71 /* Array+Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Difference.swift"; sourceTree = "<group>"; };
 		584EE5AB23A7F8490013087A /* Map.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Map.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		584EE5AE23A7F8490013087A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		584EE5B723A7F84C0013087A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -88,6 +93,7 @@
 		584EE5E123A834D60013087A /* SmartTargetListInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetListInteractor.swift; sourceTree = "<group>"; };
 		58551DD523BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserPreferences.MeasuringSystem+Extension.swift"; sourceTree = "<group>"; };
 		58551DD723BD854300E76885 /* TabBarControllerBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarControllerBuilder.swift; sourceTree = "<group>"; };
+		58551DD923BDA38A00E76885 /* MapRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRouter.swift; sourceTree = "<group>"; };
 		585BBB8723B219170001F749 /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
 		585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Adjust.swift"; sourceTree = "<group>"; };
 		585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetAnnotation.swift; sourceTree = "<group>"; };
@@ -153,6 +159,14 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		58454F3023BE876800EE0D71 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				58454F2E23BE875C00EE0D71 /* Identity.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
 		584EE5A223A7F8490013087A = {
 			isa = PBXGroup;
 			children = (
@@ -176,6 +190,7 @@
 				584EE5CF23A833E50013087A /* Scenes */,
 				58A9983F23A84D9000CAACE8 /* Business layer */,
 				58F7E96A23AD810F00E3859F /* Extensions */,
+				58454F3023BE876800EE0D71 /* Protocols */,
 				58A9983E23A84D7700CAACE8 /* Supporting files */,
 			);
 			path = Map;
@@ -187,6 +202,7 @@
 				584EE5C623A833D70013087A /* MapViewController.swift */,
 				584EE5C723A833D70013087A /* MapInteractor.swift */,
 				584EE5C223A833D70013087A /* MapPresenter.swift */,
+				58551DD923BDA38A00E76885 /* MapRouter.swift */,
 				584EE5C523A833D70013087A /* MapModels.swift */,
 			);
 			path = "Map scene";
@@ -321,6 +337,7 @@
 			isa = PBXGroup;
 			children = (
 				58A9984523AC1D1700CAACE8 /* Sequence+UniqueElements.swift */,
+				58454F3123BE87C400EE0D71 /* Array+Difference.swift */,
 				58A9984723AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift */,
 				582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */,
 				585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */,
@@ -443,11 +460,14 @@
 				3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */,
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
 				582ED16D23AE8458001AD44E /* Decodable+Initialization.swift in Sources */,
+				58454F2F23BE875C00EE0D71 /* Identity.swift in Sources */,
 				584EE5C823A833D70013087A /* MapPresenter.swift in Sources */,
 				585F64DD23BA928B00B66EAA /* RangeSliderThumbLayer.swift in Sources */,
 				58A9984123A852AC00CAACE8 /* SmartTarget.swift in Sources */,
+				58454F3223BE87C400EE0D71 /* Array+Difference.swift in Sources */,
 				58F7E96D23AD96A600E3859F /* DataBaseWorker.swift in Sources */,
 				58A9984623AC1D1700CAACE8 /* Sequence+UniqueElements.swift in Sources */,
+				58551DDA23BDA38A00E76885 /* MapRouter.swift in Sources */,
 				584EE5E623A834D60013087A /* SmartTargetListViewController.swift in Sources */,
 				584EE5CB23A833D70013087A /* MapModels.swift in Sources */,
 				585F64B623B9A6EC00B66EAA /* SwitchTableViewCell.swift in Sources */,
