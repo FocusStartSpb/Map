@@ -16,6 +16,10 @@ protocol MapDisplayLogic: AnyObject
 	func displayAddress(_ viewModel: Map.Address.ViewModel)
 	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel)
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel)
+	func displaySetNotificationServiceDelegate(_ viewModel: Map.SetNotificationServiceDelegate.ViewModel)
+	func displayNotificationRequestAuthorization(_ viewModel: Map.NotificationRequestAuthorization.ViewModel)
+	func displayAddNotification(_ viewModel: Map.AddNotification.ViewModel)
+	func displayRemoveNotification(_ viewModel: Map.RemoveNotification.ViewModel)
 }
 
 // MARK: - Class
@@ -135,6 +139,9 @@ final class MapViewController: UIViewController
 
 		let fetchSmartTardetRequest = Map.FetchSmartTargets.Request()
 		interactor.getSmartTargets(fetchSmartTardetRequest)
+
+		let notificationRequest = Map.SetNotificationServiceDelegate.Request(notificationDelegate: self)
+		interactor.setNotificationServiceDelegate(notificationRequest)
 	}
 
 	// MARK: ...Setup constraints
@@ -355,6 +362,10 @@ private extension MapViewController
 		let request = Map.SaveSmartTarget.Request(smartTarget: temptSmartTarget)
 		interactor.saveSmartTarget(request)
 
+		// Добавляем нотификацию
+		let notificationRequest = Map.AddNotification.Request(smartTarget: temptSmartTarget)
+		interactor.addNotification(notificationRequest)
+
 		smartTargetMenu.hide { smartTargetMenu.removeFromSuperview() }
 		self.temptPointer = nil
 		self.smartTargetMenu = nil
@@ -371,6 +382,10 @@ private extension MapViewController
 		// Удаляем smartTarget
 		let request = Map.RemoveSmartTarget.Request(uid: temptPointer.uid)
 		interactor.removeSmartTarget(request)
+
+		// Удаляем нотификацию
+		let notificationRequest = Map.RemoveNotification.Request(uid: temptPointer.uid)
+		interactor.removeNotification(notificationRequest)
 
 		mapView.removeAnnotation(temptPointer)
 		smartTargetMenu.removeFromSuperview()
@@ -460,6 +475,14 @@ extension MapViewController: MapDisplayLogic
 	func displaySaveSmartTarget(_ viewModel: Map.SaveSmartTarget.ViewModel) { }
 
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel) { }
+
+	func displaySetNotificationServiceDelegate(_ viewModel: Map.SetNotificationServiceDelegate.ViewModel) { }
+
+	func displayNotificationRequestAuthorization(_ viewModel: Map.NotificationRequestAuthorization.ViewModel) { }
+
+	func displayAddNotification(_ viewModel: Map.AddNotification.ViewModel) { }
+
+	func displayRemoveNotification(_ viewModel: Map.RemoveNotification.ViewModel) { }
 }
 
 // MARK: - Map view delegate
@@ -602,5 +625,14 @@ extension MapViewController: MKMapViewDelegate
 		if isEditSmartTarget == false, view.annotation !== temptPointer {
 			removeTemptCircle()
 		}
+	}
+}
+
+extension MapViewController: NotificationServiceDelegate
+{
+	func notificationService(_ notificationService: NotificationService, showButtonTappedForUID uid: String) {
+		guard let annotation = annotations.first(where: { $0.uid == uid }) else { return }
+		showLocation(coordinate: annotation.coordinate)
+		mapView.selectAnnotation(annotation, animated: true)
 	}
 }

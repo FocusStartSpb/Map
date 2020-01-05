@@ -16,6 +16,10 @@ protocol MapPresentationLogic
 	func presentAddress(_ response: Map.Address.Response)
 	func presentSaveSmartTarget(_ response: Map.SaveSmartTarget.Response)
 	func presentRemoveSmartTarget(_ response: Map.RemoveSmartTarget.Response)
+	func presentSetNotificationServiceDelegate(_ response: Map.SetNotificationServiceDelegate.Response)
+	func presentNotificationRequestAuthorization(_ response: Map.NotificationRequestAuthorization.Response)
+	func presentAddNotification(_ response: Map.AddNotification.Response)
+	func presentRemoveNotification(_ response: Map.RemoveNotification.Response)
 }
 
 // MARK: - Class
@@ -78,5 +82,27 @@ extension MapPresenter: MapPresentationLogic
 		DispatchQueue.main.async { [weak self] in
 			self?.viewController?.displayRemoveSmartTarget(Map.RemoveSmartTarget.ViewModel(isRemoved: response.isRemoved))
 		}
+	}
+
+	func presentSetNotificationServiceDelegate(_ response: Map.SetNotificationServiceDelegate.Response) {
+		let viewModel = Map.SetNotificationServiceDelegate.ViewModel(isSet: response.isSet)
+		viewController?.displaySetNotificationServiceDelegate(viewModel)
+	}
+
+	func presentNotificationRequestAuthorization(_ response: Map.NotificationRequestAuthorization.Response) {
+		let viewModel = Map.NotificationRequestAuthorization.ViewModel(iaAuthorized: response.iaAuthorized)
+		DispatchQueue.main.async { [weak self] in
+			self?.viewController?.displayNotificationRequestAuthorization(viewModel)
+		}
+	}
+
+	func presentAddNotification(_ response: Map.AddNotification.Response) {
+		let viewModel = Map.AddNotification.ViewModel(isAdded: response.isAdded)
+		viewController?.displayAddNotification(viewModel)
+	}
+
+	func presentRemoveNotification(_ response: Map.RemoveNotification.Response) {
+		let viewModel = Map.RemoveNotification.ViewModel(isRemoved: response.isRemoved)
+		viewController?.displayRemoveNotification(viewModel)
 	}
 }

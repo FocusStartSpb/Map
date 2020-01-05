@@ -6,6 +6,8 @@
 //
 
 import CoreLocation
+import UIKit
+
 // MARK: MapBusinessLogic protocol
 protocol MapBusinessLogic
 {
@@ -16,6 +18,10 @@ protocol MapBusinessLogic
 	func saveSmartTarget(_ request: Map.SaveSmartTarget.Request)
 	func removeSmartTarget(_ request: Map.RemoveSmartTarget.Request)
 	func getAddress(_ request: Map.Address.Request)
+	func setNotificationServiceDelegate(_ request: Map.SetNotificationServiceDelegate.Request)
+	func notificationRequestAuthorization(_ request: Map.NotificationRequestAuthorization.Request)
+	func addNotification(_ request: Map.AddNotification.Request)
+	func removeNotification(_ request: Map.RemoveNotification.Request)
 }
 
 // MARK: - MapDataStore protocol
@@ -34,6 +40,8 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 	private var geocoderWorker: GeocoderWorker<G>
 
 	private let locationManager = CLLocationManager()
+
+	private let notificationService = NotificationService.default
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
@@ -163,6 +171,79 @@ extension MapInteractor: MapBusinessLogic
 		saveSmartTargetCollection { [weak self] isSaved in
 			self?.presenter.presentRemoveSmartTarget(Map.RemoveSmartTarget.Response(isRemoved: isSaved))
 		}
+	}
+
+	func setNotificationServiceDelegate(_ request: Map.SetNotificationServiceDelegate.Request) {
+		notificationService.delegate = request.notificationDelegate
+		let response = Map.SetNotificationServiceDelegate.Response(isSet: true)
+		presenter.presentSetNotificationServiceDelegate(response)
+	}
+
+	func notificationRequestAuthorization(_ request: Map.NotificationRequestAuthorization.Request) {
+		let center = notificationService.center
+		center.requestAuthorization(options: [.alert, .sound]) { [weak self] granted, _ in
+			if granted {
+				DispatchQueue.main.async {
+					UIApplication.shared.registerForRemoteNotifications()
+				}
+				let response = Map.NotificationRequestAuthorization.Response(iaAuthorized: true)
+				self?.presenter.presentNotificationRequestAuthorization(response)
+			}
+			else {
+				let response = Map.NotificationRequestAuthorization.Response(iaAuthorized: false)
+				self?.presenter.presentNotificationRequestAuthorization(response)
+			}
+		}
+	}
+
+	private func notificationRequestAuthorization(completionHandler: @escaping (Bool) -> Void) {
+		let center = notificationService.center
+		center.requestAuthorization(options: [.alert, .sound]) { granted, _ in
+			if granted {
+				DispatchQueue.main.async {
+					UIApplication.shared.registerForRemoteNotifications()
+					completionHandler(granted)
+				}
+			}
+			else {
+				completionHandler(granted)
+			}
+		}
+	}
+
+	private func addNotification(for smartTarget: SmartTarget) {
+		if let smartTargetCollection = smartTargetCollection, smartTargetCollection.contains(smartTarget) {
+			notificationService.updateLocationNotification(center: smartTarget.coordinates,
+														   radius: smartTarget.radius ?? 100,
+														   title: smartTarget.title,
+														   subtitle: smartTarget.address ?? "",
+														   body: "Какая-то строка",
+														   uid: smartTarget.uid)
+		}
+		else {
+			notificationService.addLocationNotificationWith(center: smartTarget.coordinates,
+															radius: smartTarget.radius ?? 100,
+															title: smartTarget.title,
+															subtitle: smartTarget.address ?? "",
+															body: "Какая-то строка",
+															uid: smartTarget.uid)
+		}
+	}
+
+	func addNotification(_ request: Map.AddNotification.Request) {
+		notificationRequestAuthorization { [weak self] granted in
+			if granted {
+				self?.addNotification(for: request.smartTarget)
+			}
+			let response = Map.AddNotification.Response(isAdded: granted)
+			self?.presenter.presentAddNotification(response)
+		}
+	}
+
+	func removeNotification(_ request: Map.RemoveNotification.Request) {
+		notificationService.removePendingNotification(at: request.uid)
+		let response = Map.RemoveNotification.Response(isRemoved: true)
+		presenter.presentRemoveNotification(response)
 	}
 }
 
