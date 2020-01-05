@@ -18,9 +18,12 @@
 		5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01723A8388700A6F125 /* SceneBuilder.swift */; };
 		5837D01A23A838E100A6F125 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01923A838E100A6F125 /* Repository.swift */; };
 		5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01B23A839E000A6F125 /* DecoderService.swift */; };
+<<<<<<< HEAD
 		58454C3923C25B7A008BB813 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58454C3823C25B7A008BB813 /* NotificationService.swift */; };
+=======
 		58454F2F23BE875C00EE0D71 /* Identity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58454F2E23BE875C00EE0D71 /* Identity.swift */; };
 		58454F3223BE87C400EE0D71 /* Array+Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58454F3123BE87C400EE0D71 /* Array+Difference.swift */; };
+>>>>>>> develop
 		584EE5AF23A7F8490013087A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5AE23A7F8490013087A /* AppDelegate.swift */; };
 		584EE5B823A7F84C0013087A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 584EE5B723A7F84C0013087A /* Assets.xcassets */; };
 		584EE5BB23A7F84C0013087A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 584EE5B923A7F84C0013087A /* LaunchScreen.storyboard */; };
@@ -76,9 +79,12 @@
 		5837D01723A8388700A6F125 /* SceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneBuilder.swift; sourceTree = "<group>"; };
 		5837D01923A838E100A6F125 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		5837D01B23A839E000A6F125 /* DecoderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecoderService.swift; sourceTree = "<group>"; };
+<<<<<<< HEAD
 		58454C3823C25B7A008BB813 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+=======
 		58454F2E23BE875C00EE0D71 /* Identity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identity.swift; sourceTree = "<group>"; };
 		58454F3123BE87C400EE0D71 /* Array+Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Difference.swift"; sourceTree = "<group>"; };
+>>>>>>> develop
 		584EE5AB23A7F8490013087A /* Map.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Map.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		584EE5AE23A7F8490013087A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		584EE5B723A7F84C0013087A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -316,10 +322,14 @@
 				58551DD723BD854300E76885 /* TabBarControllerBuilder.swift */,
 				5837D01923A838E100A6F125 /* Repository.swift */,
 				3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */,
+<<<<<<< HEAD
 				58454C3823C25B7A008BB813 /* NotificationService.swift */,
+				58A9984223A852EE00CAACE8 /* Models */,
+=======
 				585F64A023B9881800B66EAA /* FilesManager.swift */,
 				585F64A223B988A700B66EAA /* SettingWrapper.swift */,
 				585F64A423B9947000B66EAA /* UserPreferences.swift */,
+>>>>>>> develop
 			);
 			path = "Business layer";
 			sourceTree = "<group>";

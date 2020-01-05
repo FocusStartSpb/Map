@@ -5,6 +5,8 @@
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
 
+import Foundation
+
 // swiftlint:disable nesting
 enum SmartTargetList
 {
@@ -44,6 +46,27 @@ enum SmartTargetList
 		struct ViewModel
 		{
 			let didSave: Bool
+		}
+	}
+
+	// MARK: ...UpdateSmartTargets
+	enum UpdateSmartTargets
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let collection: ISmartTargetCollection
+			let addedSmartTargets: [SmartTarget]
+			let removedSmartTargets: [SmartTarget]
+			let updatedSmartTargets: [SmartTarget]
+		}
+
+		struct ViewModel
+		{
+			let addedIndexPaths: [IndexPath]
+			let removedIndexPaths: [IndexPath]
+			let updatedIndexPaths: [IndexPath]
 		}
 	}
 }

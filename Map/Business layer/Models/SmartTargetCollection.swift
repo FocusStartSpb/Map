@@ -5,6 +5,8 @@
 //  Created by Arkadiy Grigoryanc on 20.12.2019.
 //
 
+import Foundation
+
 // MARK: - ISmartTargetCollection protocol
 protocol ISmartTargetCollection: Codable
 {
@@ -14,10 +16,21 @@ protocol ISmartTargetCollection: Codable
 	@discardableResult func put(_ smartTarget: SmartTarget) -> Int
 	func add(_ smartTargets: [SmartTarget])
 	@discardableResult func remove(atUID uid: String) -> Int?
+
 	func smartTarget(at uid: String) -> SmartTarget?
+	func smartTargets(at uids: [String]) -> [SmartTarget]
+
+	func index(at uid: String) -> Int?
+	func index(at smartTarget: SmartTarget) -> Int?
+	func indexes(at uids: [String]) -> [Int]
+	func indexes(at smartTargets: [SmartTarget]) -> [Int]
 	subscript(_ uid: String) -> SmartTarget? { get }
 
 	func contains(_ smartTarget: SmartTarget) -> Bool
+	func smartTargetsOfDifference(from other: ISmartTargetCollection) ->
+		(added: [SmartTarget], removed: [SmartTarget], updated: [SmartTarget])
+
+	func copy() -> Self
 }
 
 // MARK: - Class
@@ -37,6 +50,7 @@ final class SmartTargetCollection
 // MARK: - ISmartTargetCollection
 extension SmartTargetCollection: ISmartTargetCollection
 {
+
 	// MARK: ...Public methods
 
 	/// Add smart target to first position or replace.
@@ -70,6 +84,29 @@ extension SmartTargetCollection: ISmartTargetCollection
 		smartTargets.first { $0.uid == uid }
 	}
 
+	func smartTargets(at uids: [String]) -> [SmartTarget] {
+		uids.reduce(into: []) { $0.append(self[$1]) }
+			.compactMap { $0 }
+	}
+
+	func index(at uid: String) -> Int? {
+		smartTargets.firstIndex { $0.uid == uid }
+	}
+
+	func index(at smartTarget: SmartTarget) -> Int? {
+		index(at: smartTarget.uid)
+	}
+
+	func indexes(at uids: [String]) -> [Int] {
+		smartTargets(at: uids)
+			.reduce(into: []) { $0.append(smartTargets.firstIndex(of: $1)) }
+			.compactMap { $0 }
+	}
+
+	func indexes(at smartTargets: [SmartTarget]) -> [Int] {
+		indexes(at: smartTargets.map { $0.uid })
+	}
+
 	subscript(_ uid: String) -> SmartTarget? {
 		smartTarget(at: uid)
 	}
@@ -78,7 +115,36 @@ extension SmartTargetCollection: ISmartTargetCollection
 		smartTargets.contains(smartTarget)
 	}
 
+	func smartTargetsOfDifference(from other: ISmartTargetCollection) ->
+		(added: [SmartTarget], removed: [SmartTarget], updated: [SmartTarget]) {
+
+		let otherSmartTargets = other.smartTargets
+		let difference = smartTargets.difference(from: otherSmartTargets)
+		return difference
+			.reduce(into: (added: [SmartTarget](), removed: [SmartTarget](), updated: [SmartTarget]())) { result, smartTarget in
+				if let dif = otherSmartTargets.first(where: { $0 == smartTarget }) {
+					if let same = smartTargets.first(where: { dif == $0 }) {
+						if same !== smartTarget {
+							result.updated.append(smartTarget)
+						}
+					}
+					else {
+						result.removed.append(smartTarget)
+					}
+				}
+				else if let dif = smartTargets.first(where: { $0 == smartTarget }),
+					otherSmartTargets.contains(dif) == false {
+
+					result.added.append(smartTarget)
+				}
+			}
+	}
+
 	var count: Int { smartTargets.count }
+
+	func copy() -> Self {
+		Self(smartTargets)
+	}
 
 	static func += (lhs: SmartTargetCollection, rhs: SmartTarget) {
 		lhs.put(rhs)
