@@ -9,6 +9,7 @@
 protocol SmartTargetListRoutingLogic
 {
 	func routeToDetail()
+	func routeToMap(_ mapViewController: MapViewController)
 }
 
 // MARK: - SmartTargetListDataPassing protocol
@@ -38,20 +39,32 @@ extension SmartTargetListRouter: SmartTargetListRoutingLogic
 {
 	// MARK: ...Routing
 	func routeToDetail() {
-		// Создаем DetailViewController
-		//passDataToDetail(source: homeDS, destination: &detailDS)
-		//navigateToDetail(source: viewController, destination: detailVC)
+	}
+
+	func routeToMap(_ mapViewController: MapViewController) {
+		guard
+			let viewController = viewController,
+			let sourceDataStore = dataStore,
+			var destinationDataStore = mapViewController.router.dataStore else { return }
+
+		passDataToMap(source: sourceDataStore, destination: &destinationDataStore)
+
+		navigateToMap(source: viewController, destination: mapViewController)
+
+		// Обнавляем временный коллекшен
+		dataStore?.oldSmartTargetCollection = sourceDataStore.smartTargetCollection?.copy()
 	}
 
 	// MARK: ...Navigation
-//	private func navigateToSomewhere(source: SmartTargetListViewController, destination: SomewhereViewController) {
-//		source.show(destination, sender: nil)
-//	}
+	private func navigateToMap(source: SmartTargetListViewController, destination: MapViewController) {
+		source.tabBarController?.selectedViewController = destination
+	}
 
 	// MARK: ...Passing data
-//	private func passDataToDetail(source: SmartTargetListDataStore, destination: inout SomewhereDataStore) {
-//		destination.name = source.name
-//	}
+	private func passDataToMap(source: SmartTargetListDataStore, destination: inout MapDataStore) {
+		destination.smartTargetCollection = source.smartTargetCollection
+		destination.temptSmartTargetCollection = source.oldSmartTargetCollection
+	}
 }
 
 // MARK: - Smart target list data passing

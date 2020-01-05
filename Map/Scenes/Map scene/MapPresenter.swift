@@ -14,8 +14,13 @@ protocol MapPresentationLogic
 	func presentSmartTarget(_ response: Map.GetSmartTarget.Response)
 	func beginLocationUpdates(response: Map.UpdateStatus.Response)
 	func presentAddress(_ response: Map.Address.Response)
-	func presentSaveSmartTarget(_ response: Map.SaveSmartTarget.Response)
+	func presentAddSmartTarget(_ response: Map.AddSmartTarget.Response)
 	func presentRemoveSmartTarget(_ response: Map.RemoveSmartTarget.Response)
+	func presentUpdateSmartTarget(_ response: Map.UpdateSmartTarget.Response)
+	func presentUpdateSmartTargets(_ response: Map.UpdateSmartTargets.Response)
+	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response)
+	func presentGetRangeRadius(_ response: Map.GetRangeRadius.Response)
+	func presentGetMeasuringSystem(_ response: Map.GetMeasuringSystem.Response)
 }
 
 // MARK: - Class
@@ -68,9 +73,9 @@ extension MapPresenter: MapPresentationLogic
 		}
 	}
 
-	func presentSaveSmartTarget(_ response: Map.SaveSmartTarget.Response) {
+	func presentAddSmartTarget(_ response: Map.AddSmartTarget.Response) {
 		DispatchQueue.main.async { [weak self] in
-			self?.viewController?.displaySaveSmartTarget(Map.SaveSmartTarget.ViewModel(isSaved: response.isSaved))
+			self?.viewController?.displayAddSmartTarget(Map.AddSmartTarget.ViewModel(isAdded: response.isAdded))
 		}
 	}
 
@@ -78,5 +83,46 @@ extension MapPresenter: MapPresentationLogic
 		DispatchQueue.main.async { [weak self] in
 			self?.viewController?.displayRemoveSmartTarget(Map.RemoveSmartTarget.ViewModel(isRemoved: response.isRemoved))
 		}
+	}
+
+	func presentUpdateSmartTarget(_ response: Map.UpdateSmartTarget.Response) {
+		DispatchQueue.main.async { [weak self] in
+			self?.viewController?.displayUpdateSmartTarget(Map.UpdateSmartTarget.ViewModel(isUpdated: response.isUpdated))
+		}
+	}
+
+	func presentUpdateSmartTargets(_ response: Map.UpdateSmartTargets.Response) {
+		let viewModel =
+			Map.UpdateSmartTargets.ViewModel(addedUIDs: response.addedSmartTargets.map { $0.uid },
+											 removedUIDs: response.removedSmartTargets.map { $0.uid },
+											 updatedUIDs: response.updatedSmartTargets.map { $0.uid })
+		viewController?.displayUpdateSmartTargets(viewModel)
+	}
+
+	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response) {
+
+		let radius: Double
+		switch response.currentRadius {
+		case ...response.userValues.lower: radius = response.userValues.lower
+		case response.userValues.lower...response.userValues.upper: radius = response.currentRadius
+		case ...response.userValues.lower: radius = response.currentRadius
+		default: radius = response.userValues.upper
+		}
+
+		let viewModel = Map.GetCurrentRadius.ViewModel(radius: radius)
+		viewController?.displayGetCurrentRadius(viewModel)
+	}
+
+	func presentGetRangeRadius(_ response: Map.GetRangeRadius.Response) {
+		let viewModel = Map.GetRangeRadius.ViewModel(userValues: response.userValues)
+		viewController?.displayGetRangeRadius(viewModel)
+	}
+
+	func presentGetMeasuringSystem(_ response: Map.GetMeasuringSystem.Response) {
+		let symbol = response.measuringSystem.symbol
+		let factor = response.measuringSystem.factor
+		let viewModel = Map.GetMeasuringSystem.ViewModel(measuringSymbol: symbol,
+														 measuringFactor: factor)
+		viewController?.displayGetMeasuringSystem(viewModel)
 	}
 }

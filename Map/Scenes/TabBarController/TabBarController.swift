@@ -11,16 +11,5 @@ final class TabBarController: UITabBarController
 {
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		let factory = SceneBuilder()
-		let dataBaseService = DataBaseService<SmartTargetCollection>()
-		let repository = SmartTargetRepository(dataBaseService: dataBaseService)
-		let mapViewController = factory.getMapScene(withRepository: repository)
-		let smartTargetListViewController = factory.getSmartTargetListScene(withRepository: repository)
-		mapViewController.tabBarItem = UITabBarItem(title: "Map", image: #imageLiteral(resourceName: "icons8-map-64"), tag: 0)
-		smartTargetListViewController.tabBarItem = UITabBarItem(title: "List", image: #imageLiteral(resourceName: "icons8-table-of-content-80"), tag: 1)
-		viewControllers = [
-			mapViewController,
-			smartTargetListViewController,
-		]
 	}
 }
