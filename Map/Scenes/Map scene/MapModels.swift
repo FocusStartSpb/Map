@@ -126,4 +126,77 @@ enum Map
 			let address: String
 		}
 	}
+
+	// MARK: ...SetNotificationServiceDelegate
+	enum SetNotificationServiceDelegate
+	{
+		struct Request
+		{
+			weak var notificationDelegate: NotificationServiceDelegate?
+		}
+
+		struct Response
+		{
+			let isSet: Bool
+		}
+
+		struct ViewModel
+		{
+			let isSet: Bool
+		}
+	}
+
+	// MARK: ...NotificationRequestAuthorization
+	enum NotificationRequestAuthorization
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let iaAuthorized: Bool
+		}
+
+		struct ViewModel
+		{
+			let iaAuthorized: Bool
+		}
+	}
+
+	// MARK: ...AddNotification
+	enum AddNotification
+	{
+		struct Request
+		{
+			let smartTarget: SmartTarget
+		}
+
+		struct Response
+		{
+			let isAdded: Bool
+		}
+
+		struct ViewModel
+		{
+			let isAdded: Bool
+		}
+	}
+
+	// MARK: ...RemoveNotification
+	enum RemoveNotification
+	{
+		struct Request
+		{
+			let uid: String
+		}
+
+		struct Response
+		{
+			let isRemoved: Bool
+		}
+
+		struct ViewModel
+		{
+			let isRemoved: Bool
+		}
+	}
 }
