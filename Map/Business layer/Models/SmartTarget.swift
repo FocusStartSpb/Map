@@ -81,6 +81,17 @@ extension SmartTarget: Comparable
 	}
 }
 
+extension SmartTarget: Identity
+{
+	static func === (lhs: Self, rhs: Self) -> Bool {
+		lhs.uid == rhs.uid && lhs.address == rhs.address && lhs.radius == rhs.radius && lhs.title == rhs.title
+	}
+
+	static func !== (lhs: Self, rhs: Self) -> Bool {
+		lhs.uid != rhs.uid || lhs.address != rhs.address || lhs.radius != rhs.radius || lhs.title != rhs.title
+	}
+}
+
 // MARK: - Hashable
 extension SmartTarget: Hashable
 {

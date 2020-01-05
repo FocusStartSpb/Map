@@ -51,8 +51,8 @@ enum Map
 		}
 	}
 
-	// MARK: ...SaveSmartTarget
-	enum SaveSmartTarget
+	// MARK: ...AddSmartTarget
+	enum AddSmartTarget
 	{
 		struct Request
 		{
@@ -61,12 +61,12 @@ enum Map
 
 		struct Response
 		{
-			let isSaved: Bool
+			let isAdded: Bool
 		}
 
 		struct ViewModel
 		{
-			let isSaved: Bool
+			let isAdded: Bool
 		}
 	}
 
@@ -86,6 +86,46 @@ enum Map
 		struct ViewModel
 		{
 			let isRemoved: Bool
+		}
+	}
+
+	// MARK: ...UpdateSmartTarget
+	enum UpdateSmartTarget
+	{
+		struct Request
+		{
+			let smartTarget: SmartTarget
+		}
+
+		struct Response
+		{
+			let isUpdated: Bool
+		}
+
+		struct ViewModel
+		{
+			let isUpdated: Bool
+		}
+	}
+
+	// MARK: ...UpdateSmartTargets
+	enum UpdateSmartTargets
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let collection: ISmartTargetCollection
+			let addedSmartTargets: [SmartTarget]
+			let removedSmartTargets: [SmartTarget]
+			let updatedSmartTargets: [SmartTarget]
+		}
+
+		struct ViewModel
+		{
+			let addedUIDs: [String]
+			let removedUIDs: [String]
+			let updatedUIDs: [String]
 		}
 	}
 
@@ -124,6 +164,61 @@ enum Map
 		struct ViewModel
 		{
 			let address: String
+		}
+	}
+
+	// MARK: - Settings
+
+	// MARK: ...GetCurrentRadius
+	enum GetCurrentRadius
+	{
+		struct Request
+		{
+			let currentRadius: Double
+		}
+
+		struct Response
+		{
+			let currentRadius: Double
+			let userValues: (lower: Double, upper: Double)
+		}
+
+		struct ViewModel
+		{
+			let radius: Double
+		}
+	}
+
+	// MARK: ...GetRangeRadius
+	enum GetRangeRadius
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let userValues: (lower: Double, upper: Double)
+		}
+
+		struct ViewModel
+		{
+			let userValues: (lower: Double, upper: Double)
+		}
+	}
+
+	// MARK: ...GetMeasuringSystem
+	enum GetMeasuringSystem
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let measuringSystem: UserPreferences.MeasuringSystem
+		}
+
+		struct ViewModel
+		{
+			let measuringSymbol: String
+			let measuringFactor: Double
 		}
 	}
 }

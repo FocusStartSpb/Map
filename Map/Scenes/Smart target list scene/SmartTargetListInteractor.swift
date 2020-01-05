@@ -10,6 +10,7 @@ protocol SmartTargetListBusinessLogic
 {
 	func loadSmartTargets(_ request: SmartTargetList.LoadSmartTargets.Request)
 	func saveSmartTargets(_ request: SmartTargetList.SaveSmartTargets.Request)
+	func updateSmartTargets(_ request: SmartTargetList.UpdateSmartTargets.Request)
 }
 
 // MARK: - SmartTargetListDataStore protocol
@@ -18,6 +19,9 @@ protocol SmartTargetListDataStore
 	var smartTargetsCount: Int { get }
 
 	func getSmartTarget(at index: Int) -> SmartTarget?
+
+	var oldSmartTargetCollection: ISmartTargetCollection? { get set }
+	var smartTargetCollection: ISmartTargetCollection? { get set }
 }
 
 // MARK: - Class
@@ -27,8 +31,9 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 	private var presenter: SmartTargetListPresentationLogic
 	private var worker: DataBaseWorker<T>
 
-	//var collection: T.Element?
-	private var smartTargetCollection: ISmartTargetCollection?
+	// MARK: ...Map data store
+	var oldSmartTargetCollection: ISmartTargetCollection?
+	var smartTargetCollection: ISmartTargetCollection?
 
 	// MARK: ...Initialization
 	init(presenter: SmartTargetListPresentationLogic, worker: DataBaseWorker<T>) {
@@ -45,6 +50,7 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 		worker.fetchSmartTargets { [weak self] result in
 			if case .success(let collection) = result {
 				self?.smartTargetCollection = collection as? ISmartTargetCollection
+				self?.oldSmartTargetCollection = self?.smartTargetCollection?.copy()
 			}
 			let result = result.map { $0 as? ISmartTargetCollection ?? SmartTargetCollection() }
 			let response = SmartTargetList.LoadSmartTargets.Response(result: result)
@@ -61,6 +67,21 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 			let response = SmartTargetList.SaveSmartTargets.Response(result: result)
 			self?.presenter.presentSaveSmartTargets(response)
 		}
+	}
+
+	func updateSmartTargets(_ request: SmartTargetList.UpdateSmartTargets.Request) {
+		guard
+			let oldCollection = oldSmartTargetCollection?.copy(),
+			let smartTargetCollection = smartTargetCollection else { return }
+
+		let differences = smartTargetCollection.smartTargetsOfDifference(from: oldCollection)
+		let response = SmartTargetList.UpdateSmartTargets.Response(collection: oldCollection,
+																   addedSmartTargets: differences.added,
+																   removedSmartTargets: differences.removed,
+																   updatedSmartTargets: differences.updated)
+		presenter.presentUpdateSmartTargets(response)
+
+		oldSmartTargetCollection = smartTargetCollection.copy()
 	}
 }
 

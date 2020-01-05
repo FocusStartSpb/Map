@@ -21,4 +21,8 @@ final class SmartTargetAnnotation: NSObject, MKAnnotation
 		self.coordinate = coordinate
 		super.init()
 	}
+
+	func copy() -> SmartTargetAnnotation {
+		SmartTargetAnnotation(uid: uid, title: title, coordinate: coordinate)
+	}
 }

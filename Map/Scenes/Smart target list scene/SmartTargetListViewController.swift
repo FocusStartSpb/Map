@@ -12,14 +12,15 @@ protocol SmartTargetListDisplayLogic: AnyObject
 {
 	func displayLoadSmartTargets(_ viewModel: SmartTargetList.LoadSmartTargets.ViewModel)
 	func displaySaveSmartTargets(_ viewModel: SmartTargetList.SaveSmartTargets.ViewModel)
+	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel)
 }
 
 // MARK: - Class
 final class SmartTargetListViewController: UIViewController
 {
 	// MARK: ...Private properties
-	private var interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore
-	private var router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
+	private let interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore
+	let router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
 	private let targetsTableView = UITableView()
 
 	private enum CellSettings
@@ -56,6 +57,16 @@ final class SmartTargetListViewController: UIViewController
 		interactor.loadSmartTargets(SmartTargetList.LoadSmartTargets.Request())
 	}
 
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		tabBarController?.delegate = self
+	}
+
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		interactor.updateSmartTargets(.init())
+	}
+
 	// MARK: ...Private methods
 	private func setupTargetsTableView() {
 		self.view.addSubview(targetsTableView)
@@ -81,6 +92,14 @@ extension SmartTargetListViewController: SmartTargetListDisplayLogic
 	}
 
 	func displaySaveSmartTargets(_ viewModel: SmartTargetList.SaveSmartTargets.ViewModel) {
+	}
+
+	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel) {
+		targetsTableView.beginUpdates()
+		targetsTableView.deleteRows(at: viewModel.removedIndexPaths, with: .automatic)
+		targetsTableView.insertRows(at: viewModel.addedIndexPaths, with: .automatic)
+		targetsTableView.reloadRows(at: viewModel.updatedIndexPaths, with: .automatic)
+		targetsTableView.endUpdates()
 	}
 }
 // MARK: - TableViewDataSource
@@ -126,5 +145,17 @@ extension SmartTargetListViewController: UITableViewDelegate
 					   delay: 0.02 * Double(indexPath.row),
 					   options: .curveEaseOut,
 					   animations: { cell.layer.transform = CATransform3DIdentity })
+	}
+}
+
+extension SmartTargetListViewController: UITabBarControllerDelegate
+{
+	func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+		tabBarController.delegate = nil
+		guard let viewController = viewController as? MapViewController else {
+			return true
+		}
+		router.routeToMap(viewController)
+		return false
 	}
 }
