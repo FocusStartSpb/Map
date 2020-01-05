@@ -16,6 +16,8 @@ protocol ISmartTargetCollection: Codable
 	@discardableResult func remove(atUID uid: String) -> Int?
 	func smartTarget(at uid: String) -> SmartTarget?
 	subscript(_ uid: String) -> SmartTarget? { get }
+
+	func contains(_ smartTarget: SmartTarget) -> Bool
 }
 
 // MARK: - Class
@@ -70,6 +72,10 @@ extension SmartTargetCollection: ISmartTargetCollection
 
 	subscript(_ uid: String) -> SmartTarget? {
 		smartTarget(at: uid)
+	}
+
+	func contains(_ smartTarget: SmartTarget) -> Bool {
+		smartTargets.contains(smartTarget)
 	}
 
 	var count: Int { smartTargets.count }
