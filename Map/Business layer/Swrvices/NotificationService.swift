@@ -103,6 +103,10 @@ final class NotificationService: NSObject
 		center.removeDeliveredNotifications(withIdentifiers: [identifierNotification])
 	}
 
+	func removeAllNotifications() {
+		center.removeAllPendingNotificationRequests()
+	}
+
 	// swiftlint:disable:next function_parameter_count
 	func updateLocationNotification(center: CLLocationCoordinate2D,
 									radius: CLLocationDistance,
