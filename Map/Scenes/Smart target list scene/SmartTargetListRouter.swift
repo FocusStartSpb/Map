@@ -8,7 +8,7 @@
 // MARK: - SmartTargetListRoutingLogic protocol
 protocol SmartTargetListRoutingLogic
 {
-	func routeToDetail()
+	func routeToDetail(tableInEditMode: Bool, smartTarget: SmartTarget?)
 	func routeToMap(_ mapViewController: MapViewController)
 }
 
@@ -38,7 +38,11 @@ final class SmartTargetListRouter
 extension SmartTargetListRouter: SmartTargetListRoutingLogic
 {
 	// MARK: ...Routing
-	func routeToDetail() {
+	func routeToDetail(tableInEditMode: Bool, smartTarget: SmartTarget?) {
+		guard let viewController = viewController else { return }
+		factory.getDetailTargetScene(smartTargetListViewController: viewController,
+									 tableInEditMode: tableInEditMode,
+									 smartTarget: smartTarget)
 	}
 
 	func routeToMap(_ mapViewController: MapViewController) {
