@@ -49,11 +49,10 @@ final class SceneBuilder
 		let interactor = SmartTargetListInteractor(presenter: presenter, worker: worker)
 		let router = SmartTargetListRouter(factory: self)
 		let viewController = SmartTargetListViewController(interactor: interactor, router: router)
-
+		_ = UINavigationController(rootViewController: viewController)
 		presenter.viewController = viewController
 		router.viewController = viewController
 		router.dataStore = interactor
-
 		viewController.tabBarItem = UITabBarItem(title: "List", image: #imageLiteral(resourceName: "icons8-table-of-content"), selectedImage: #imageLiteral(resourceName: "icons8-table-of-content-fill"))
 
 		return viewController
@@ -86,6 +85,27 @@ final class SceneBuilder
 			mapViewController.navigationController ?? mapViewController
 			smartTargetListViewController.navigationController ?? smartTargetListViewController
 			settingsViewController.navigationController ?? settingsViewController
+		}
+	}
+
+	func getDetailTargetScene(smartTargetListViewController: SmartTargetListViewController,
+							  tableInEditMode: Bool,
+							  smartTarget: SmartTarget?) {
+		guard let smartTarget = smartTarget else { return }
+		let presenter = DetailTargetPresenter()
+		let interactor = DetailTargetInteractor(detailPresenter: presenter,
+												smartTarget: smartTarget)
+		let router = DetailTargetRouter()
+		let viewController = DetailTargetViewController(interactor: interactor,
+														router: router,
+														smartTargetEditable: tableInEditMode)
+		presenter.detailTargetViewController = viewController
+		if tableInEditMode {
+			smartTargetListViewController.navigationController?.pushViewController(viewController,
+																				   animated: true)
+		}
+		else {
+			smartTargetListViewController.present(viewController, animated: true)
 		}
 	}
 }
