@@ -4,7 +4,6 @@
 //
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
-
 import UIKit
 
 // MARK: - SmartTargetListDisplayLogic protocol
@@ -54,8 +53,10 @@ final class SmartTargetListViewController: UIViewController
 	// MARK: ...View lifecycle
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		setupTargetsTableView()
+		updateNavigationBar()
+		checkUserInterfaceStyle()
 		interactor.loadSmartTargets(SmartTargetList.LoadSmartTargets.Request())
+		setupTargetsTableView()
 	}
 
 	override func viewWillAppear(_ animated: Bool) {
@@ -69,6 +70,12 @@ final class SmartTargetListViewController: UIViewController
 	}
 
 	// MARK: ...Private methods
+	private func updateNavigationBar() {
+		self.navigationController?.navigationBar.prefersLargeTitles = true
+		self.navigationItem.title = StaticConstants.navigationItemTitle
+		self.navigationItem.leftBarButtonItem = self.editButtonItem
+	}
+
 	private func setupTargetsTableView() {
 		self.view.addSubview(targetsTableView)
 		self.targetsTableView.translatesAutoresizingMaskIntoConstraints = false
@@ -136,7 +143,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		guard let cell = tableView.dequeueReusableCell(withIdentifier: CellSettings.reuseIdentifier)
+		guard let cell = tableView.dequeueReusableCell(withIdentifier: StaticConstants.reuseIdentifier)
 			as? SmartTargetTableViewCell
 			else {
 			return UITableViewCell()
@@ -154,23 +161,22 @@ extension SmartTargetListViewController: UITableViewDelegate
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		guard let cell = tableView.cellForRow(at: indexPath) as? SmartTargetTableViewCell else { return }
-		UIView.animate(withDuration: 0.2,
-					   animations: { cell.containerView.backgroundColor = CellSettings.selectedCellBackgroundColor })
+		let backgroundColorDefault = cell.containerView.backgroundColor
+		var selectedBackgroundColor: UIColor {
+			if userInterfaceIsDark {
+				return StaticConstants.selectedCellBackgroundColorInDarkMode
+			}
+			else {
+				return StaticConstants.selectedCellBackgroundColorInLightMode
+			}
+		}
+		UIView.animate(withDuration: 0.2, animations: { cell.containerView.backgroundColor = selectedBackgroundColor })
+		self.router.routeToDetail(tableInEditMode: self.isEditing,
+								  smartTarget: self.interactor.getSmartTarget(at: indexPath.row))
+		self.setEditing(false, animated: false)
 		tableView.deselectRow(at: indexPath, animated: false)
-		UIView.animate(withDuration: 0.2,
-					   delay: 0.2,
-					   animations: { cell.containerView.backgroundColor = CellSettings.notSelectedCellBackgroundColor })
-	}
-
-	func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-		let degree: Double = 90
-		let rotationAngle = CGFloat(degree * .pi / 180)
-		let rotationTransform = CATransform3DMakeRotation(rotationAngle, 1, 0, 0)
-		cell.layer.transform = rotationTransform
-		UIView.animate(withDuration: 0.7,
-					   delay: 0.02 * Double(indexPath.row),
-					   options: .curveEaseOut,
-					   animations: { cell.layer.transform = CATransform3DIdentity })
+		UIView.animate(withDuration: 0.2, delay: 0.5,
+						   animations: { cell.containerView.backgroundColor = backgroundColorDefault })
 	}
 }
 
