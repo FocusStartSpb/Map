@@ -22,19 +22,20 @@ final class SmartTargetListViewController: UIViewController
 	private let interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore
 	let router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
 	private let targetsTableView = UITableView()
-
-	private enum CellSettings
-	{
-		static let reuseIdentifier = "Cell"
-		static let selectedCellBackgroundColor = #colorLiteral(red: 0.5475797056, green: 0.5739227794, blue: 0.6377512708, alpha: 1)
-		static var notSelectedCellBackgroundColor: UIColor {
-			if #available(iOS 13.0, *) {
-				return .systemBackground
-			}
-			else {
-				return .white
-			}
+	private var userInterfaceIsDark: Bool {
+		if #available(iOS 12.0, *) {
+			return self.traitCollection.userInterfaceStyle == .dark ? true : false
 		}
+		return false
+	}
+
+	private enum StaticConstants
+	{
+		static let editButtonTitle = "Edit"
+		static let navigationItemTitle = "List of smart object"
+		static let reuseIdentifier = "Cell"
+		static let selectedCellBackgroundColorInDarkMode = #colorLiteral(red: 0.3045190282, green: 0.3114352223, blue: 0.3184640712, alpha: 1)
+		static let selectedCellBackgroundColorInLightMode = #colorLiteral(red: 0.7502671557, green: 0.7502671557, blue: 0.7502671557, alpha: 1)
 	}
 
 	// MARK: ...Initialization
@@ -81,7 +82,32 @@ final class SmartTargetListViewController: UIViewController
 		self.targetsTableView.delegate = self
 		self.targetsTableView.separatorStyle = .none
 		self.targetsTableView.register(SmartTargetTableViewCell.self,
-									   forCellReuseIdentifier: CellSettings.reuseIdentifier)
+									   forCellReuseIdentifier: StaticConstants.reuseIdentifier)
+		self.targetsTableView.allowsSelectionDuringEditing = true
+	}
+
+	private func checkUserInterfaceStyle() {
+		if self.userInterfaceIsDark == true {
+			self.targetsTableView.backgroundColor = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
+			self.view.backgroundColor = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
+			self.navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+		}
+		else {
+			self.view.backgroundColor = .white
+			self.targetsTableView.backgroundColor = #colorLiteral(red: 0.9871620841, green: 0.9871620841, blue: 0.9871620841, alpha: 1)
+			self.navigationController?.navigationBar.barTintColor = .white
+		}
+	}
+
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		checkUserInterfaceStyle()
+	}
+
+	override func setEditing(_ editing: Bool, animated: Bool) {
+		super.setEditing(editing, animated: animated)
+		self.targetsTableView.setEditing(editing, animated: animated)
+		self.targetsTableView.beginUpdates()
+		self.targetsTableView.endUpdates()
 	}
 }
 
