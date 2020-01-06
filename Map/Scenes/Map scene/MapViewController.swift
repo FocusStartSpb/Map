@@ -24,7 +24,6 @@ protocol MapDisplayLogic: AnyObject
 
 	// Notifications
 	func displaySetNotificationServiceDelegate(_ viewModel: Map.SetNotificationServiceDelegate.ViewModel)
-	func displayNotificationRequestAuthorization(_ viewModel: Map.NotificationRequestAuthorization.ViewModel)
 	func displayAddNotification(_ viewModel: Map.AddNotification.ViewModel)
 	func displayRemoveNotification(_ viewModel: Map.RemoveNotification.ViewModel)
 
@@ -345,7 +344,7 @@ private extension MapViewController
 		}
 
 		guard
-			let smartTargetMenu = self.smartTargetMenu,
+			let smartTargetMenu = smartTargetMenu,
 			var temptSmartTarget = interactor.temptSmartTarget,
 			let temptPointer = currentPointer else { return }
 
@@ -591,8 +590,6 @@ extension MapViewController: MapDisplayLogic
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel) { }
 
 	func displaySetNotificationServiceDelegate(_ viewModel: Map.SetNotificationServiceDelegate.ViewModel) { }
-
-	func displayNotificationRequestAuthorization(_ viewModel: Map.NotificationRequestAuthorization.ViewModel) { }
 
 	func displayAddNotification(_ viewModel: Map.AddNotification.ViewModel) { }
 

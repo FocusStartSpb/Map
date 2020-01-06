@@ -15,15 +15,21 @@ protocol MapBusinessLogic
 	func getSmartTarget(_ request: Map.GetSmartTarget.Request)
 	func configureLocationService(request: Map.UpdateStatus.Request)
 	func returnToCurrentLocation(request: Map.UpdateStatus.Request)
+	func getAddress(_ request: Map.Address.Request)
+
+	// Adding, updating, removing smart targets
 	func addSmartTarget(_ request: Map.AddSmartTarget.Request)
 	func updateSmartTarget(_ request: Map.UpdateSmartTarget.Request)
 	func removeSmartTarget(_ request: Map.RemoveSmartTarget.Request)
+
 	func updateSmartTargets(_ request: Map.UpdateSmartTargets.Request)
-	func getAddress(_ request: Map.Address.Request)
+
+	// Notifications
 	func setNotificationServiceDelegate(_ request: Map.SetNotificationServiceDelegate.Request)
-	func notificationRequestAuthorization(_ request: Map.NotificationRequestAuthorization.Request)
 	func addNotification(_ request: Map.AddNotification.Request)
 	func removeNotification(_ request: Map.RemoveNotification.Request)
+
+	// Settings
 	func getCurrentRadius(_ request: Map.GetCurrentRadius.Request)
 	func getRangeRadius(_ request: Map.GetRangeRadius.Request)
 	func getMeasuringSystem(_ request: Map.GetMeasuringSystem.Request)
@@ -127,8 +133,11 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 		}
 	}
 
-	// MARK: - CLLocationDelegate
+	private func updateNotificationsIfNeeded(_ isNeed: Bool) -> [SmartTarget] {
+		isNeed ? smartTargetCollection?.smartTargets ?? [] : []
+	}
 
+	// MARK: ...CLLocationDelegate
 	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 		guard let latestCoordinate = locations.first?.coordinate else { return }
 		if currentCoordinate == nil {
@@ -161,7 +170,13 @@ extension MapInteractor: MapBusinessLogic
 				let response = Map.FetchSmartTargets.Response(smartTargetCollection: collection)
 				self?.presenter.presentSmartTargets(response)
 			case .failure(let error):
-				print(error)
+				switch error {
+				case .fileNotExists:
+					self?.smartTargetCollection = SmartTargetCollection()
+					self?.temptSmartTargetCollection = self?.smartTargetCollection?.copy()
+				default:
+					print(error)
+				}
 			}
 		}
 	}
@@ -213,76 +228,21 @@ extension MapInteractor: MapBusinessLogic
 	}
 
 	func setNotificationServiceDelegate(_ request: Map.SetNotificationServiceDelegate.Request) {
-		notificationService.delegate = request.notificationDelegate
+		notificationWorker.setDelegate(request.notificationDelegate)
 		let response = Map.SetNotificationServiceDelegate.Response(isSet: true)
 		presenter.presentSetNotificationServiceDelegate(response)
 	}
 
-	func notificationRequestAuthorization(_ request: Map.NotificationRequestAuthorization.Request) {
-		let center = notificationService.center
-		center.requestAuthorization(options: [.alert, .sound]) { [weak self] granted, _ in
-			if granted {
-				DispatchQueue.main.async {
-					UIApplication.shared.registerForRemoteNotifications()
-				}
-				let response = Map.NotificationRequestAuthorization.Response(iaAuthorized: true)
-				self?.presenter.presentNotificationRequestAuthorization(response)
-			}
-			else {
-				let response = Map.NotificationRequestAuthorization.Response(iaAuthorized: false)
-				self?.presenter.presentNotificationRequestAuthorization(response)
-			}
-		}
-	}
-
-	private func notificationRequestAuthorization(completionHandler: @escaping (Bool) -> Void) {
-		let center = notificationService.center
-		center.requestAuthorization(options: [.alert, .sound]) { granted, _ in
-			if granted {
-				DispatchQueue.main.async {
-					UIApplication.shared.registerForRemoteNotifications()
-					completionHandler(granted)
-				}
-			}
-			else {
-				completionHandler(granted)
-			}
-		}
-	}
-
-	private func addNotification(for smartTarget: SmartTarget) {
-		if let smartTargetCollection = smartTargetCollection, smartTargetCollection.contains(smartTarget) {
-			notificationService.updateLocationNotification(center: smartTarget.coordinates,
-														   radius: smartTarget.radius ?? 100,
-														   title: smartTarget.title,
-														   subtitle: smartTarget.address ?? "",
-														   body: "Какая-то строка",
-														   uid: smartTarget.uid)
-		}
-		else {
-			notificationService.addLocationNotificationWith(center: smartTarget.coordinates,
-															radius: smartTarget.radius ?? 100,
-															title: smartTarget.title,
-															subtitle: smartTarget.address ?? "",
-															body: "Какая-то строка",
-															uid: smartTarget.uid)
-		}
-	}
-
 	func addNotification(_ request: Map.AddNotification.Request) {
-		notificationRequestAuthorization { [weak self] granted in
-			if granted {
-				self?.addNotification(for: request.smartTarget)
-			}
-			let response = Map.AddNotification.Response(isAdded: granted)
-			self?.presenter.presentAddNotification(response)
-		}
+		notificationWorker.addNotifications(for: [request.smartTarget], updatesIfNeeded: updateNotificationsIfNeeded)
+		let response = Map.AddNotification.Response(completion: true)
+		presenter.presentAddNotification(response)
 	}
 
 	func removeNotification(_ request: Map.RemoveNotification.Request) {
-		notificationService.removePendingNotification(at: request.uid)
-		let response = Map.RemoveNotification.Response(isRemoved: true)
-		presenter.presentRemoveNotification(response)
+		notificationWorker.removeNotification(at: request.uid, updatesIfNeeded: updateNotificationsIfNeeded)
+		let response = Map.AddNotification.Response(completion: true)
+		presenter.presentAddNotification(response)
 	}
 
 	func updateSmartTargets(_ request: Map.UpdateSmartTargets.Request) {

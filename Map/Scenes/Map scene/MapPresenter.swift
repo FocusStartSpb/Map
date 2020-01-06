@@ -14,14 +14,20 @@ protocol MapPresentationLogic
 	func presentSmartTarget(_ response: Map.GetSmartTarget.Response)
 	func beginLocationUpdates(response: Map.UpdateStatus.Response)
 	func presentAddress(_ response: Map.Address.Response)
+
+	// Adding, updating, removing smart targets
 	func presentAddSmartTarget(_ response: Map.AddSmartTarget.Response)
 	func presentRemoveSmartTarget(_ response: Map.RemoveSmartTarget.Response)
+	func presentUpdateSmartTarget(_ response: Map.UpdateSmartTarget.Response)
+
+	func presentUpdateSmartTargets(_ response: Map.UpdateSmartTargets.Response)
+
+	// Notifications
 	func presentSetNotificationServiceDelegate(_ response: Map.SetNotificationServiceDelegate.Response)
-	func presentNotificationRequestAuthorization(_ response: Map.NotificationRequestAuthorization.Response)
 	func presentAddNotification(_ response: Map.AddNotification.Response)
 	func presentRemoveNotification(_ response: Map.RemoveNotification.Response)
-	func presentUpdateSmartTarget(_ response: Map.UpdateSmartTarget.Response)
-	func presentUpdateSmartTargets(_ response: Map.UpdateSmartTargets.Response)
+
+	// Settings
 	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response)
 	func presentGetRangeRadius(_ response: Map.GetRangeRadius.Response)
 	func presentGetMeasuringSystem(_ response: Map.GetMeasuringSystem.Response)
@@ -94,21 +100,18 @@ extension MapPresenter: MapPresentationLogic
 		viewController?.displaySetNotificationServiceDelegate(viewModel)
 	}
 
-	func presentNotificationRequestAuthorization(_ response: Map.NotificationRequestAuthorization.Response) {
-		let viewModel = Map.NotificationRequestAuthorization.ViewModel(iaAuthorized: response.iaAuthorized)
+	func presentAddNotification(_ response: Map.AddNotification.Response) {
+		let viewModel = Map.AddNotification.ViewModel(completion: response.completion)
 		DispatchQueue.main.async { [weak self] in
-			self?.viewController?.displayNotificationRequestAuthorization(viewModel)
+			self?.viewController?.displayAddNotification(viewModel)
 		}
 	}
 
-	func presentAddNotification(_ response: Map.AddNotification.Response) {
-		let viewModel = Map.AddNotification.ViewModel(isAdded: response.isAdded)
-		viewController?.displayAddNotification(viewModel)
-	}
-
 	func presentRemoveNotification(_ response: Map.RemoveNotification.Response) {
-		let viewModel = Map.RemoveNotification.ViewModel(isRemoved: response.isRemoved)
-		viewController?.displayRemoveNotification(viewModel)
+		let viewModel = Map.RemoveNotification.ViewModel(completion: response.completion)
+		DispatchQueue.main.async { [weak self] in
+			self?.viewController?.displayRemoveNotification(viewModel)
+		}
 	}
 
 	func presentUpdateSmartTarget(_ response: Map.UpdateSmartTarget.Response) {

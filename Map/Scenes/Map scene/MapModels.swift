@@ -243,22 +243,6 @@ enum Map
 		}
 	}
 
-	// MARK: ...NotificationRequestAuthorization
-	enum NotificationRequestAuthorization
-	{
-		struct Request { }
-
-		struct Response
-		{
-			let iaAuthorized: Bool
-		}
-
-		struct ViewModel
-		{
-			let iaAuthorized: Bool
-		}
-	}
-
 	// MARK: ...AddNotification
 	enum AddNotification
 	{
@@ -269,12 +253,12 @@ enum Map
 
 		struct Response
 		{
-			let isAdded: Bool
+			let completion: Bool
 		}
 
 		struct ViewModel
 		{
-			let isAdded: Bool
+			let completion: Bool
 		}
 	}
 
@@ -288,12 +272,12 @@ enum Map
 
 		struct Response
 		{
-			let isRemoved: Bool
+			let completion: Bool
 		}
 
 		struct ViewModel
 		{
-			let isRemoved: Bool
+			let completion: Bool
 		}
 	}
 }
