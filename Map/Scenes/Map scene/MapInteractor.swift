@@ -28,6 +28,7 @@ protocol MapBusinessLogic
 	func setNotificationServiceDelegate(_ request: Map.SetNotificationServiceDelegate.Request)
 	func addNotification(_ request: Map.AddNotification.Request)
 	func removeNotification(_ request: Map.RemoveNotification.Request)
+	func updateSmartTargetAtNotification(_ request: Map.UpdateSmartTargetAtNotification.Request)
 
 	// Settings
 	func getCurrentRadius(_ request: Map.GetCurrentRadius.Request)
@@ -61,7 +62,6 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 
 	var temptSmartTargetCollection: ISmartTargetCollection?
 	var smartTargetCollection: ISmartTargetCollection?
-	//var smartTargetCollection: T.Element? = SmartTargetCollection() as? T.Element
 
 	private let dispatchQueueGetAddress =
 		DispatchQueue(label: "com.map.getAddress",
@@ -167,8 +167,6 @@ extension MapInteractor: MapBusinessLogic
 			case .success(let collection):
 				self?.temptSmartTargetCollection = collection.copy()
 				self?.smartTargetCollection = collection
-				let response = Map.FetchSmartTargets.Response(smartTargetCollection: collection)
-				self?.presenter.presentSmartTargets(response)
 			case .failure(let error):
 				switch error {
 				case .fileNotExists:
@@ -178,6 +176,9 @@ extension MapInteractor: MapBusinessLogic
 					print(error)
 				}
 			}
+			guard let collection = self?.smartTargetCollection else { return }
+			let response = Map.FetchSmartTargets.Response(smartTargetCollection: collection)
+			self?.presenter.presentSmartTargets(response)
 		}
 	}
 
@@ -243,6 +244,23 @@ extension MapInteractor: MapBusinessLogic
 		notificationWorker.removeNotification(at: request.uid, updatesIfNeeded: updateNotificationsIfNeeded)
 		let response = Map.AddNotification.Response(completion: true)
 		presenter.presentAddNotification(response)
+	}
+
+	func updateSmartTargetAtNotification(_ request: Map.UpdateSmartTargetAtNotification.Request) {
+		updateTemptSmartTargetCollection()
+		guard var smartTarget = smartTargetCollection?[request.uid] else { return }
+		smartTarget.inside.toggle()
+		if smartTarget.inside {
+			smartTarget.entryDate = request.notificationDeliveryDate
+		}
+		else {
+			smartTarget.exitDate = request.notificationDeliveryDate
+		}
+		smartTargetCollection?.put(smartTarget)
+		saveSmartTargetCollection { [weak self] isSaved in
+			let response = Map.UpdateSmartTargetAtNotification.Response(isUpdated: isSaved)
+			self?.presenter.presentUpdateSmartTargetAtNotification(response)
+		}
 	}
 
 	func updateSmartTargets(_ request: Map.UpdateSmartTargets.Request) {

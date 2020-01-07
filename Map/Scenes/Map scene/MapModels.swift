@@ -280,4 +280,24 @@ enum Map
 			let completion: Bool
 		}
 	}
+
+	// MARK: ...UpdateSmartTargetAtNotification
+	enum UpdateSmartTargetAtNotification
+	{
+		struct Request
+		{
+			let uid: String
+			let notificationDeliveryDate: Date
+		}
+
+		struct Response
+		{
+			let isUpdated: Bool
+		}
+
+		struct ViewModel
+		{
+			let isUpdated: Bool
+		}
+	}
 }

@@ -26,6 +26,7 @@ protocol MapDisplayLogic: AnyObject
 	func displaySetNotificationServiceDelegate(_ viewModel: Map.SetNotificationServiceDelegate.ViewModel)
 	func displayAddNotification(_ viewModel: Map.AddNotification.ViewModel)
 	func displayRemoveNotification(_ viewModel: Map.RemoveNotification.ViewModel)
+	func displayUpdateSmartTargetAtNotification(_ viewModel: Map.UpdateSmartTargetAtNotification.ViewModel)
 
 	// Settings
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel)
@@ -191,6 +192,13 @@ final class MapViewController: UIViewController
 		interactor.getCurrentRadius(request)
 	}
 
+	private func setInitialAttendanceData(for smartTarget: inout SmartTarget) {
+		smartTarget.entryDate = nil
+		smartTarget.exitDate = nil
+		smartTarget.numberOfVisits = 0
+		smartTarget.timeInside = 0
+	}
+
 	private func setAnnotationView(_ annotationView: MKAnnotationView?,
 								   draggable: Bool,
 								   andShowCallout canShowCallout: Bool) {
@@ -338,7 +346,7 @@ private extension MapViewController
 			.forEach { mapView.deselectAnnotation($0, animated: true) }
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		isEditSmartTarget = true
-		interactor.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate)
+		interactor.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate, inside: false)
 		addCurrentPointer(at: mapView.centerCoordinate)
 		showSmartTargetMenu(isEditing: false)
 		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
@@ -377,11 +385,16 @@ private extension MapViewController
 			return
 		}
 
+		let region = CLCircularRegion(center: temptPointer.coordinate,
+									  radius: Double(smartTargetMenu.sliderValue),
+									  identifier: "")
+
 		// Обновляем smart target
 		temptSmartTarget.coordinates = temptPointer.coordinate
 		temptSmartTarget.title = smartTargetMenu.text ?? "Noname"
 		temptSmartTarget.address = smartTargetMenu.title
 		temptSmartTarget.radius = Double(smartTargetMenu.sliderValue)
+		temptSmartTarget.inside = region.contains(mapView.userLocation.coordinate)
 
 		// Обновляем аннотацию (pin)
 		temptPointer.title = smartTargetMenu.text
@@ -392,6 +405,11 @@ private extension MapViewController
 
 		// Сохраняем smartTarget
 		if temptLastPointer != nil {
+			if temptLastPointer?.coordinate != temptSmartTarget.coordinates {
+				// Обнуляем данные посещаемости
+				setInitialAttendanceData(for: &temptSmartTarget)
+			}
+
 			let request = Map.UpdateSmartTarget.Request(smartTarget: temptSmartTarget)
 			interactor.updateSmartTarget(request)
 		}
@@ -617,6 +635,8 @@ extension MapViewController: MapDisplayLogic
 
 	func displayRemoveNotification(_ viewModel: Map.RemoveNotification.ViewModel) { }
 
+	func displayUpdateSmartTargetAtNotification(_ viewModel: Map.UpdateSmartTargetAtNotification.ViewModel) { }
+
 	func displayUpdateSmartTarget(_ viewModel: Map.UpdateSmartTarget.ViewModel) { }
 
 	func displayUpdateSmartTargets(_ viewModel: Map.UpdateSmartTargets.ViewModel) {
@@ -824,10 +844,29 @@ extension MapViewController: MKMapViewDelegate
 // MARK: - Notification service delegate
 extension MapViewController: NotificationServiceDelegate
 {
-	func notificationService(_ notificationService: NotificationService, showButtonTappedForUID uid: String) {
-		guard let annotation = annotations.first(where: { $0.uid == uid }) else { return }
-		showLocation(coordinate: annotation.coordinate)
-		mapView.selectAnnotation(annotation, animated: true)
+	func notificationService(_ notificationService: NotificationService,
+							 action: NotificationService.Action,
+							 forUID uid: String,
+							 atNotificationDeliveryDate deliveryDate: Date) {
+		switch action {
+		case .show:
+			guard let annotation = annotations.first(where: { $0.uid == uid }) else { return }
+			showLocation(coordinate: annotation.coordinate)
+			mapView.selectAnnotation(annotation, animated: true)
+		case .dismiss: break
+		case .cancel: break
+		case .default: break
+		}
+
+		let request = Map.UpdateSmartTargetAtNotification.Request(uid: uid, notificationDeliveryDate: deliveryDate)
+		interactor.updateSmartTargetAtNotification(request)
+	}
+
+	func notificationService(_ notificationService: NotificationService,
+							 didReceiveNotificationForUID uid: String,
+							 atNotificationDeliveryDate deliveryDate: Date) {
+		let request = Map.UpdateSmartTargetAtNotification.Request(uid: uid, notificationDeliveryDate: deliveryDate)
+		interactor.updateSmartTargetAtNotification(request)
 	}
 }
 

@@ -26,6 +26,7 @@ protocol MapPresentationLogic
 	func presentSetNotificationServiceDelegate(_ response: Map.SetNotificationServiceDelegate.Response)
 	func presentAddNotification(_ response: Map.AddNotification.Response)
 	func presentRemoveNotification(_ response: Map.RemoveNotification.Response)
+	func presentUpdateSmartTargetAtNotification(_ response: Map.UpdateSmartTargetAtNotification.Response)
 
 	// Settings
 	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response)
@@ -111,6 +112,13 @@ extension MapPresenter: MapPresentationLogic
 		let viewModel = Map.RemoveNotification.ViewModel(completion: response.completion)
 		DispatchQueue.main.async { [weak self] in
 			self?.viewController?.displayRemoveNotification(viewModel)
+		}
+	}
+
+	func presentUpdateSmartTargetAtNotification(_ response: Map.UpdateSmartTargetAtNotification.Response) {
+		let viewModel = Map.UpdateSmartTargetAtNotification.ViewModel(isUpdated: response.isUpdated)
+		DispatchQueue.main.async { [weak self] in
+			self?.viewController?.displayUpdateSmartTargetAtNotification(viewModel)
 		}
 	}
 
