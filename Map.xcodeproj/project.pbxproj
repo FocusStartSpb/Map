@@ -62,6 +62,7 @@
 		58A9984823AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984723AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift */; };
 		58A9984A23AC35E000CAACE8 /* SmartTargetCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984923AC35E000CAACE8 /* SmartTargetCollection.swift */; };
 		58EEE41923C27F1600CE9229 /* NotificationWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EEE41823C27F1600CE9229 /* NotificationWorker.swift */; };
+		58EEE41B23C4404300CE9229 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EEE41A23C4404300CE9229 /* UIViewController+Extension.swift */; };
 		58F7E96D23AD96A600E3859F /* DataBaseWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F7E96C23AD96A600E3859F /* DataBaseWorker.swift */; };
 /* End PBXBuildFile section */
 
@@ -123,6 +124,7 @@
 		58A9984723AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocationCoordinate2D+Extension.swift"; sourceTree = "<group>"; };
 		58A9984923AC35E000CAACE8 /* SmartTargetCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetCollection.swift; sourceTree = "<group>"; };
 		58EEE41823C27F1600CE9229 /* NotificationWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationWorker.swift; sourceTree = "<group>"; };
+		58EEE41A23C4404300CE9229 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		58F7E96C23AD96A600E3859F /* DataBaseWorker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataBaseWorker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -349,6 +351,7 @@
 				585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */,
 				5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */,
 				58551DD523BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift */,
+				58EEE41A23C4404300CE9229 /* UIViewController+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -467,6 +470,7 @@
 				3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */,
 				3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */,
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
+				58EEE41B23C4404300CE9229 /* UIViewController+Extension.swift in Sources */,
 				582ED16D23AE8458001AD44E /* Decodable+Initialization.swift in Sources */,
 				58454F2F23BE875C00EE0D71 /* Identity.swift in Sources */,
 				584EE5C823A833D70013087A /* MapPresenter.swift in Sources */,
