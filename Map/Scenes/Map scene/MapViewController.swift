@@ -191,6 +191,13 @@ final class MapViewController: UIViewController
 		interactor.getCurrentRadius(request)
 	}
 
+	private func setAnnotationView(_ annotationView: MKAnnotationView?,
+								   draggable: Bool,
+								   andShowCallout canShowCallout: Bool) {
+		annotationView?.isDraggable = draggable
+		annotationView?.canShowCallout = canShowCallout
+	}
+
 	private func setupDefaultSettings() {
 		currentPointer = nil
 		smartTargetMenu = nil
@@ -381,8 +388,7 @@ private extension MapViewController
 
 		// Меняем настройки для annotation view
 		let annotationView = mapView.view(for: temptPointer)
-		annotationView?.isDraggable = false
-		annotationView?.canShowCallout = true
+		setAnnotationView(annotationView, draggable: false, andShowCallout: true)
 
 		// Сохраняем smartTarget
 		if temptLastPointer != nil {
@@ -445,8 +451,7 @@ private extension MapViewController
 
 		// Меняем настройки для annotation view
 		let annotationView = mapView.view(for: temptPointer)
-		annotationView?.isDraggable = false
-		annotationView?.canShowCallout = true
+		setAnnotationView(annotationView, draggable: false, andShowCallout: true)
 
 		mapView.removeAnnotation(temptPointer)
 		mapView.addAnnotation(temptLastPointer)
@@ -666,9 +671,8 @@ extension MapViewController: MKMapViewDelegate
 			pinView?.annotation = annotation
 		}
 		pinView?.animatesDrop = isNewPointer
-		pinView?.isDraggable = isEditSmartTarget
-		pinView?.canShowCallout = (isEditSmartTarget == false)
 		pinView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+		setAnnotationView(pinView, draggable: isEditSmartTarget, andShowCallout: (isEditSmartTarget == false))
 
 		if isNewPointer {
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
@@ -788,8 +792,7 @@ extension MapViewController: MKMapViewDelegate
 		isNewPointer = false
 		showLocation(coordinate: annotation.coordinate)
 		mapView.deselectAnnotation(view.annotation, animated: true)
-		view.canShowCallout = false
-		view.isDraggable = true
+		setAnnotationView(view, draggable: true, andShowCallout: false)
 		currentPointer = annotation
 		actionEditSmartTarget(annotation: annotation)
 	}
