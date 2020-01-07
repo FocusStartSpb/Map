@@ -11,12 +11,24 @@ import UserNotifications
 // MARK: - NotificationServiceDelegate protocol
 protocol NotificationServiceDelegate: AnyObject
 {
-	func notificationService(_ notificationService: NotificationService, showButtonTappedForUID uid: String)
+	func notificationService(_ notificationService: NotificationService,
+							 action: NotificationService.Action,
+							 forUID uid: String,
+							 atNotificationDeliveryDate deliveryDate: Date)
+
+	func notificationService(_ notificationService: NotificationService,
+							 didReceiveNotificationForUID uid: String,
+							 atNotificationDeliveryDate deliveryDate: Date)
 }
 
 // MARK: - Class
 final class NotificationService: NSObject
 {
+	enum Action
+	{
+		case show, `default`, cancel, dismiss
+	}
+
 	private enum Identifier
 	{
 		case location(String)
@@ -46,14 +58,17 @@ final class NotificationService: NSObject
 	private var defaultCategory: UNNotificationCategory {
 		let showAction = UNNotificationAction(identifier: Identifier.showAction.value,
 											  title: "Show pin on map",
-											  options: [.foreground])
+											  options: .foreground)
 		let cancelAction = UNNotificationAction(identifier: Identifier.cancelAction.value,
 												title: "Delete",
 												options: [.authenticationRequired, .destructive])
+		var categoryOptions: UNNotificationCategoryOptions = .customDismissAction
+		if #available(iOS 13.0, *) { categoryOptions.insert(.allowAnnouncement) }
+
 		return UNNotificationCategory(identifier: Identifier.category.value,
 									  actions: [showAction, cancelAction],
 									  intentIdentifiers: [],
-									  options: [])
+									  options: categoryOptions)
 	}
 
 	// MARK: ...Internal properties
@@ -69,11 +84,9 @@ final class NotificationService: NSObject
 	}()
 
 	// MARK: ...Internal methods
-	// swiftlint:disable:next function_parameter_count
 	func addLocationNotificationWith(center: CLLocationCoordinate2D,
 									 radius: CLLocationDistance,
 									 title: String,
-									 subtitle: String,
 									 body: String,
 									 uid: String) {
 		let identifier = Identifier.location(uid).value
@@ -83,7 +96,7 @@ final class NotificationService: NSObject
 		let trigger = UNLocationNotificationTrigger(region: region, repeats: true)
 //		let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
 		let identifierNotification = Identifier.notification(uid).value
-		let content = createContent(title: title, subtitle: subtitle, body: body)
+		let content = createContent(title: title, body: body)
 		let request = UNNotificationRequest(identifier: identifierNotification, content: content, trigger: trigger)
 
 		self.center.add(request) { error in
@@ -103,19 +116,21 @@ final class NotificationService: NSObject
 		center.removeDeliveredNotifications(withIdentifiers: [identifierNotification])
 	}
 
+	func removeAllDeliveredNotifications() {
+		center.removeAllDeliveredNotifications()
+	}
+
 	func removeAllNotifications() {
 		center.removeAllPendingNotificationRequests()
 	}
 
-	// swiftlint:disable:next function_parameter_count
 	func updateLocationNotification(center: CLLocationCoordinate2D,
 									radius: CLLocationDistance,
 									title: String,
-									subtitle: String,
 									body: String,
 									uid: String) {
 		removePendingNotification(at: uid)
-		addLocationNotificationWith(center: center, radius: radius, title: title, subtitle: subtitle, body: body, uid: uid)
+		addLocationNotificationWith(center: center, radius: radius, title: title, body: body, uid: uid)
 	}
 
 	func getPendingNotificationUIDs(completionHandler: @escaping ([String]) -> Void) {
@@ -124,11 +139,17 @@ final class NotificationService: NSObject
 		}
 	}
 
+	func getDeliveredNotifications(completionHandler: @escaping ([UNNotification], [String]) -> Void) {
+		center.getDeliveredNotifications{ notifications in
+			let uids = notifications.map { Identifier.fetchUID(from: $0.request.identifier) }
+			completionHandler(notifications, uids)
+		}
+	}
+
 	// MARK: ...Private methods
-	private func createContent(title: String, subtitle: String, body: String) -> UNMutableNotificationContent {
+	private func createContent(title: String, body: String) -> UNMutableNotificationContent {
 		let content = UNMutableNotificationContent()
 		content.title = title
-		content.subtitle = subtitle
 		content.body = body
 		content.sound = .default
 		content.categoryIdentifier = Identifier.category.value
@@ -142,29 +163,45 @@ extension NotificationService: UNUserNotificationCenterDelegate
 	func userNotificationCenter(_ center: UNUserNotificationCenter,
 								willPresent notification: UNNotification,
 								withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-		//let content = notification.request.content
-		completionHandler(.alert)
+		let uid = Identifier.fetchUID(from: notification.request.identifier)
+		let date = notification.date
+		delegate?.notificationService(self, didReceiveNotificationForUID: uid, atNotificationDeliveryDate: date)
+		completionHandler([])
 	}
 
 	func userNotificationCenter(_ center: UNUserNotificationCenter,
 								didReceive response: UNNotificationResponse,
 								withCompletionHandler completionHandler: @escaping () -> Void) {
-		//let actionIdentifier = response.actionIdentifier
-		//let content = response.notification.request.content
-
+		let uid = Identifier.fetchUID(from: response.notification.request.identifier)
+		let date = response.notification.date
 		switch response.actionIdentifier {
-		case UNNotificationDismissActionIdentifier: break
-		case UNNotificationDefaultActionIdentifier: break
-		case Identifier.showAction.value:
-			let uid = Identifier.fetchUID(from: response.notification.request.identifier)
-			delegate?.notificationService(self, showButtonTappedForUID: uid)
-		case Identifier.cancelAction.value: break
-		default: break
+		case Action.dismiss.identifier:
+			delegate?.notificationService(self, action: .dismiss, forUID: uid, atNotificationDeliveryDate: date)
+		case Action.default.identifier:
+			delegate?.notificationService(self, action: .default, forUID: uid, atNotificationDeliveryDate: date)
+		case Action.show.identifier:
+			delegate?.notificationService(self, action: .show, forUID: uid, atNotificationDeliveryDate: date)
+		case Action.cancel.identifier:
+			delegate?.notificationService(self, action: .cancel, forUID: uid, atNotificationDeliveryDate: date)
+		default:
+			break
 		}
 
 		completionHandler()
 	}
 
 	func userNotificationCenter(_ center: UNUserNotificationCenter, openSettingsFor notification: UNNotification?) {
+	}
+}
+
+private extension NotificationService.Action
+{
+	var identifier: String {
+		switch self {
+		case .show: return NotificationService.Identifier.showAction.value
+		case .default: return UNNotificationDefaultActionIdentifier
+		case .cancel: return NotificationService.Identifier.cancelAction.value
+		case .dismiss: return UNNotificationDismissActionIdentifier
+		}
 	}
 }
