@@ -197,6 +197,7 @@ final class MapViewController: UIViewController
 		temptLastPointer = nil
 		interactor.temptSmartTarget = nil
 		removeTemptCircle()
+		setTabBarHidden(false)
 
 		addButtonView.isHidden = false
 		isEditSmartTarget = false
@@ -262,7 +263,9 @@ final class MapViewController: UIViewController
 		view.layoutIfNeeded()
 
 		UIView.animate(withDuration: 0.3) {
-			self.smartTargetMenuBottomLayoutConstraint?.constant = -self.currentLocationOffset
+			let tabBarHeight = isEditing ? (self.tabBarController?.tabBar.frame.height ?? 0) : 0
+			self.smartTargetMenuBottomLayoutConstraint?.constant =
+				-self.currentLocationOffset + tabBarHeight
 			self.smartTargetMenuLeadingLayoutConstraint?.isActive = false
 			self.smartTargetMenu?
 				.leadingAnchor
@@ -336,6 +339,7 @@ private extension MapViewController
 	}
 
 	func actionEditSmartTarget(annotation: SmartTargetAnnotation) {
+		setTabBarHidden(true)
 		let request = Map.GetSmartTarget.Request(uid: annotation.uid)
 		interactor.getSmartTarget(request)
 		addButtonView.isHidden = true
@@ -486,14 +490,15 @@ private extension MapViewController
 		}
 		let keyboardHeight = keyboardFrame.cgRectValue.height
 		animateMapViewFrame(withBottomOffset: -keyboardHeight)
-		smartTargetMenuBottomConstant = -keyboardHeight / 3 - currentLocationOffset
+		smartTargetMenuBottomConstant = -keyboardHeight / 3
 		animateSmartTargetMenu(withBottomOffset: smartTargetMenuBottomConstant)
 	}
 
 	func keyboardWillDisappear(notification: NSNotification?) {
 		willTranslateKeyboard = true
+		let tabBarHeight = (tabBarController?.tabBar.isHidden == false) ? 0 : tabBarController?.tabBar.frame.height ?? 0
 		animateMapViewFrame(withBottomOffset: 0, layoutIfNeeded: false)
-		smartTargetMenuBottomConstant = -currentLocationOffset
+		smartTargetMenuBottomConstant = -currentLocationOffset + tabBarHeight
 		animateSmartTargetMenu(withBottomOffset: smartTargetMenuBottomConstant, layoutIfNeeded: false)
 	}
 
