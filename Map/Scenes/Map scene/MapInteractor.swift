@@ -261,6 +261,7 @@ extension MapInteractor: MapBusinessLogic
 			let response = Map.UpdateSmartTargetAtNotification.Response(isUpdated: isSaved)
 			self?.presenter.presentUpdateSmartTargetAtNotification(response)
 		}
+		notificationWorker.addNotifications(for: [smartTarget]) { _ in [] }
 	}
 
 	func updateSmartTargets(_ request: Map.UpdateSmartTargets.Request) {

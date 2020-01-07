@@ -29,10 +29,15 @@ final class NotificationService: NSObject
 		case show, `default`, cancel, dismiss
 	}
 
+	enum Visit: String
+	{
+		case entry, exit
+	}
+
 	private enum Identifier
 	{
 		case location(String)
-		case notification(String)
+		case notification(String, Visit)
 		case showAction
 		case cancelAction
 		case category
@@ -42,7 +47,8 @@ final class NotificationService: NSObject
 		var value: String {
 			switch self {
 			case .location(let uid): return Self.base.appending("location.").appending("uid:" + uid)
-			case .notification(let uid): return Self.base.appending("locationotificationn.").appending("uid:" + uid)
+			case let .notification(uid, visit):
+				return Self.base.appending("locationotificationn.").appending("\(visit.rawValue).").appending("uid:" + uid)
 			case .showAction: return Self.base.appending("action.show")
 			case .cancelAction: return Self.base.appending("action.cancel")
 			case .category: return Self.base.appending("category")
@@ -84,18 +90,26 @@ final class NotificationService: NSObject
 	}()
 
 	// MARK: ...Internal methods
+	// swiftlint:disable:next function_parameter_count
 	func addLocationNotificationWith(center: CLLocationCoordinate2D,
 									 radius: CLLocationDistance,
 									 title: String,
 									 body: String,
+									 visit: Visit,
 									 uid: String) {
 		let identifier = Identifier.location(uid).value
 		let region = CLCircularRegion(center: center, radius: radius, identifier: identifier)
-		region.notifyOnEntry = true
-		region.notifyOnExit = true
+		switch visit {
+		case .entry:
+			region.notifyOnEntry = true
+			region.notifyOnExit = false
+		case .exit:
+			region.notifyOnEntry = false
+			region.notifyOnExit = true
+		}
 		let trigger = UNLocationNotificationTrigger(region: region, repeats: true)
-//		let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-		let identifierNotification = Identifier.notification(uid).value
+//		let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: false)
+		let identifierNotification = Identifier.notification(uid, visit).value
 		let content = createContent(title: title, body: body)
 		let request = UNNotificationRequest(identifier: identifierNotification, content: content, trigger: trigger)
 
@@ -106,13 +120,13 @@ final class NotificationService: NSObject
 		}
 	}
 
-	func removePendingNotification(at uid: String) {
-		let identifierNotification = Identifier.notification(uid).value
+	func removePendingNotification(at uid: String, visit: Visit) {
+		let identifierNotification = Identifier.notification(uid, visit).value
 		center.removePendingNotificationRequests(withIdentifiers: [identifierNotification])
 	}
 
-	func removeDeliveredNotification(at uid: String) {
-		let identifierNotification = Identifier.notification(uid).value
+	func removeDeliveredNotification(at uid: String, visit: Visit) {
+		let identifierNotification = Identifier.notification(uid, visit).value
 		center.removeDeliveredNotifications(withIdentifiers: [identifierNotification])
 	}
 
@@ -124,13 +138,20 @@ final class NotificationService: NSObject
 		center.removeAllPendingNotificationRequests()
 	}
 
+	// swiftlint:disable:next function_parameter_count
 	func updateLocationNotification(center: CLLocationCoordinate2D,
 									radius: CLLocationDistance,
 									title: String,
 									body: String,
+									visit: Visit,
 									uid: String) {
-		removePendingNotification(at: uid)
-		addLocationNotificationWith(center: center, radius: radius, title: title, body: body, uid: uid)
+		removePendingNotification(at: uid, visit: visit)
+		addLocationNotificationWith(center: center,
+									radius: radius,
+									title: title,
+									body: body,
+									visit: visit,
+									uid: uid)
 	}
 
 	func getPendingNotificationUIDs(completionHandler: @escaping ([String]) -> Void) {

@@ -58,6 +58,7 @@ extension AppDelegate
 			}
 			try? DataBaseService<SmartTargetCollection>().write(collection)
 			self?.notificationWorker.removeAllDeliveredNotifications()
+			self?.notificationWorker.addNotifications(for: smartTargets) { _ in [] }
 		}
 	}
 }

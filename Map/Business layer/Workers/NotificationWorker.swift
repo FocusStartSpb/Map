@@ -72,12 +72,20 @@ final class NotificationWorker
 																  radius: $0.radius ?? 100,
 																  title: $0.title,
 																  body: $0.address ?? "",
+																  visit: .entry,
+																  uid: $0.uid)
+			self?.notificationService.addLocationNotificationWith(center: $0.coordinates,
+																  radius: $0.radius ?? 100,
+																  title: $0.title,
+																  body: $0.address ?? "",
+																  visit: .exit,
 																  uid: $0.uid)
 		}
 	}
 
 	private func removeNotification(at uid: String) {
-		notificationService.removePendingNotification(at: uid)
+		notificationService.removePendingNotification(at: uid, visit: .entry)
+		notificationService.removePendingNotification(at: uid, visit: .exit)
 	}
 
 	private func updateNotification(for smartTarget: SmartTarget) {
@@ -85,6 +93,13 @@ final class NotificationWorker
 													   radius: smartTarget.radius ?? 100,
 													   title: smartTarget.title,
 													   body: smartTarget.address ?? "",
+													   visit: .entry,
+													   uid: smartTarget.uid)
+		notificationService.updateLocationNotification(center: smartTarget.coordinates,
+													   radius: smartTarget.radius ?? 100,
+													   title: smartTarget.title,
+													   body: smartTarget.address ?? "",
+													   visit: .exit,
 													   uid: smartTarget.uid)
 	}
 
