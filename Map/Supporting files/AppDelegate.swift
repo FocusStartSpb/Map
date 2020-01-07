@@ -30,6 +30,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate
 
 	func applicationDidBecomeActive(_ application: UIApplication) {
 		updateNotifications()
+		updateAttendanceOfSmartTargets()
 	}
 }
 
@@ -38,12 +39,25 @@ extension AppDelegate
 	private func updateNotifications() {
 		guard let collection = try? DataBaseService<SmartTargetCollection>().read() else { return }
 		notificationWorker.checkNotifications(for: collection.smartTargets)
+	}
 
-		DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-			NotificationService.default.getPendingNotificationUIDs { uids in
-				print(uids.count)
-				uids.forEach { print($0) }
+	private func updateAttendanceOfSmartTargets() {
+		notificationWorker.getDeliveredNotifications { [weak self] notifications, uids in
+			guard notifications.isEmpty == false else { return }
+			guard let collection = try? DataBaseService<SmartTargetCollection>().read() else { return }
+			var smartTargets = collection.smartTargets(at: uids)
+			for index in 0..<uids.count {
+				smartTargets[index].inside.toggle()
+				if smartTargets[index].inside {
+					smartTargets[index].entryDate = notifications[index].date
+				}
+				else {
+					smartTargets[index].exitDate = notifications[index].date
+				}
+				collection.put(smartTargets[index])
 			}
+			try? DataBaseService<SmartTargetCollection>().write(collection)
+			self?.notificationWorker.removeAllDeliveredNotifications()
 		}
 	}
 }
