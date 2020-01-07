@@ -71,8 +71,7 @@ final class NotificationWorker
 			self?.notificationService.addLocationNotificationWith(center: $0.coordinates,
 																  radius: $0.radius ?? 100,
 																  title: $0.title,
-																  subtitle: $0.address ?? "",
-																  body: "Какая-то строка",
+																  body: $0.address ?? "",
 																  uid: $0.uid)
 		}
 	}
@@ -85,8 +84,7 @@ final class NotificationWorker
 		notificationService.updateLocationNotification(center: smartTarget.coordinates,
 													   radius: smartTarget.radius ?? 100,
 													   title: smartTarget.title,
-													   subtitle: smartTarget.address ?? "",
-													   body: "Какая-то строка",
+													   body: smartTarget.address ?? "",
 													   uid: smartTarget.uid)
 	}
 
@@ -155,5 +153,13 @@ final class NotificationWorker
 				self?.replaceAllNotifications(with: smartTargets)
 			}
 		}
+	}
+
+	func getDeliveredNotifications(completionHandler: @escaping ([UNNotification], [String]) -> Void) {
+		notificationService.getDeliveredNotifications(completionHandler: completionHandler)
+	}
+
+	func removeAllDeliveredNotifications() {
+		notificationService.removeAllDeliveredNotifications()
 	}
 }
