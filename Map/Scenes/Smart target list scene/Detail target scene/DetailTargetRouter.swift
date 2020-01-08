@@ -17,7 +17,7 @@ protocol IDetailTargetRouter
 
 final class DetailTargetRouter
 {
-	weak var viewController: DetailTargetViewController?
+	private weak var viewController: DetailTargetViewController?
 }
 // MARK: - IDetailTargetRouter()
 extension DetailTargetRouter: IDetailTargetRouter
