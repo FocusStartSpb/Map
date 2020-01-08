@@ -24,7 +24,7 @@ final class DetailTargetViewController: UIViewController
 		static let addressLabelFont = UIFont.systemFont(ofSize: 25, weight: .regular)
 	}
 
-	private let interactor: DetailTargetInteractor
+	private let presenter: IDetailTargetPresenter
 	private let router: IDetailTargetRouter
 	private let smartTargetEditable: Bool
 	private var userInterfaceIsDark: Bool {
@@ -44,10 +44,10 @@ final class DetailTargetViewController: UIViewController
 	private let addresDescriptionLabel = UILabel()
 	private let addressLabel = UILabel()
 
-	init(interactor: DetailTargetInteractor,
+	init(presenter: IDetailTargetPresenter,
 		 router: IDetailTargetRouter,
 		 smartTargetEditable: Bool) {
-		self.interactor = interactor
+		self.presenter = presenter
 		self.router = router
 		self.smartTargetEditable = smartTargetEditable
 		super.init(nibName: nil, bundle: nil)
@@ -61,12 +61,7 @@ final class DetailTargetViewController: UIViewController
 	// MARK: - Lyficycle
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		interactor.getTarget()
-		self.router.attachViewController(detailTargetViewController: self)
-		self.navigationItem.largeTitleDisplayMode = .never
-		setupUI()
-		self.view.addGestureRecognizer(UITapGestureRecognizer(target: self,
-															  action: #selector(hideKeyboard)))
+		setup()
 	}
 
 	override func viewWillAppear(_ animated: Bool) {
@@ -77,6 +72,16 @@ final class DetailTargetViewController: UIViewController
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
 		self.navigationController?.navigationBar.isTranslucent = true
+	}
+
+	// MARK: - Private methods
+	private func setup() {
+		presenter.getTarget()
+		self.navigationItem.largeTitleDisplayMode = .never
+		self.navigationItem.title = "Edit"
+		setupUI()
+		self.view.addGestureRecognizer(UITapGestureRecognizer(target: self,
+															  action: #selector(hideKeyboard)))
 	}
 
 	// MARK: - Setup UI
@@ -146,7 +151,7 @@ final class DetailTargetViewController: UIViewController
 			self.titleTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 20),
 			self.titleTextView.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
 		])
-		self.titleTextView.text = interactor.getTitleText()
+		self.titleTextView.text = presenter.getTitleText()
 		self.titleTextView.isScrollEnabled = false
 		self.titleTextView.isUserInteractionEnabled = (self.smartTargetEditable == true)
 		self.titleTextView.font = FontForDetailScreen.titleLabelFont
@@ -170,7 +175,7 @@ final class DetailTargetViewController: UIViewController
 			self.dateOfCreationLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 20),
 			self.dateOfCreationLabel.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
 		])
-		self.dateOfCreationLabel.text = interactor.getDateOfCreation()
+		self.dateOfCreationLabel.text = presenter.getDateOfCreation()
 		self.dateOfCreationLabel.numberOfLines = 2
 		self.dateOfCreationLabel.font = FontForDetailScreen.timeOfCreationFont
 		self.dateOfCreationLabel.textAlignment = .center
@@ -187,7 +192,7 @@ final class DetailTargetViewController: UIViewController
 			self.addressLabel.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
 		])
 		self.addressLabel.numberOfLines = 0
-		self.addressLabel.text = interactor.getAddressText()
+		self.addressLabel.text = presenter.getAddressText()
 		self.addressLabel.font = FontForDetailScreen.addressLabelFont
 		self.addressLabel.textAlignment = .center
 	}
@@ -197,7 +202,7 @@ final class DetailTargetViewController: UIViewController
 		self.mapView.translatesAutoresizingMaskIntoConstraints = false
 		let topAnchor = self.mapView.topAnchor.constraint(equalTo: self.addressLabel.bottomAnchor,
 														  constant: 20)
-		topAnchor.priority = UILayoutPriority(999)
+		topAnchor.priority = .required
 		NSLayoutConstraint.activate([
 			topAnchor,
 			self.mapView.heightAnchor.constraint(equalToConstant: ScreenProperties.height / 2),
