@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3A4337AD23C3646B00700935 /* DetailTargetInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337AC23C3646B00700935 /* DetailTargetInteractor.swift */; };
-		3A4337AF23C3649400700935 /* DetailTargetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337AE23C3649400700935 /* DetailTargetPresenter.swift */; };
+		3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */; };
 		3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B023C364A300700935 /* DetailTargetRouter.swift */; };
 		3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B223C364B900700935 /* DetailTargetViewController.swift */; };
 		3A4337B523C364CB00700935 /* DismissView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B423C364CB00700935 /* DismissView.swift */; };
@@ -69,8 +68,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3A4337AC23C3646B00700935 /* DetailTargetInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetInteractor.swift; sourceTree = "<group>"; };
-		3A4337AE23C3649400700935 /* DetailTargetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetPresenter.swift; sourceTree = "<group>"; };
+		3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetPresenter.swift; sourceTree = "<group>"; };
 		3A4337B023C364A300700935 /* DetailTargetRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetRouter.swift; sourceTree = "<group>"; };
 		3A4337B223C364B900700935 /* DetailTargetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetViewController.swift; sourceTree = "<group>"; };
 		3A4337B423C364CB00700935 /* DismissView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissView.swift; sourceTree = "<group>"; };
@@ -162,8 +160,7 @@
 		3AC8713223C3914000B06657 /* Detail target scene */ = {
 			isa = PBXGroup;
 			children = (
-				3A4337AC23C3646B00700935 /* DetailTargetInteractor.swift */,
-				3A4337AE23C3649400700935 /* DetailTargetPresenter.swift */,
+				3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */,
 				3A4337B023C364A300700935 /* DetailTargetRouter.swift */,
 				3A4337B223C364B900700935 /* DetailTargetViewController.swift */,
 				3AC8713323C3915000B06657 /* View */,
@@ -480,14 +477,13 @@
 				3A4337B523C364CB00700935 /* DismissView.swift in Sources */,
 				585F64B923BA7D5000B66EAA /* RangeSliderTableViewCell.swift in Sources */,
 				584EE5E423A834D60013087A /* SmartTargetListRouter.swift in Sources */,
-				3A4337AF23C3649400700935 /* DetailTargetPresenter.swift in Sources */,
 				5815996823B52DD900232CE2 /* NotificationCenter+Extension.swift in Sources */,
 				58A9984A23AC35E000CAACE8 /* SmartTargetCollection.swift in Sources */,
 				584EE5E723A834D60013087A /* SmartTargetListInteractor.swift in Sources */,
 				585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */,
 				5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */,
 				5891A8EC23B3BF5200FB1D1C /* GeocoderWorker.swift in Sources */,
-				3A4337AD23C3646B00700935 /* DetailTargetInteractor.swift in Sources */,
+				3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */,
 				3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */,
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,
 				3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */,
