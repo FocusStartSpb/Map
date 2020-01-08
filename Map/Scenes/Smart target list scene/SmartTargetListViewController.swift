@@ -148,7 +148,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 			else {
 			return UITableViewCell()
 		}
-		cell.fillLabels(with: interactor.getSmartTarget(at: indexPath.row))
+		cell.fillLabels(with: interactor.smartTargetCollection?.smartTargets[indexPath.row])
 		return cell
 	}
 }
@@ -171,8 +171,7 @@ extension SmartTargetListViewController: UITableViewDelegate
 			}
 		}
 		UIView.animate(withDuration: 0.2, animations: { cell.containerView.backgroundColor = selectedBackgroundColor })
-		self.router.routeToDetail(tableInEditMode: self.isEditing,
-								  smartTarget: self.interactor.getSmartTarget(at: indexPath.row))
+		self.router.routeToDetail(indexPathAtRow: indexPath.row)
 		self.setEditing(false, animated: false)
 		tableView.deselectRow(at: indexPath, animated: false)
 		UIView.animate(withDuration: 0.2, delay: 0.5,

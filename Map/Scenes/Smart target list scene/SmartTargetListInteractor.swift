@@ -17,9 +17,6 @@ protocol SmartTargetListBusinessLogic
 protocol SmartTargetListDataStore
 {
 	var smartTargetsCount: Int { get }
-
-	func getSmartTarget(at index: Int) -> SmartTarget?
-
 	var oldSmartTargetCollection: ISmartTargetCollection? { get set }
 	var smartTargetCollection: ISmartTargetCollection? { get set }
 }
@@ -90,9 +87,5 @@ extension SmartTargetListInteractor: SmartTargetListDataStore
 {
 	var smartTargetsCount: Int {
 		smartTargetCollection?.count ?? 0
-	}
-
-	func getSmartTarget(at index: Int) -> SmartTarget? {
-		self.smartTargetCollection?.smartTargets[index]
 	}
 }
