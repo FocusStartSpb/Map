@@ -25,6 +25,10 @@ struct SmartTarget
 	var timeInside: TimeInterval = 0
 	var inside: Bool
 
+	var region: CLRegion {
+		CLCircularRegion(center: coordinates, radius: radius ?? 100, identifier: uid)
+	}
+
 	var entryDate: Date? {
 		didSet {
 			if entryDate != nil {
