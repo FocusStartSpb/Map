@@ -23,7 +23,6 @@ struct SmartTarget
 
 	var numberOfVisits = 0
 	var timeInside: TimeInterval = 0
-	var inside: Bool
 
 	var region: CLRegion {
 		CLCircularRegion(center: coordinates, radius: radius ?? 100, identifier: uid)
@@ -33,6 +32,7 @@ struct SmartTarget
 		didSet {
 			if entryDate != nil {
 				numberOfVisits += 1
+				exitDate = nil
 			}
 		}
 	}
@@ -41,7 +41,6 @@ struct SmartTarget
 			if exitDate != nil {
 				timeInside += exitDate?.timeIntervalSince(entryDate ?? Date()) ?? 0
 				entryDate = nil
-				exitDate = nil
 			}
 		}
 	}
@@ -56,7 +55,6 @@ struct SmartTarget
 		case radius
 		case numberOfVisits
 		case timeInside
-		case inside
 		case entryDate
 		case exitDate
 	}
@@ -72,7 +70,6 @@ struct SmartTarget
 		self.title = title
 		self.coordinates = coordinates
 		self.dateOfCreated = Date()
-		self.inside = inside
 		self.address = address
 	}
 }
@@ -90,7 +87,6 @@ extension SmartTarget: Codable
 		radius = try? container.decode(Double.self, forKey: .radius)
 		numberOfVisits = try container.decode(Int.self, forKey: .numberOfVisits)
 		timeInside = try container.decode(TimeInterval.self, forKey: .timeInside)
-		inside = try container.decode(Bool.self, forKey: .inside)
 		entryDate = try? container.decode(Date.self, forKey: .entryDate)
 		exitDate = try? container.decode(Date.self, forKey: .exitDate)
 	}
@@ -105,7 +101,6 @@ extension SmartTarget: Codable
 		try container.encode(radius, forKey: .radius)
 		try container.encode(numberOfVisits, forKey: .numberOfVisits)
 		try container.encode(timeInside, forKey: .timeInside)
-		try container.encode(inside, forKey: .inside)
 		try container.encode(entryDate, forKey: .entryDate)
 		try container.encode(exitDate, forKey: .exitDate)
 	}

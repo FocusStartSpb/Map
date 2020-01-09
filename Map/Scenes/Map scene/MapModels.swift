@@ -243,8 +243,10 @@ enum Map
 		}
 	}
 
-	// MARK: ...AddNotification
-	enum AddNotification
+	// Monitoring region
+
+	// MARK: ...StartMonitoringRegion
+	enum StartMonitoringRegion
 	{
 		struct Request
 		{
@@ -253,17 +255,17 @@ enum Map
 
 		struct Response
 		{
-			let completion: Bool
+			let isStarted: Bool
 		}
 
 		struct ViewModel
 		{
-			let completion: Bool
+			let isStarted: Bool
 		}
 	}
 
-	// MARK: ...RemoveNotification
-	enum RemoveNotification
+	// MARK: ...StopMonitoringRegion
+	enum StopMonitoringRegion
 	{
 		struct Request
 		{
@@ -272,32 +274,12 @@ enum Map
 
 		struct Response
 		{
-			let completion: Bool
+			let isStoped: Bool
 		}
 
 		struct ViewModel
 		{
-			let completion: Bool
-		}
-	}
-
-	// MARK: ...UpdateSmartTargetAtNotification
-	enum UpdateSmartTargetAtNotification
-	{
-		struct Request
-		{
-			let uid: String
-			let notificationDeliveryDate: Date
-		}
-
-		struct Response
-		{
-			let isUpdated: Bool
-		}
-
-		struct ViewModel
-		{
-			let isUpdated: Bool
+			let isStoped: Bool
 		}
 	}
 }

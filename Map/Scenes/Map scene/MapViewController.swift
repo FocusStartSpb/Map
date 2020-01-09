@@ -24,9 +24,10 @@ protocol MapDisplayLogic: AnyObject
 
 	// Notifications
 	func displaySetNotificationServiceDelegate(_ viewModel: Map.SetNotificationServiceDelegate.ViewModel)
-	func displayAddNotification(_ viewModel: Map.AddNotification.ViewModel)
-	func displayRemoveNotification(_ viewModel: Map.RemoveNotification.ViewModel)
-	func displayUpdateSmartTargetAtNotification(_ viewModel: Map.UpdateSmartTargetAtNotification.ViewModel)
+
+	// Monitoring Region
+	func displayStartMonitoringRegion(_ viewModel: Map.StartMonitoringRegion.ViewModel)
+	func displayStopMonitoringRegion(_ viewModel: Map.StopMonitoringRegion.ViewModel)
 
 	// Settings
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel)
@@ -395,16 +396,11 @@ private extension MapViewController
 			return
 		}
 
-		let region = CLCircularRegion(center: temptPointer.coordinate,
-									  radius: Double(smartTargetMenu.sliderValue),
-									  identifier: "")
-
 		// Обновляем smart target
 		temptSmartTarget.coordinates = temptPointer.coordinate
 		temptSmartTarget.title = smartTargetMenu.text ?? "Noname"
 		temptSmartTarget.address = smartTargetMenu.title
 		temptSmartTarget.radius = Double(smartTargetMenu.sliderValue)
-		temptSmartTarget.inside = region.contains(mapView.userLocation.coordinate)
 
 		// Обновляем аннотацию (pin)
 		temptPointer.title = smartTargetMenu.text
@@ -428,9 +424,9 @@ private extension MapViewController
 			interactor.addSmartTarget(request)
 		}
 
-		// Добавляем нотификацию
-		let notificationRequest = Map.AddNotification.Request(smartTarget: temptSmartTarget)
-		interactor.addNotification(notificationRequest)
+		// Начинаем отслеживание
+		let monitoringRegionRequest = Map.StartMonitoringRegion.Request(smartTarget: temptSmartTarget)
+		interactor.startMonitoringRegion(monitoringRegionRequest)
 
 		smartTargetMenu.hide { smartTargetMenu.removeFromSuperview() }
 		setupDefaultSettings()
@@ -463,9 +459,9 @@ private extension MapViewController
 		let request = Map.RemoveSmartTarget.Request(uid: temptPointer.uid)
 		interactor.removeSmartTarget(request)
 
-		// Удаляем нотификацию
-		let notificationRequest = Map.RemoveNotification.Request(uid: temptPointer.uid)
-		interactor.removeNotification(notificationRequest)
+		// Завершаем отслеживание
+		let monitoringRegionRequest = Map.StopMonitoringRegion.Request(uid: temptPointer.uid)
+		interactor.stopMonitoringRegion(monitoringRegionRequest)
 
 		mapView.removeAnnotation(temptPointer)
 		smartTargetMenu?.removeFromSuperview()
@@ -641,11 +637,9 @@ extension MapViewController: MapDisplayLogic
 
 	func displaySetNotificationServiceDelegate(_ viewModel: Map.SetNotificationServiceDelegate.ViewModel) { }
 
-	func displayAddNotification(_ viewModel: Map.AddNotification.ViewModel) { }
+	func displayStartMonitoringRegion(_ viewModel: Map.StartMonitoringRegion.ViewModel) { }
 
-	func displayRemoveNotification(_ viewModel: Map.RemoveNotification.ViewModel) { }
-
-	func displayUpdateSmartTargetAtNotification(_ viewModel: Map.UpdateSmartTargetAtNotification.ViewModel) { }
+	func displayStopMonitoringRegion(_ viewModel: Map.StopMonitoringRegion.ViewModel) { }
 
 	func displayUpdateSmartTarget(_ viewModel: Map.UpdateSmartTarget.ViewModel) { }
 
@@ -869,16 +863,11 @@ extension MapViewController: NotificationServiceDelegate
 		case .cancel: break
 		case .default: break
 		}
-
-		let request = Map.UpdateSmartTargetAtNotification.Request(uid: uid, notificationDeliveryDate: deliveryDate)
-		interactor.updateSmartTargetAtNotification(request)
 	}
 
 	func notificationService(_ notificationService: NotificationService,
 							 didReceiveNotificationForUID uid: String,
 							 atNotificationDeliveryDate deliveryDate: Date) {
-		let request = Map.UpdateSmartTargetAtNotification.Request(uid: uid, notificationDeliveryDate: deliveryDate)
-		interactor.updateSmartTargetAtNotification(request)
 	}
 }
 

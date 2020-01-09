@@ -26,9 +26,10 @@ protocol MapBusinessLogic
 
 	// Notifications
 	func setNotificationServiceDelegate(_ request: Map.SetNotificationServiceDelegate.Request)
-	func addNotification(_ request: Map.AddNotification.Request)
-	func removeNotification(_ request: Map.RemoveNotification.Request)
-	func updateSmartTargetAtNotification(_ request: Map.UpdateSmartTargetAtNotification.Request)
+
+	// Monitoring Region
+	func startMonitoringRegion(_ request: Map.StartMonitoringRegion.Request)
+	func stopMonitoringRegion(_ request: Map.StopMonitoringRegion.Request)
 
 	// Settings
 	func getCurrentRadius(_ request: Map.GetCurrentRadius.Request)
@@ -98,7 +99,8 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 	private func checkAuthorizationService() {
 		let status = CLLocationManager.authorizationStatus()
 		switch status {
-		case .notDetermined: locationManager.requestAlwaysAuthorization()
+		case .notDetermined:
+			locationManager.requestAlwaysAuthorization()
 		case .authorizedAlways, .authorizedWhenInUse:
 			locationManager.startUpdatingLocation()
 			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: true,
@@ -106,8 +108,8 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 		case .restricted, .denied:
 			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: false,
 																			   userCoordinate: nil))
-		default:
-			locationManager.requestAlwaysAuthorization()
+		@unknown default:
+			fatalError("Unknown case")
 		}
 	}
 
@@ -133,10 +135,6 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 		}
 	}
 
-	private func updateNotificationsIfNeeded(_ isNeed: Bool) -> [SmartTarget] {
-		isNeed ? smartTargetCollection?.smartTargets ?? [] : []
-	}
-
 	// MARK: ...CLLocationDelegate
 	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 		guard let latestCoordinate = locations.first?.coordinate else { return }
@@ -149,6 +147,26 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 
 	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
 		checkAuthorizationService()
+	}
+
+	func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+		notificationWorker.requestNotificationAuthorized { _ in }
+	}
+
+	func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+		guard var smartTarget = smartTargetCollection?[region.identifier] else { return }
+		smartTarget.entryDate = Date()
+		smartTargetCollection?.put(smartTarget)
+		saveSmartTargetCollection { _ in }
+		notificationWorker.addNotifications(for: [smartTarget])
+	}
+
+	func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+		guard var smartTarget = smartTargetCollection?[region.identifier] else { return }
+		smartTarget.exitDate = Date()
+		smartTargetCollection?.put(smartTarget)
+		saveSmartTargetCollection { _ in }
+		notificationWorker.addNotifications(for: [smartTarget])
 	}
 }
 
@@ -234,34 +252,21 @@ extension MapInteractor: MapBusinessLogic
 		presenter.presentSetNotificationServiceDelegate(response)
 	}
 
-	func addNotification(_ request: Map.AddNotification.Request) {
-		notificationWorker.addNotifications(for: [request.smartTarget], updatesIfNeeded: updateNotificationsIfNeeded)
-		let response = Map.AddNotification.Response(completion: true)
-		presenter.presentAddNotification(response)
+	func startMonitoringRegion(_ request: Map.StartMonitoringRegion.Request) {
+		if let region = locationManager.monitoredRegions.first(where: { $0.identifier == request.smartTarget.uid }) {
+			locationManager.stopMonitoring(for: region)
+		}
+		locationManager.startMonitoring(for: request.smartTarget.region)
+		let response = Map.StartMonitoringRegion.Response(isStarted: true)
+		presenter.presentStartMonitoringRegion(response)
 	}
 
-	func removeNotification(_ request: Map.RemoveNotification.Request) {
-		notificationWorker.removeNotification(at: request.uid, updatesIfNeeded: updateNotificationsIfNeeded)
-		let response = Map.AddNotification.Response(completion: true)
-		presenter.presentAddNotification(response)
-	}
-
-	func updateSmartTargetAtNotification(_ request: Map.UpdateSmartTargetAtNotification.Request) {
-		updateTemptSmartTargetCollection()
-		guard var smartTarget = smartTargetCollection?[request.uid] else { return }
-		smartTarget.inside.toggle()
-		if smartTarget.inside {
-			smartTarget.entryDate = request.notificationDeliveryDate
-		}
-		else {
-			smartTarget.exitDate = request.notificationDeliveryDate
-		}
-		smartTargetCollection?.put(smartTarget)
-		saveSmartTargetCollection { [weak self] isSaved in
-			let response = Map.UpdateSmartTargetAtNotification.Response(isUpdated: isSaved)
-			self?.presenter.presentUpdateSmartTargetAtNotification(response)
-		}
-		notificationWorker.addNotifications(for: [smartTarget]) { _ in [] }
+	func stopMonitoringRegion(_ request: Map.StopMonitoringRegion.Request) {
+		guard let region = locationManager.monitoredRegions.first(where: { $0.identifier == request.uid }) else { return }
+		locationManager.stopMonitoring(for: region)
+		notificationWorker.removeNotification(at: request.uid)
+		let response = Map.StopMonitoringRegion.Response(isStoped: true)
+		presenter.presentStopMonitoringRegion(response)
 	}
 
 	func updateSmartTargets(_ request: Map.UpdateSmartTargets.Request) {

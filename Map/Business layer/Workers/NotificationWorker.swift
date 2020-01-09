@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 typealias UpdateNotificationsIfNeeded = (Bool) -> [SmartTarget]
 
@@ -34,22 +35,6 @@ final class NotificationWorker
 	}
 
 	// MARK: ...Private methods
-	private func requestNotificationAuthorized(completionHandler: @escaping (Bool) -> Void) {
-		notificationService.center.requestAuthorization(options: [.alert, .sound]) { granted, _ in
-			if granted {
-				DispatchQueue.main.async {
-					Self.isVerificationRequired = false
-					UIApplication.shared.registerForRemoteNotifications()
-					completionHandler(granted)
-				}
-			}
-			else {
-				Self.isVerificationRequired = true
-				completionHandler(granted)
-			}
-		}
-	}
-
 	private func checkRequestNotificationAllowed(completionHandler: @escaping (Bool) -> Void) {
 		notificationService.center.getNotificationSettings { [weak self] settings in
 			switch settings.authorizationStatus {
@@ -66,47 +51,26 @@ final class NotificationWorker
 		}
 	}
 
-	private func addNotifications(for smartTargets: [SmartTarget]) {
-		smartTargets.forEach { [weak self] in
-			self?.notificationService.addLocationNotificationWith(center: $0.coordinates,
-																  radius: $0.radius ?? 100,
-																  title: $0.title,
-																  body: $0.address ?? "",
-																  visit: .entry,
-																  uid: $0.uid)
-			self?.notificationService.addLocationNotificationWith(center: $0.coordinates,
-																  radius: $0.radius ?? 100,
-																  title: $0.title,
-																  body: $0.address ?? "",
-																  visit: .exit,
-																  uid: $0.uid)
+	private func configureBody(by smartTarget: SmartTarget) -> String {
+		let body: String
+		if let entryDate = smartTarget.entryDate {
+			body = """
+			Вы находитесь в радиусе \(smartTarget.radius ?? 100)м от \(smartTarget.address ?? "")
+			Время прибытия: \(Formatter.medium.string(from: entryDate))
+			Количество посещения данного места: \(smartTarget.numberOfVisits)
+			"""
 		}
-	}
-
-	private func removeNotification(at uid: String) {
-		notificationService.removePendingNotification(at: uid, visit: .entry)
-		notificationService.removePendingNotification(at: uid, visit: .exit)
-	}
-
-	private func updateNotification(for smartTarget: SmartTarget) {
-		notificationService.updateLocationNotification(center: smartTarget.coordinates,
-													   radius: smartTarget.radius ?? 100,
-													   title: smartTarget.title,
-													   body: smartTarget.address ?? "",
-													   visit: .entry,
-													   uid: smartTarget.uid)
-		notificationService.updateLocationNotification(center: smartTarget.coordinates,
-													   radius: smartTarget.radius ?? 100,
-													   title: smartTarget.title,
-													   body: smartTarget.address ?? "",
-													   visit: .exit,
-													   uid: smartTarget.uid)
-	}
-
-	private func replaceAllNotifications(with smartTargets: [SmartTarget]) {
-		notificationService.removeAllNotifications()
-		addNotifications(for: smartTargets)
-		Self.isVerificationRequired = false
+		else if let exitDate = smartTarget.exitDate {
+			body = """
+			Вы находитесь в радиусе \(smartTarget.radius ?? 100)м от \(smartTarget.address ?? "")
+			Время убытия: \(Formatter.medium.string(from: exitDate))
+			Общее количество проведенного времени: \(Int(smartTarget.timeInside))с
+			"""
+		}
+		else {
+			body = ""
+		}
+		return body
 	}
 
 	// MARK: ...Internal methods
@@ -114,59 +78,46 @@ final class NotificationWorker
 		notificationService.delegate = delegate
 	}
 
-	func addNotifications(for smartTargets: [SmartTarget], updatesIfNeeded: @escaping UpdateNotificationsIfNeeded) {
-		checkRequestNotificationAllowed { [weak self] granted in
-			guard granted else { return }
-			if Self.isVerificationRequired ?? false {
-				self?.replaceAllNotifications(with: updatesIfNeeded(true))
-			}
-			else {
-				_ = updatesIfNeeded(false)
-				self?.notificationService.getPendingNotificationUIDs { uids in
-					let targetsContainedInPendingNotifications = smartTargets.filter { uids.contains($0.uid) }
-					// Обновляем
-					targetsContainedInPendingNotifications.forEach {
-						self?.updateNotification(for: $0)
-					}
-					// Добавляем
-					self?.addNotifications(for: smartTargets.difference(from: targetsContainedInPendingNotifications))
+	func requestNotificationAuthorized(completionHandler: @escaping (Bool) -> Void) {
+		notificationService.center.requestAuthorization(options: [.alert, .sound]) { granted, _ in
+			if granted {
+				DispatchQueue.main.async {
+					Self.isVerificationRequired = false
+					UIApplication.shared.registerForRemoteNotifications()
+					completionHandler(granted)
 				}
 			}
-		}
-	}
-
-	func removeNotification(at uid: String, updatesIfNeeded: @escaping UpdateNotificationsIfNeeded) {
-		checkRequestNotificationAllowed { [weak self] granted in
-			guard granted else { return }
-			if Self.isVerificationRequired ?? false {
-				self?.replaceAllNotifications(with: updatesIfNeeded(true))
-			}
 			else {
-				_ = updatesIfNeeded(false)
-				self?.removeNotification(at: uid)
+				Self.isVerificationRequired = true
+				completionHandler(granted)
 			}
 		}
 	}
 
-	func updateNotification(for smartTarget: SmartTarget, updatesIfNeeded: @escaping UpdateNotificationsIfNeeded) {
+	func addNotifications(for smartTargets: [SmartTarget]) {
 		checkRequestNotificationAllowed { [weak self] granted in
 			guard granted else { return }
-			if Self.isVerificationRequired ?? false {
-				self?.replaceAllNotifications(with: updatesIfNeeded(true))
-			}
-			else {
-				_ = updatesIfNeeded(false)
-				self?.updateNotification(for: smartTarget)
+			smartTargets.forEach { target in
+				self?.notificationService.addLocationNotification(for: target.region,
+																  title: target.title,
+																  body: self?.configureBody(by: target) ?? "",
+																  uid: target.uid)
 			}
 		}
 	}
 
-	func checkNotifications(for smartTargets: [SmartTarget]) {
+	func removeNotification(at uid: String) {
 		checkRequestNotificationAllowed { [weak self] granted in
 			guard granted else { return }
-			if Self.isVerificationRequired ?? false {
-				self?.replaceAllNotifications(with: smartTargets)
-			}
+			self?.notificationService.removePendingNotification(at: uid)
+		}
+	}
+
+	func updateNotification(for smartTarget: SmartTarget) {
+		checkRequestNotificationAllowed { [weak self] granted in
+			guard granted else { return }
+			self?.removeNotification(at: smartTarget.uid)
+			self?.addNotifications(for: [smartTarget])
 		}
 	}
 
