@@ -329,6 +329,16 @@ final class MapViewController: UIViewController
 			}
 		}
 	}
+
+	private func animatePinViewHidden(_ isHidden: Bool) {
+		if let temptPointer = currentPointer, let view = mapView.view(for: temptPointer) {
+			UIView.animate(withDuration: 0.25, delay: 0.15, animations: {
+				view.alpha = isHidden ? 0 : 1
+			}, completion: { _ in
+				view.isHidden = isHidden
+			})
+		}
+	}
 }
 
 // MARK: - Actions
@@ -711,6 +721,7 @@ extension MapViewController: MKMapViewDelegate
 		if temptLastPointer != nil {
 			smartTargetMenu?.leftMenuAction = self.cancelAction
 		}
+		animatePinViewHidden(true)
 	}
 
 	func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
@@ -742,6 +753,7 @@ extension MapViewController: MKMapViewDelegate
 		if willTranslateKeyboard == false {
 			animateSmartTargetMenu(hide: false)
 		}
+		animatePinViewHidden(false)
 		interactor.getAddress(Map.Address.Request(coordinate: temptPointer.coordinate))
 	}
 
