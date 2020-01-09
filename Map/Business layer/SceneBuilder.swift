@@ -89,21 +89,13 @@ final class SceneBuilder
 	}
 
 	func getDetailTargetScene(smartTargetListViewController: SmartTargetListViewController,
-							  smartTarget: SmartTarget?) {
-		guard let smartTarget = smartTarget else { return }
+							  smartTarget: SmartTarget) -> DetailTargetViewController {
 		let presenter = DetailTargetPresenter(smartTarget: smartTarget)
 		let router = DetailTargetRouter()
 		let viewController = DetailTargetViewController(presenter: presenter,
 														router: router,
 														smartTargetEditable: smartTargetListViewController.isEditing)
 		router.attachViewController(detailTargetViewController: viewController)
-		if smartTargetListViewController.isEditing {
-			viewController.hidesBottomBarWhenPushed = true
-			smartTargetListViewController.navigationController?.pushViewController(viewController,
-																				   animated: true)
-		}
-		else {
-			smartTargetListViewController.present(viewController, animated: true)
-		}
+		return viewController
 	}
 }

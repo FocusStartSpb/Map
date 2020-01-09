@@ -41,8 +41,19 @@ extension SmartTargetListRouter: SmartTargetListRoutingLogic
 	func routeToDetail(indexPathAtRow: Int) {
 		guard let viewController = viewController else { return }
 		guard let smartTarget = dataStore?.smartTargetCollection?.smartTargets[indexPathAtRow] else { return }
-		factory.getDetailTargetScene(smartTargetListViewController: viewController,
+		let detailViewController = factory.getDetailTargetScene(smartTargetListViewController: viewController,
 									 smartTarget: smartTarget)
+		self.navigateToDetail(source: viewController, destination: detailViewController)
+	}
+
+	private func navigateToDetail(source: SmartTargetListViewController,
+								  destination: DetailTargetViewController) {
+		if source.isEditing {
+			source.navigationController?.pushViewController(destination, animated: true)
+		}
+		else {
+			source.present(destination, animated: true)
+		}
 	}
 
 	func routeToMap(_ mapViewController: MapViewController) {

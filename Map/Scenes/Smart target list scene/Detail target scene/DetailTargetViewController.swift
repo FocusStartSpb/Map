@@ -51,6 +51,7 @@ final class DetailTargetViewController: UIViewController
 		self.router = router
 		self.smartTargetEditable = smartTargetEditable
 		super.init(nibName: nil, bundle: nil)
+		self.hidesBottomBarWhenPushed = true
 	}
 
 	@available (*, unavailable)
