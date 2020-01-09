@@ -380,7 +380,7 @@ private extension MapViewController
 	func actionSave(_ sender: Any) {
 
 		var checkTitleText: Bool {
-			guard let title = smartTargetMenu?.title else { return false }
+			guard let title = smartTargetMenu?.text else { return false }
 			return title.isEmpty == false
 		}
 
