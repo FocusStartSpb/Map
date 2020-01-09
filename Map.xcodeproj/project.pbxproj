@@ -56,6 +56,7 @@
 		586F660723BAB6D2007D4657 /* SettingsSceneWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586F660623BAB6D2007D4657 /* SettingsSceneWorker.swift */; };
 		586F660C23BBF065007D4657 /* MenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586F660B23BBF065007D4657 /* MenuAction.swift */; };
 		5891A8EC23B3BF5200FB1D1C /* GeocoderWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5891A8EB23B3BF5200FB1D1C /* GeocoderWorker.swift */; };
+		58A4B28923C6E27700D0D985 /* Formatter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A4B28823C6E27700D0D985 /* Formatter+Extension.swift */; };
 		58A9984123A852AC00CAACE8 /* SmartTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984023A852AC00CAACE8 /* SmartTarget.swift */; };
 		58A9984423AC19A500CAACE8 /* DataBaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984323AC19A500CAACE8 /* DataBaseService.swift */; };
 		58A9984623AC1D1700CAACE8 /* Sequence+UniqueElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984523AC1D1700CAACE8 /* Sequence+UniqueElements.swift */; };
@@ -118,6 +119,7 @@
 		586F660623BAB6D2007D4657 /* SettingsSceneWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSceneWorker.swift; sourceTree = "<group>"; };
 		586F660B23BBF065007D4657 /* MenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuAction.swift; sourceTree = "<group>"; };
 		5891A8EB23B3BF5200FB1D1C /* GeocoderWorker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderWorker.swift; sourceTree = "<group>"; };
+		58A4B28823C6E27700D0D985 /* Formatter+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Formatter+Extension.swift"; sourceTree = "<group>"; };
 		58A9984023A852AC00CAACE8 /* SmartTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTarget.swift; sourceTree = "<group>"; };
 		58A9984323AC19A500CAACE8 /* DataBaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBaseService.swift; sourceTree = "<group>"; };
 		58A9984523AC1D1700CAACE8 /* Sequence+UniqueElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+UniqueElements.swift"; sourceTree = "<group>"; };
@@ -352,6 +354,7 @@
 				5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */,
 				58551DD523BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift */,
 				58EEE41A23C4404300CE9229 /* UIViewController+Extension.swift */,
+				58A4B28823C6E27700D0D985 /* Formatter+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -456,6 +459,7 @@
 				584EE5CC23A833D70013087A /* MapViewController.swift in Sources */,
 				585BBB8823B219170001F749 /* ButtonView.swift in Sources */,
 				58551DD823BD854300E76885 /* TabBarControllerBuilder.swift in Sources */,
+				58A4B28923C6E27700D0D985 /* Formatter+Extension.swift in Sources */,
 				585F64B923BA7D5000B66EAA /* RangeSliderTableViewCell.swift in Sources */,
 				584EE5E423A834D60013087A /* SmartTargetListRouter.swift in Sources */,
 				5815996823B52DD900232CE2 /* NotificationCenter+Extension.swift in Sources */,
