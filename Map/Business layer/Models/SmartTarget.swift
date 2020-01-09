@@ -63,7 +63,6 @@ struct SmartTarget
 	init(uid: String = UUID().uuidString,
 		 title: String,
 		 coordinates: CLLocationCoordinate2D,
-		 inside: Bool,
 		 address: String? = nil) {
 
 		self.uid = uid
