@@ -82,7 +82,9 @@ final class MapViewController: UIViewController
 	private var isDraggedTemptPointer = false
 	private var isNewPointer = false
 	private var isAnimateMapView = false
+	private var isAnimateSmartTargetMenu = false
 	private var willTranslateKeyboard = false
+	private var regionIsChanging = false
 	private var circleRadius = 300.0
 
 	// Calculated properties
@@ -278,18 +280,25 @@ final class MapViewController: UIViewController
 		setupSmartTargetMenuConstraints()
 		view.layoutIfNeeded()
 
-		UIView.animate(withDuration: 0.3) {
+		let needHide = regionIsChanging
+
+		UIView.animate(withDuration: 0.3, animations: {
+			self.isAnimateSmartTargetMenu = true
 			let tabBarHeight = isEditing ? (self.tabBarController?.tabBar.frame.height ?? 0) : 0
 			self.smartTargetMenuBottomLayoutConstraint?.constant =
 				-self.currentLocationOffset + tabBarHeight
 			self.smartTargetMenuLeadingLayoutConstraint?.isActive = false
-			self.smartTargetMenu?
-				.leadingAnchor
+			menu.leadingAnchor
 				.constraint(equalTo: self.view.leadingAnchor,
 							constant: self.currentLocationOffset)
 				.isActive = true
 			self.view.layoutIfNeeded()
-		}
+		}, completion: { _ in
+			self.isAnimateSmartTargetMenu = false
+			if needHide, self.isEditSmartTarget {
+				self.animateSmartTargetMenu(hide: true)
+			}
+		})
 	}
 
 	// MARK: ...Animations
@@ -333,7 +342,7 @@ final class MapViewController: UIViewController
 
 	private func animatePinViewHidden(_ isHidden: Bool) {
 		if let temptPointer = currentPointer, let view = mapView.view(for: temptPointer) {
-			UIView.animate(withDuration: 0.25, delay: 0.15, animations: {
+			UIView.animate(withDuration: 0.25, delay: 0.25, animations: {
 				view.alpha = isHidden ? 0 : 1
 			}, completion: { _ in
 				view.isHidden = isHidden
@@ -357,11 +366,13 @@ private extension MapViewController
 			.forEach { mapView.deselectAnnotation($0, animated: true) }
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		isEditSmartTarget = true
-		interactor.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate, inside: false)
+		interactor.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate)
 		addCurrentPointer(at: mapView.centerCoordinate)
 		showSmartTargetMenu(isEditing: false)
-		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
-		impactFeedbackGenerator.prepare()
+		if regionIsChanging == false {
+			interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
+			impactFeedbackGenerator.prepare()
+		}
 	}
 
 	func actionEditSmartTarget(annotation: SmartTargetAnnotation) {
@@ -541,10 +552,17 @@ private extension MapViewController
 
 	func appMovedFromBackground() {
 		notificationCenter.addObserver(self, notifications: keyboardNotifications)
+		if currentPointer != nil {
+			smartTargetMenu?.translucent(false)
+			smartTargetMenu?.isEditable = true
+		}
 	}
 
 	func appMovedToBackground() {
 		notificationCenter.removeObserver(self, names: Set(keyboardNotifications.keys))
+		if currentPointer != nil, regionIsChanging, isAnimateSmartTargetMenu {
+			actionRemove(Any.self)
+		}
 	}
 }
 
@@ -700,7 +718,9 @@ extension MapViewController: MKMapViewDelegate
 
 		if isNewPointer {
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
-				self?.impactFeedbackGenerator.impactOccurred()
+				if self?.regionIsChanging == false {
+					self?.impactFeedbackGenerator.impactOccurred()
+				}
 			}
 			isNewPointer = false
 		}
@@ -709,6 +729,7 @@ extension MapViewController: MKMapViewDelegate
 	}
 
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+		regionIsChanging = true
 		guard willTranslateKeyboard == false, isDraggedTemptPointer == false else { return }
 		animateSmartTargetMenu(hide: true)
 		smartTargetMenu?.title = nil
@@ -723,6 +744,8 @@ extension MapViewController: MKMapViewDelegate
 			isDraggedTemptPointer == false,
 			isAnimateMapView == false else { return }
 
+		smartTargetMenu?.title = nil
+
 		// Update pointer annotation
 		mapView.removeAnnotation(temptPointer)
 		addCurrentPointer(at: mapView.centerCoordinate)
@@ -733,6 +756,7 @@ extension MapViewController: MKMapViewDelegate
 	}
 
 	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+		regionIsChanging = false
 		guard let temptPointer = self.currentPointer,
 			isAnimateMapView == false,
 			isDraggedTemptPointer == false else {
