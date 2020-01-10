@@ -68,7 +68,7 @@ extension MapPresenter: MapPresentationLogic
 
 	func presentAddress(_ response: Map.Address.Response) {
 		let result = response.result
-			.map { $0.response?.geoCollection?.featureMember?.first?.geo?.name ?? "Hello" }
+			.map { $0.response?.geoCollection?.featureMember?.first?.geo?.metaDataProperty?.geocoderMetaData?.text ?? "" }
 
 		let address: String
 		if case .success(let string) = result {
