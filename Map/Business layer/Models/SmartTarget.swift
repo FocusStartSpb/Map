@@ -71,6 +71,14 @@ struct SmartTarget
 		self.dateOfCreated = Date()
 		self.address = address
 	}
+
+	// MARK: ...Internal methods
+	mutating func setInitialAttendance() {
+		entryDate = nil
+		exitDate = nil
+		numberOfVisits = 0
+		timeInside = 0
+	}
 }
 
 // MARK: - Codable
