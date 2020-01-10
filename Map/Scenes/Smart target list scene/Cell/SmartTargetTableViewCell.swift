@@ -16,9 +16,9 @@ final class SmartTargetTableViewCell: UITableViewCell
 {
 	private enum FontsForCell
 	{
-		static let timeOfCreationFont = UIFont(name: "Avenir-LightOblique ", size: 10)
-		static let titleLabelFont = UIFont(name: "Cochin-Bold", size: 17)
-		static let addressLabelFont = UIFont(name: "Optima-Regular", size: 17)
+		static let timeOfCreationFont = UIFont.systemFont(ofSize: 15, weight: .light)
+		static let titleLabelFont = UIFont.systemFont(ofSize: 20, weight: .bold)
+		static let addressLabelFont = UIFont.systemFont(ofSize: 20, weight: .regular)
 	}
 
 	let containerView = UIView()
@@ -34,6 +34,7 @@ final class SmartTargetTableViewCell: UITableViewCell
 		setupTitleLabel()
 		setupAddressLabel()
 		selectionStyle = .none
+		updateBackgroundColors()
 	}
 
 	@available (*, unavailable)
@@ -60,7 +61,7 @@ final class SmartTargetTableViewCell: UITableViewCell
 		self.containerView.layer.cornerRadius = 20
 		self.containerView.layer.shadowOpacity = 0.3
 		self.containerView.layer.shadowOffset = CGSize(width: self.containerView.frame.width,
-													   height: self.containerView.frame.height + 13)
+													   height: self.containerView.frame.height + 7)
 		self.containerView.layer.borderWidth = 0.07
 	}
 
@@ -74,12 +75,6 @@ final class SmartTargetTableViewCell: UITableViewCell
 			self.timeOfCreationLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 7),
 		])
 		self.timeOfCreationLabel.font = FontsForCell.timeOfCreationFont
-		if #available(iOS 13.0, *) {
-			self.timeOfCreationLabel.textColor = .systemGray2
-		}
-		else {
-			self.timeOfCreationLabel.textColor = #colorLiteral(red: 0.7540688515, green: 0.7540867925, blue: 0.7540771365, alpha: 1)
-		}
 		self.timeOfCreationLabel.textAlignment = .center
 	}
 
@@ -110,12 +105,35 @@ final class SmartTargetTableViewCell: UITableViewCell
 		self.addressLabel.numberOfLines = 0
 		self.addressLabel.font = FontsForCell.addressLabelFont
 		self.addressLabel.textAlignment = .center
-		if #available(iOS 13.0, *) {
-			self.addressLabel.textColor = .systemGray
+	}
+
+	private func updateBackgroundColors() {
+		if #available(iOS 12.0, *) {
+			if self.traitCollection.userInterfaceStyle == .dark {
+				self.containerView.backgroundColor = #colorLiteral(red: 0.3623036282, green: 0.3623036282, blue: 0.3623036282, alpha: 1)
+				self.contentView.backgroundColor = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
+			}
+			else {
+				self.contentView.backgroundColor = .white
+				self.containerView.backgroundColor = #colorLiteral(red: 0.990454598, green: 0.990454598, blue: 0.990454598, alpha: 1)
+			}
 		}
 		else {
 			self.addressLabel.textColor = .gray
+			self.contentView.backgroundColor = .white
+			self.containerView.backgroundColor = #colorLiteral(red: 0.990454598, green: 0.990454598, blue: 0.990454598, alpha: 1)
 		}
+	}
+
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		updateBackgroundColors()
+		print("traitcollectiondidchange in tableviewcell")
+	}
+
+	override func setEditing(_ editing: Bool, animated: Bool) {
+		super.setEditing(editing, animated: animated)
+		self.editingAccessoryType = .disclosureIndicator
+		self.backgroundColor = .clear
 	}
 }
 // MARK: - ISmartTargetTableViewCell

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */; };
+		3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B023C364A300700935 /* DetailTargetRouter.swift */; };
+		3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B223C364B900700935 /* DetailTargetViewController.swift */; };
+		3A4337B523C364CB00700935 /* DismissView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B423C364CB00700935 /* DismissView.swift */; };
 		3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */; };
 		3ABCDC9323B7B71B0050F4B2 /* SmartTargetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */; };
 		3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */; };
@@ -68,6 +72,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetPresenter.swift; sourceTree = "<group>"; };
+		3A4337B023C364A300700935 /* DetailTargetRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetRouter.swift; sourceTree = "<group>"; };
+		3A4337B223C364B900700935 /* DetailTargetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetViewController.swift; sourceTree = "<group>"; };
+		3A4337B423C364CB00700935 /* DismissView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissView.swift; sourceTree = "<group>"; };
 		3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartTargetTableViewCell.swift; sourceTree = "<group>"; };
 		3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderModel.swift; sourceTree = "<group>"; };
@@ -157,6 +165,25 @@
 			path = Cell;
 			sourceTree = "<group>";
 		};
+		3AC8713223C3914000B06657 /* Detail target scene */ = {
+			isa = PBXGroup;
+			children = (
+				3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */,
+				3A4337B023C364A300700935 /* DetailTargetRouter.swift */,
+				3A4337B223C364B900700935 /* DetailTargetViewController.swift */,
+				3AC8713323C3915000B06657 /* View */,
+			);
+			path = "Detail target scene";
+			sourceTree = "<group>";
+		};
+		3AC8713323C3915000B06657 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				3A4337B423C364CB00700935 /* DismissView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		580A076423AFEAB900192969 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -235,6 +262,7 @@
 				584EE5DC23A834D60013087A /* SmartTargetListPresenter.swift */,
 				584EE5DE23A834D60013087A /* SmartTargetListRouter.swift */,
 				584EE5DF23A834D60013087A /* SmartTargetListModels.swift */,
+				3AC8713223C3914000B06657 /* Detail target scene */,
 				3ABCDC9123B7B71B0050F4B2 /* Cell */,
 			);
 			path = "Smart target list scene";
@@ -459,6 +487,7 @@
 				584EE5CC23A833D70013087A /* MapViewController.swift in Sources */,
 				585BBB8823B219170001F749 /* ButtonView.swift in Sources */,
 				58551DD823BD854300E76885 /* TabBarControllerBuilder.swift in Sources */,
+				3A4337B523C364CB00700935 /* DismissView.swift in Sources */,
 				58A4B28923C6E27700D0D985 /* Formatter+Extension.swift in Sources */,
 				585F64B923BA7D5000B66EAA /* RangeSliderTableViewCell.swift in Sources */,
 				584EE5E423A834D60013087A /* SmartTargetListRouter.swift in Sources */,
@@ -468,13 +497,16 @@
 				585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */,
 				5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */,
 				5891A8EC23B3BF5200FB1D1C /* GeocoderWorker.swift in Sources */,
+				3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */,
 				3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */,
 				58454C3923C25B7A008BB813 /* NotificationService.swift in Sources */,
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,
 				3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */,
 				3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */,
+				3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */,
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
 				58EEE41B23C4404300CE9229 /* UIViewController+Extension.swift in Sources */,
+				3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */,
 				582ED16D23AE8458001AD44E /* Decodable+Initialization.swift in Sources */,
 				58454F2F23BE875C00EE0D71 /* Identity.swift in Sources */,
 				584EE5C823A833D70013087A /* MapPresenter.swift in Sources */,
