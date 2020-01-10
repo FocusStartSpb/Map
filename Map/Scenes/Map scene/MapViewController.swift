@@ -715,6 +715,11 @@ extension MapViewController: MKMapViewDelegate
 		pinView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
 		setAnnotationView(pinView, draggable: isEditSmartTarget, andShowCallout: (isEditSmartTarget == false))
 
+		if let currentPointer = currentPointer, annotation !== currentPointer {
+			pinView?.isHidden = false
+			pinView?.alpha = 1
+		}
+
 		if isNewPointer {
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
 				if self?.regionIsChanging == false {
