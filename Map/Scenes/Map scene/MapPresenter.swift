@@ -14,10 +14,22 @@ protocol MapPresentationLogic
 	func presentSmartTarget(_ response: Map.GetSmartTarget.Response)
 	func beginLocationUpdates(response: Map.UpdateStatus.Response)
 	func presentAddress(_ response: Map.Address.Response)
+
+	// Adding, updating, removing smart targets
 	func presentAddSmartTarget(_ response: Map.AddSmartTarget.Response)
 	func presentRemoveSmartTarget(_ response: Map.RemoveSmartTarget.Response)
 	func presentUpdateSmartTarget(_ response: Map.UpdateSmartTarget.Response)
+
 	func presentUpdateSmartTargets(_ response: Map.UpdateSmartTargets.Response)
+
+	// Notifications
+	func presentSetNotificationServiceDelegate(_ response: Map.SetNotificationServiceDelegate.Response)
+
+	// Monitoring Region
+	func presentStartMonitoringRegion(_ response: Map.StartMonitoringRegion.Response)
+	func presentStopMonitoringRegion(_ response: Map.StopMonitoringRegion.Response)
+
+	// Settings
 	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response)
 	func presentGetRangeRadius(_ response: Map.GetRangeRadius.Response)
 	func presentGetMeasuringSystem(_ response: Map.GetMeasuringSystem.Response)
@@ -83,6 +95,21 @@ extension MapPresenter: MapPresentationLogic
 		DispatchQueue.main.async { [weak self] in
 			self?.viewController?.displayRemoveSmartTarget(Map.RemoveSmartTarget.ViewModel(isRemoved: response.isRemoved))
 		}
+	}
+
+	func presentSetNotificationServiceDelegate(_ response: Map.SetNotificationServiceDelegate.Response) {
+		let viewModel = Map.SetNotificationServiceDelegate.ViewModel(isSet: response.isSet)
+		viewController?.displaySetNotificationServiceDelegate(viewModel)
+	}
+
+	func presentStartMonitoringRegion(_ response: Map.StartMonitoringRegion.Response) {
+		let viewModel = Map.StartMonitoringRegion.ViewModel(isStarted: response.isStarted)
+		viewController?.displayStartMonitoringRegion(viewModel)
+	}
+
+	func presentStopMonitoringRegion(_ response: Map.StopMonitoringRegion.Response) {
+		let viewModel = Map.StopMonitoringRegion.ViewModel(isStoped: response.isStoped)
+		viewController?.displayStopMonitoringRegion(viewModel)
 	}
 
 	func presentUpdateSmartTarget(_ response: Map.UpdateSmartTarget.Response) {

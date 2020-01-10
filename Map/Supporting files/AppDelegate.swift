@@ -12,6 +12,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate
 {
 	var window: UIWindow?
 
+	let notificationWorker = NotificationWorker(service: NotificationService.default)
+
 	func application(_ application: UIApplication,
 					didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 

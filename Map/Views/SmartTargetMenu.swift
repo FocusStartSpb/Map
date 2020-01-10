@@ -152,10 +152,11 @@ final class SmartTargetMenu: UIView
 	///   - textField: textField с заголовком
 	///   - sliderValue: Значение установленное на слайдере
 	///   - sliderValuesRange: Диапазон значений слайдера
-	///   - title: label c адресом
-	///   - saveAction: Блок кода выполняемый при нажатии на кнопку "Save"
-	///   - removeAction: Блок кода выполняемый при нажатии на кнопку "Remove"
+	///   - title: текст отображаемый в label`е
+	///   - leftAction: Блок кода выполняемый при нажатии на кнопку кнопку слева
+	///   - rightAction: Блок кода выполняемый при нажатии на кнопку кнопку справа
 	///   - sliderAction: Блок кода выполняемый при изменении значения слайдера
+	///   - textFieldAction: Блок кода выполняемый при изменении текста
 	init(textField: String? = nil,
 		 sliderValue: Double = 0,
 		 sliderValuesRange: (min: Double, max: Double),

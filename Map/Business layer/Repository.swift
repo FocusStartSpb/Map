@@ -42,6 +42,14 @@ extension SmartTargetRepository: ISmartTargetRepository
 		catch let error as ServiceError {
 			completion(.failure(error))
 		}
+		catch let error as FilesManager.Error {
+			switch error {
+			case .fileNotExists:
+				completion(.failure(.fileNotExists))
+			default:
+				completion(.failure(.canNotLoadSmartTarget(message: error.localizedDescription)))
+			}
+		}
 		catch {
 			completion(.failure(.canNotLoadSmartTarget(message: error.localizedDescription)))
 		}

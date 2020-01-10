@@ -14,10 +14,22 @@ protocol MapDisplayLogic: AnyObject
 	func displaySmartTarget(_ viewModel: Map.GetSmartTarget.ViewModel)
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel)
 	func displayAddress(_ viewModel: Map.Address.ViewModel)
+
+	// Adding, updating, removing smart targets
 	func displayAddSmartTarget(_ viewModel: Map.AddSmartTarget.ViewModel)
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel)
 	func displayUpdateSmartTarget(_ viewModel: Map.UpdateSmartTarget.ViewModel)
+
 	func displayUpdateSmartTargets(_ viewModel: Map.UpdateSmartTargets.ViewModel)
+
+	// Notifications
+	func displaySetNotificationServiceDelegate(_ viewModel: Map.SetNotificationServiceDelegate.ViewModel)
+
+	// Monitoring Region
+	func displayStartMonitoringRegion(_ viewModel: Map.StartMonitoringRegion.ViewModel)
+	func displayStopMonitoringRegion(_ viewModel: Map.StopMonitoringRegion.ViewModel)
+
+	// Settings
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel)
 	func displayGetRangeRadius(_ viewModel: Map.GetRangeRadius.ViewModel)
 	func displayGetMeasuringSystem(_ viewModel: Map.GetMeasuringSystem.ViewModel)
@@ -70,7 +82,9 @@ final class MapViewController: UIViewController
 	private var isDraggedTemptPointer = false
 	private var isNewPointer = false
 	private var isAnimateMapView = false
+	private var isAnimateSmartTargetMenu = false
 	private var willTranslateKeyboard = false
+	private var regionIsChanging = false
 	private var circleRadius = 300.0
 
 	// Calculated properties
@@ -174,8 +188,25 @@ final class MapViewController: UIViewController
 		let fetchSmartTardetRequest = Map.FetchSmartTargets.Request()
 		interactor.getSmartTargets(fetchSmartTardetRequest)
 
+		let notificationRequest = Map.SetNotificationServiceDelegate.Request(notificationDelegate: self)
+		interactor.setNotificationServiceDelegate(notificationRequest)
+
 		let request = Map.GetCurrentRadius.Request(currentRadius: circleRadius)
 		interactor.getCurrentRadius(request)
+	}
+
+	private func setInitialAttendanceData(for smartTarget: inout SmartTarget) {
+		smartTarget.entryDate = nil
+		smartTarget.exitDate = nil
+		smartTarget.numberOfVisits = 0
+		smartTarget.timeInside = 0
+	}
+
+	private func setAnnotationView(_ annotationView: MKAnnotationView?,
+								   draggable: Bool,
+								   andShowCallout canShowCallout: Bool) {
+		annotationView?.isDraggable = draggable
+		annotationView?.canShowCallout = canShowCallout
 	}
 
 	private func setupDefaultSettings() {
@@ -184,6 +215,7 @@ final class MapViewController: UIViewController
 		temptLastPointer = nil
 		interactor.temptSmartTarget = nil
 		removeTemptCircle()
+		setTabBarHidden(false)
 
 		addButtonView.isHidden = false
 		isEditSmartTarget = false
@@ -223,14 +255,14 @@ final class MapViewController: UIViewController
 
 	// MARK: ...Menu methods
 	private func createSmartTargetMenu(isEditing: Bool) -> SmartTargetMenu {
-		return SmartTargetMenu(textField: interactor.temptSmartTarget?.title,
-							   sliderValue: interactor.temptSmartTarget?.radius ?? circleRadius,
-							   sliderValuesRange: (50, 1000),
-							   title: interactor.temptSmartTarget?.address,
-							   leftAction: isEditing ? removeAction /*cancelAction*/ : removeAction,
-							   rightAction: saveAction,
-							   sliderAction: actionChangeRadius,
-							   textFieldAction: actionChangeTitle)
+		SmartTargetMenu(textField: interactor.temptSmartTarget?.title,
+						sliderValue: interactor.temptSmartTarget?.radius ?? circleRadius,
+						sliderValuesRange: (50, 1000),
+						title: interactor.temptSmartTarget?.address,
+						leftAction: isEditing ? removeAction /*cancelAction*/ : removeAction,
+						rightAction: saveAction,
+						sliderAction: actionChangeRadius,
+						textFieldAction: actionChangeTitle)
 	}
 
 	private func showSmartTargetMenu(isEditing: Bool) {
@@ -248,16 +280,25 @@ final class MapViewController: UIViewController
 		setupSmartTargetMenuConstraints()
 		view.layoutIfNeeded()
 
-		UIView.animate(withDuration: 0.3) {
-			self.smartTargetMenuBottomLayoutConstraint?.constant = -self.currentLocationOffset
+		let needHide = regionIsChanging
+
+		UIView.animate(withDuration: 0.3, animations: {
+			self.isAnimateSmartTargetMenu = true
+			let tabBarHeight = isEditing ? (self.tabBarController?.tabBar.frame.height ?? 0) : 0
+			self.smartTargetMenuBottomLayoutConstraint?.constant =
+				-self.currentLocationOffset + tabBarHeight
 			self.smartTargetMenuLeadingLayoutConstraint?.isActive = false
-			self.smartTargetMenu?
-				.leadingAnchor
+			menu.leadingAnchor
 				.constraint(equalTo: self.view.leadingAnchor,
 							constant: self.currentLocationOffset)
 				.isActive = true
 			self.view.layoutIfNeeded()
-		}
+		}, completion: { _ in
+			self.isAnimateSmartTargetMenu = false
+			if needHide, self.isEditSmartTarget {
+				self.animateSmartTargetMenu(hide: true)
+			}
+		})
 	}
 
 	// MARK: ...Animations
@@ -298,6 +339,16 @@ final class MapViewController: UIViewController
 			}
 		}
 	}
+
+	private func animatePinViewHidden(_ isHidden: Bool) {
+		if let temptPointer = currentPointer, let view = mapView.view(for: temptPointer) {
+			UIView.animate(withDuration: 0.25, delay: 0.25, animations: {
+				view.alpha = isHidden ? 0 : 1
+			}, completion: { _ in
+				view.isHidden = isHidden
+			})
+		}
+	}
 }
 
 // MARK: - Actions
@@ -318,11 +369,14 @@ private extension MapViewController
 		interactor.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate)
 		addCurrentPointer(at: mapView.centerCoordinate)
 		showSmartTargetMenu(isEditing: false)
-		interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
-		impactFeedbackGenerator.prepare()
+		if regionIsChanging == false {
+			interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
+			impactFeedbackGenerator.prepare()
+		}
 	}
 
 	func actionEditSmartTarget(annotation: SmartTargetAnnotation) {
+		setTabBarHidden(true)
 		let request = Map.GetSmartTarget.Request(uid: annotation.uid)
 		interactor.getSmartTarget(request)
 		addButtonView.isHidden = true
@@ -338,12 +392,12 @@ private extension MapViewController
 	func actionSave(_ sender: Any) {
 
 		var checkTitleText: Bool {
-			guard let title = smartTargetMenu?.title else { return false }
+			guard let title = smartTargetMenu?.text else { return false }
 			return title.isEmpty == false
 		}
 
 		guard
-			let smartTargetMenu = self.smartTargetMenu,
+			let smartTargetMenu = smartTargetMenu,
 			var temptSmartTarget = interactor.temptSmartTarget,
 			let temptPointer = currentPointer else { return }
 
@@ -364,11 +418,15 @@ private extension MapViewController
 
 		// Меняем настройки для annotation view
 		let annotationView = mapView.view(for: temptPointer)
-		annotationView?.isDraggable = false
-		annotationView?.canShowCallout = true
+		setAnnotationView(annotationView, draggable: false, andShowCallout: true)
 
 		// Сохраняем smartTarget
 		if temptLastPointer != nil {
+			if temptLastPointer?.coordinate != temptSmartTarget.coordinates {
+				// Обнуляем данные посещаемости
+				setInitialAttendanceData(for: &temptSmartTarget)
+			}
+
 			let request = Map.UpdateSmartTarget.Request(smartTarget: temptSmartTarget)
 			interactor.updateSmartTarget(request)
 		}
@@ -376,6 +434,10 @@ private extension MapViewController
 			let request = Map.AddSmartTarget.Request(smartTarget: temptSmartTarget)
 			interactor.addSmartTarget(request)
 		}
+
+		// Начинаем отслеживание
+		let monitoringRegionRequest = Map.StartMonitoringRegion.Request(smartTarget: temptSmartTarget)
+		interactor.startMonitoringRegion(monitoringRegionRequest)
 
 		smartTargetMenu.hide { smartTargetMenu.removeFromSuperview() }
 		setupDefaultSettings()
@@ -408,6 +470,10 @@ private extension MapViewController
 		let request = Map.RemoveSmartTarget.Request(uid: temptPointer.uid)
 		interactor.removeSmartTarget(request)
 
+		// Завершаем отслеживание
+		let monitoringRegionRequest = Map.StopMonitoringRegion.Request(uid: temptPointer.uid)
+		interactor.stopMonitoringRegion(monitoringRegionRequest)
+
 		mapView.removeAnnotation(temptPointer)
 		smartTargetMenu?.removeFromSuperview()
 		setupDefaultSettings()
@@ -420,8 +486,7 @@ private extension MapViewController
 
 		// Меняем настройки для annotation view
 		let annotationView = mapView.view(for: temptPointer)
-		annotationView?.isDraggable = false
-		annotationView?.canShowCallout = true
+		setAnnotationView(annotationView, draggable: false, andShowCallout: true)
 
 		mapView.removeAnnotation(temptPointer)
 		mapView.addAnnotation(temptLastPointer)
@@ -465,14 +530,15 @@ private extension MapViewController
 		}
 		let keyboardHeight = keyboardFrame.cgRectValue.height
 		animateMapViewFrame(withBottomOffset: -keyboardHeight)
-		smartTargetMenuBottomConstant = -keyboardHeight / 3 - currentLocationOffset
+		smartTargetMenuBottomConstant = -keyboardHeight / 3
 		animateSmartTargetMenu(withBottomOffset: smartTargetMenuBottomConstant)
 	}
 
 	func keyboardWillDisappear(notification: NSNotification?) {
 		willTranslateKeyboard = true
+		let tabBarHeight = (tabBarController?.tabBar.isHidden == false) ? 0 : tabBarController?.tabBar.frame.height ?? 0
 		animateMapViewFrame(withBottomOffset: 0, layoutIfNeeded: false)
-		smartTargetMenuBottomConstant = -currentLocationOffset
+		smartTargetMenuBottomConstant = -currentLocationOffset + tabBarHeight
 		animateSmartTargetMenu(withBottomOffset: smartTargetMenuBottomConstant, layoutIfNeeded: false)
 	}
 
@@ -486,10 +552,74 @@ private extension MapViewController
 
 	func appMovedFromBackground() {
 		notificationCenter.addObserver(self, notifications: keyboardNotifications)
+		if currentPointer != nil {
+			smartTargetMenu?.translucent(false)
+			smartTargetMenu?.isEditable = true
+		}
 	}
 
 	func appMovedToBackground() {
 		notificationCenter.removeObserver(self, names: Set(keyboardNotifications.keys))
+		if currentPointer != nil, regionIsChanging, isAnimateSmartTargetMenu {
+			actionRemove(Any.self)
+		}
+	}
+}
+
+// MARK: - Constraints
+private extension MapViewController
+{
+	func setupMapConstraints() {
+		mapView.translatesAutoresizingMaskIntoConstraints = false
+		mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+		mapViewBottomLayoutConstraint = mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+		mapViewBottomLayoutConstraint?.isActive = true
+		mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+	}
+
+	func setupCurrentLocationButtonConstraints() {
+		currentLocationButton.translatesAutoresizingMaskIntoConstraints = false
+		currentLocationButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
+													  constant: currentLocationOffset).isActive = true
+		currentLocationButton.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+		currentLocationButton.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+		currentLocationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+														constant: -currentLocationOffset).isActive = true
+	}
+
+	func setupAddButtonViewConstraints() {
+		addButtonView.translatesAutoresizingMaskIntoConstraints = false
+
+		addButtonView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+												constant: -currentLocationOffset).isActive = true
+		addButtonView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+											  constant: -currentLocationOffset).isActive = true
+		addButtonView.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+		addButtonView.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
+	}
+
+	func setupSmartTargetMenuConstraints() {
+		smartTargetMenu?.translatesAutoresizingMaskIntoConstraints = false
+
+		smartTargetMenuBottomLayoutConstraint =
+			smartTargetMenu?
+				.bottomAnchor
+				.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+							constant: -currentLocationOffset)
+		smartTargetMenuBottomLayoutConstraint?.isActive = true
+
+		smartTargetMenuLeadingLayoutConstraint =
+			smartTargetMenu?
+				.leadingAnchor
+				.constraint(equalTo: addButtonView.leadingAnchor)
+		smartTargetMenuLeadingLayoutConstraint?.isActive = true
+
+		smartTargetMenu?
+			.trailingAnchor
+			.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
+						constant: -currentLocationOffset)
+			.isActive = true
 	}
 }
 
@@ -522,6 +652,12 @@ extension MapViewController: MapDisplayLogic
 	func displayAddSmartTarget(_ viewModel: Map.AddSmartTarget.ViewModel) { }
 
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel) { }
+
+	func displaySetNotificationServiceDelegate(_ viewModel: Map.SetNotificationServiceDelegate.ViewModel) { }
+
+	func displayStartMonitoringRegion(_ viewModel: Map.StartMonitoringRegion.ViewModel) { }
+
+	func displayStopMonitoringRegion(_ viewModel: Map.StopMonitoringRegion.ViewModel) { }
 
 	func displayUpdateSmartTarget(_ viewModel: Map.UpdateSmartTarget.ViewModel) { }
 
@@ -577,13 +713,14 @@ extension MapViewController: MKMapViewDelegate
 			pinView?.annotation = annotation
 		}
 		pinView?.animatesDrop = isNewPointer
-		pinView?.isDraggable = isEditSmartTarget
-		pinView?.canShowCallout = (isEditSmartTarget == false)
 		pinView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+		setAnnotationView(pinView, draggable: isEditSmartTarget, andShowCallout: (isEditSmartTarget == false))
 
 		if isNewPointer {
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
-				self?.impactFeedbackGenerator.impactOccurred()
+				if self?.regionIsChanging == false {
+					self?.impactFeedbackGenerator.impactOccurred()
+				}
 			}
 			isNewPointer = false
 		}
@@ -592,18 +729,22 @@ extension MapViewController: MKMapViewDelegate
 	}
 
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+		regionIsChanging = true
 		guard willTranslateKeyboard == false, isDraggedTemptPointer == false else { return }
 		animateSmartTargetMenu(hide: true)
 		smartTargetMenu?.title = nil
 		if temptLastPointer != nil {
 			smartTargetMenu?.leftMenuAction = self.cancelAction
 		}
+		animatePinViewHidden(true)
 	}
 
 	func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
 		guard let temptPointer = currentPointer, isEditSmartTarget,
 			isDraggedTemptPointer == false,
 			isAnimateMapView == false else { return }
+
+		smartTargetMenu?.title = nil
 
 		// Update pointer annotation
 		mapView.removeAnnotation(temptPointer)
@@ -615,6 +756,7 @@ extension MapViewController: MKMapViewDelegate
 	}
 
 	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+		regionIsChanging = false
 		guard let temptPointer = self.currentPointer,
 			isAnimateMapView == false,
 			isDraggedTemptPointer == false else {
@@ -629,6 +771,7 @@ extension MapViewController: MKMapViewDelegate
 		if willTranslateKeyboard == false {
 			animateSmartTargetMenu(hide: false)
 		}
+		animatePinViewHidden(false)
 		interactor.getAddress(Map.Address.Request(coordinate: temptPointer.coordinate))
 	}
 
@@ -699,8 +842,7 @@ extension MapViewController: MKMapViewDelegate
 		isNewPointer = false
 		showLocation(coordinate: annotation.coordinate)
 		mapView.deselectAnnotation(view.annotation, animated: true)
-		view.canShowCallout = false
-		view.isDraggable = true
+		setAnnotationView(view, draggable: true, andShowCallout: false)
 		currentPointer = annotation
 		actionEditSmartTarget(annotation: annotation)
 	}
@@ -729,63 +871,31 @@ extension MapViewController: MKMapViewDelegate
 	}
 }
 
-// MARK: Constraints
-private extension MapViewController
+// MARK: - Notification service delegate
+extension MapViewController: NotificationServiceDelegate
 {
-	func setupMapConstraints() {
-		mapView.translatesAutoresizingMaskIntoConstraints = false
-		mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-		mapViewBottomLayoutConstraint = mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-		mapViewBottomLayoutConstraint?.isActive = true
-		mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+	func notificationService(_ notificationService: NotificationService,
+							 action: NotificationService.Action,
+							 forUID uid: String,
+							 atNotificationDeliveryDate deliveryDate: Date) {
+		switch action {
+		case .show:
+			guard let annotation = annotations.first(where: { $0.uid == uid }) else { return }
+			showLocation(coordinate: annotation.coordinate)
+			mapView.selectAnnotation(annotation, animated: true)
+		case .dismiss: break
+		case .cancel: break
+		case .default: break
+		}
 	}
 
-	func setupCurrentLocationButtonConstraints() {
-		currentLocationButton.translatesAutoresizingMaskIntoConstraints = false
-		currentLocationButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-													  constant: currentLocationOffset).isActive = true
-		currentLocationButton.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
-		currentLocationButton.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
-		currentLocationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-														constant: -currentLocationOffset).isActive = true
-	}
-
-	func setupAddButtonViewConstraints() {
-		addButtonView.translatesAutoresizingMaskIntoConstraints = false
-
-		addButtonView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-												constant: -currentLocationOffset).isActive = true
-		addButtonView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-											  constant: -currentLocationOffset).isActive = true
-		addButtonView.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
-		addButtonView.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
-	}
-
-	func setupSmartTargetMenuConstraints() {
-		smartTargetMenu?.translatesAutoresizingMaskIntoConstraints = false
-
-		smartTargetMenuBottomLayoutConstraint =
-			smartTargetMenu?
-				.bottomAnchor
-				.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-							constant: -currentLocationOffset)
-		smartTargetMenuBottomLayoutConstraint?.isActive = true
-
-		smartTargetMenuLeadingLayoutConstraint =
-			smartTargetMenu?
-				.leadingAnchor
-				.constraint(equalTo: addButtonView.leadingAnchor)
-		smartTargetMenuLeadingLayoutConstraint?.isActive = true
-
-		smartTargetMenu?
-			.trailingAnchor
-			.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
-						constant: -currentLocationOffset)
-			.isActive = true
+	func notificationService(_ notificationService: NotificationService,
+							 didReceiveNotificationForUID uid: String,
+							 atNotificationDeliveryDate deliveryDate: Date) {
 	}
 }
 
+// MARK: - Tab bar controller delegate
 extension MapViewController: UITabBarControllerDelegate
 {
 	func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {

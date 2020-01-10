@@ -16,14 +16,17 @@ protocol ISmartTargetCollection: Codable
 	@discardableResult func put(_ smartTarget: SmartTarget) -> Int
 	func add(_ smartTargets: [SmartTarget])
 	@discardableResult func remove(atUID uid: String) -> Int?
+
 	func smartTarget(at uid: String) -> SmartTarget?
 	func smartTargets(at uids: [String]) -> [SmartTarget]
+
 	func index(at uid: String) -> Int?
 	func index(at smartTarget: SmartTarget) -> Int?
 	func indexes(at uids: [String]) -> [Int]
 	func indexes(at smartTargets: [SmartTarget]) -> [Int]
 	subscript(_ uid: String) -> SmartTarget? { get }
 
+	func contains(_ smartTarget: SmartTarget) -> Bool
 	func smartTargetsOfDifference(from other: ISmartTargetCollection) ->
 		(added: [SmartTarget], removed: [SmartTarget], updated: [SmartTarget])
 
@@ -106,6 +109,10 @@ extension SmartTargetCollection: ISmartTargetCollection
 
 	subscript(_ uid: String) -> SmartTarget? {
 		smartTarget(at: uid)
+	}
+
+	func contains(_ smartTarget: SmartTarget) -> Bool {
+		smartTargets.contains(smartTarget)
 	}
 
 	func smartTargetsOfDifference(from other: ISmartTargetCollection) ->
