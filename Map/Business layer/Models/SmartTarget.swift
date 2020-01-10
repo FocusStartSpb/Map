@@ -24,7 +24,7 @@ struct SmartTarget
 	private(set) var numberOfVisits = 0
 	private(set) var timeInside: TimeInterval = 0
 
-	var region: CLRegion {
+	var region: CLCircularRegion {
 		CLCircularRegion(center: coordinates, radius: radius ?? 100, identifier: uid)
 	}
 
