@@ -21,8 +21,8 @@ struct SmartTarget
 	var address: String?
 	var radius: Double?
 
-	var numberOfVisits = 0
-	var timeInside: TimeInterval = 0
+	private(set) var numberOfVisits = 0
+	private(set) var timeInside: TimeInterval = 0
 
 	var region: CLRegion {
 		CLCircularRegion(center: coordinates, radius: radius ?? 100, identifier: uid)
