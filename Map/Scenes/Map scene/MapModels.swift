@@ -221,4 +221,65 @@ enum Map
 			let measuringFactor: Double
 		}
 	}
+
+	// MARK: - Notifications
+
+	// MARK: ...SetNotificationServiceDelegate
+	enum SetNotificationServiceDelegate
+	{
+		struct Request
+		{
+			weak var notificationDelegate: NotificationServiceDelegate?
+		}
+
+		struct Response
+		{
+			let isSet: Bool
+		}
+
+		struct ViewModel
+		{
+			let isSet: Bool
+		}
+	}
+
+	// Monitoring region
+
+	// MARK: ...StartMonitoringRegion
+	enum StartMonitoringRegion
+	{
+		struct Request
+		{
+			let smartTarget: SmartTarget
+		}
+
+		struct Response
+		{
+			let isStarted: Bool
+		}
+
+		struct ViewModel
+		{
+			let isStarted: Bool
+		}
+	}
+
+	// MARK: ...StopMonitoringRegion
+	enum StopMonitoringRegion
+	{
+		struct Request
+		{
+			let uid: String
+		}
+
+		struct Response
+		{
+			let isStoped: Bool
+		}
+
+		struct ViewModel
+		{
+			let isStoped: Bool
+		}
+	}
 }

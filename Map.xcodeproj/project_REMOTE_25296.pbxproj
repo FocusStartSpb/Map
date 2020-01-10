@@ -7,10 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */; };
-		3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B023C364A300700935 /* DetailTargetRouter.swift */; };
-		3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B223C364B900700935 /* DetailTargetViewController.swift */; };
-		3A4337B523C364CB00700935 /* DismissView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B423C364CB00700935 /* DismissView.swift */; };
 		3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */; };
 		3ABCDC9323B7B71B0050F4B2 /* SmartTargetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */; };
 		3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */; };
@@ -22,7 +18,6 @@
 		5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01723A8388700A6F125 /* SceneBuilder.swift */; };
 		5837D01A23A838E100A6F125 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01923A838E100A6F125 /* Repository.swift */; };
 		5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5837D01B23A839E000A6F125 /* DecoderService.swift */; };
-		58454C3923C25B7A008BB813 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58454C3823C25B7A008BB813 /* NotificationService.swift */; };
 		58454F2F23BE875C00EE0D71 /* Identity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58454F2E23BE875C00EE0D71 /* Identity.swift */; };
 		58454F3223BE87C400EE0D71 /* Array+Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58454F3123BE87C400EE0D71 /* Array+Difference.swift */; };
 		584EE5AF23A7F8490013087A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584EE5AE23A7F8490013087A /* AppDelegate.swift */; };
@@ -60,22 +55,15 @@
 		586F660723BAB6D2007D4657 /* SettingsSceneWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586F660623BAB6D2007D4657 /* SettingsSceneWorker.swift */; };
 		586F660C23BBF065007D4657 /* MenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586F660B23BBF065007D4657 /* MenuAction.swift */; };
 		5891A8EC23B3BF5200FB1D1C /* GeocoderWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5891A8EB23B3BF5200FB1D1C /* GeocoderWorker.swift */; };
-		58A4B28923C6E27700D0D985 /* Formatter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A4B28823C6E27700D0D985 /* Formatter+Extension.swift */; };
 		58A9984123A852AC00CAACE8 /* SmartTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984023A852AC00CAACE8 /* SmartTarget.swift */; };
 		58A9984423AC19A500CAACE8 /* DataBaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984323AC19A500CAACE8 /* DataBaseService.swift */; };
 		58A9984623AC1D1700CAACE8 /* Sequence+UniqueElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984523AC1D1700CAACE8 /* Sequence+UniqueElements.swift */; };
 		58A9984823AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984723AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift */; };
 		58A9984A23AC35E000CAACE8 /* SmartTargetCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A9984923AC35E000CAACE8 /* SmartTargetCollection.swift */; };
-		58EEE41923C27F1600CE9229 /* NotificationWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EEE41823C27F1600CE9229 /* NotificationWorker.swift */; };
-		58EEE41B23C4404300CE9229 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EEE41A23C4404300CE9229 /* UIViewController+Extension.swift */; };
 		58F7E96D23AD96A600E3859F /* DataBaseWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F7E96C23AD96A600E3859F /* DataBaseWorker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetPresenter.swift; sourceTree = "<group>"; };
-		3A4337B023C364A300700935 /* DetailTargetRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetRouter.swift; sourceTree = "<group>"; };
-		3A4337B223C364B900700935 /* DetailTargetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetViewController.swift; sourceTree = "<group>"; };
-		3A4337B423C364CB00700935 /* DismissView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissView.swift; sourceTree = "<group>"; };
 		3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartTargetTableViewCell.swift; sourceTree = "<group>"; };
 		3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderModel.swift; sourceTree = "<group>"; };
@@ -87,7 +75,6 @@
 		5837D01723A8388700A6F125 /* SceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneBuilder.swift; sourceTree = "<group>"; };
 		5837D01923A838E100A6F125 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		5837D01B23A839E000A6F125 /* DecoderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecoderService.swift; sourceTree = "<group>"; };
-		58454C3823C25B7A008BB813 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		58454F2E23BE875C00EE0D71 /* Identity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identity.swift; sourceTree = "<group>"; };
 		58454F3123BE87C400EE0D71 /* Array+Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Difference.swift"; sourceTree = "<group>"; };
 		584EE5AB23A7F8490013087A /* Map.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Map.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -127,14 +114,11 @@
 		586F660623BAB6D2007D4657 /* SettingsSceneWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSceneWorker.swift; sourceTree = "<group>"; };
 		586F660B23BBF065007D4657 /* MenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuAction.swift; sourceTree = "<group>"; };
 		5891A8EB23B3BF5200FB1D1C /* GeocoderWorker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderWorker.swift; sourceTree = "<group>"; };
-		58A4B28823C6E27700D0D985 /* Formatter+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Formatter+Extension.swift"; sourceTree = "<group>"; };
 		58A9984023A852AC00CAACE8 /* SmartTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTarget.swift; sourceTree = "<group>"; };
 		58A9984323AC19A500CAACE8 /* DataBaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBaseService.swift; sourceTree = "<group>"; };
 		58A9984523AC1D1700CAACE8 /* Sequence+UniqueElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+UniqueElements.swift"; sourceTree = "<group>"; };
 		58A9984723AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocationCoordinate2D+Extension.swift"; sourceTree = "<group>"; };
 		58A9984923AC35E000CAACE8 /* SmartTargetCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetCollection.swift; sourceTree = "<group>"; };
-		58EEE41823C27F1600CE9229 /* NotificationWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationWorker.swift; sourceTree = "<group>"; };
-		58EEE41A23C4404300CE9229 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		58F7E96C23AD96A600E3859F /* DataBaseWorker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataBaseWorker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -163,25 +147,6 @@
 				3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */,
 			);
 			path = Cell;
-			sourceTree = "<group>";
-		};
-		3AC8713223C3914000B06657 /* Detail target scene */ = {
-			isa = PBXGroup;
-			children = (
-				3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */,
-				3A4337B023C364A300700935 /* DetailTargetRouter.swift */,
-				3A4337B223C364B900700935 /* DetailTargetViewController.swift */,
-				3AC8713323C3915000B06657 /* View */,
-			);
-			path = "Detail target scene";
-			sourceTree = "<group>";
-		};
-		3AC8713323C3915000B06657 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				3A4337B423C364CB00700935 /* DismissView.swift */,
-			);
-			path = View;
 			sourceTree = "<group>";
 		};
 		580A076423AFEAB900192969 /* Views */ = {
@@ -262,7 +227,6 @@
 				584EE5DC23A834D60013087A /* SmartTargetListPresenter.swift */,
 				584EE5DE23A834D60013087A /* SmartTargetListRouter.swift */,
 				584EE5DF23A834D60013087A /* SmartTargetListModels.swift */,
-				3AC8713223C3914000B06657 /* Detail target scene */,
 				3ABCDC9123B7B71B0050F4B2 /* Cell */,
 			);
 			path = "Smart target list scene";
@@ -315,7 +279,6 @@
 				585F64A723B9989900B66EAA /* SettingsWorker.swift */,
 				58F7E96C23AD96A600E3859F /* DataBaseWorker.swift */,
 				5891A8EB23B3BF5200FB1D1C /* GeocoderWorker.swift */,
-				58EEE41823C27F1600CE9229 /* NotificationWorker.swift */,
 			);
 			path = Workers;
 			sourceTree = "<group>";
@@ -326,7 +289,6 @@
 				5837D01B23A839E000A6F125 /* DecoderService.swift */,
 				58A9984323AC19A500CAACE8 /* DataBaseService.swift */,
 				3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */,
-				58454C3823C25B7A008BB813 /* NotificationService.swift */,
 			);
 			path = Swrvices;
 			sourceTree = "<group>";
@@ -381,8 +343,6 @@
 				585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */,
 				5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */,
 				58551DD523BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift */,
-				58EEE41A23C4404300CE9229 /* UIViewController+Extension.swift */,
-				58A4B28823C6E27700D0D985 /* Formatter+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -482,13 +442,10 @@
 				58551DD623BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift in Sources */,
 				585F64DF23BA92CD00B66EAA /* RangeSliderTrackLayer.swift in Sources */,
 				584EE5AF23A7F8490013087A /* AppDelegate.swift in Sources */,
-				58EEE41923C27F1600CE9229 /* NotificationWorker.swift in Sources */,
 				586F660723BAB6D2007D4657 /* SettingsSceneWorker.swift in Sources */,
 				584EE5CC23A833D70013087A /* MapViewController.swift in Sources */,
 				585BBB8823B219170001F749 /* ButtonView.swift in Sources */,
 				58551DD823BD854300E76885 /* TabBarControllerBuilder.swift in Sources */,
-				3A4337B523C364CB00700935 /* DismissView.swift in Sources */,
-				58A4B28923C6E27700D0D985 /* Formatter+Extension.swift in Sources */,
 				585F64B923BA7D5000B66EAA /* RangeSliderTableViewCell.swift in Sources */,
 				584EE5E423A834D60013087A /* SmartTargetListRouter.swift in Sources */,
 				5815996823B52DD900232CE2 /* NotificationCenter+Extension.swift in Sources */,
@@ -497,16 +454,11 @@
 				585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */,
 				5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */,
 				5891A8EC23B3BF5200FB1D1C /* GeocoderWorker.swift in Sources */,
-				3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */,
 				3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */,
-				58454C3923C25B7A008BB813 /* NotificationService.swift in Sources */,
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,
 				3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */,
 				3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */,
-				3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */,
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
-				58EEE41B23C4404300CE9229 /* UIViewController+Extension.swift in Sources */,
-				3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */,
 				582ED16D23AE8458001AD44E /* Decodable+Initialization.swift in Sources */,
 				58454F2F23BE875C00EE0D71 /* Identity.swift in Sources */,
 				584EE5C823A833D70013087A /* MapPresenter.swift in Sources */,
