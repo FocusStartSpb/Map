@@ -195,13 +195,6 @@ final class MapViewController: UIViewController
 		interactor.getCurrentRadius(request)
 	}
 
-	private func setInitialAttendanceData(for smartTarget: inout SmartTarget) {
-		smartTarget.entryDate = nil
-		smartTarget.exitDate = nil
-		smartTarget.numberOfVisits = 0
-		smartTarget.timeInside = 0
-	}
-
 	private func setAnnotationView(_ annotationView: MKAnnotationView?,
 								   draggable: Bool,
 								   andShowCallout canShowCallout: Bool) {
@@ -413,6 +406,17 @@ private extension MapViewController
 		temptSmartTarget.address = smartTargetMenu.title
 		temptSmartTarget.radius = Double(smartTargetMenu.sliderValue)
 
+		// Обновляем данные посещаемости
+		if temptLastPointer?.coordinate != temptPointer.coordinate {
+			temptSmartTarget.setInitialAttendance()
+		}
+		if temptSmartTarget.region.contains(mapView.userLocation.coordinate) {
+			temptSmartTarget.entryDate = Date()
+		}
+		else if temptSmartTarget.entryDate != nil {
+			temptSmartTarget.exitDate = Date()
+		}
+
 		// Обновляем аннотацию (pin)
 		temptPointer.title = smartTargetMenu.text
 
@@ -422,11 +426,6 @@ private extension MapViewController
 
 		// Сохраняем smartTarget
 		if temptLastPointer != nil {
-			if temptLastPointer?.coordinate != temptSmartTarget.coordinates {
-				// Обнуляем данные посещаемости
-				setInitialAttendanceData(for: &temptSmartTarget)
-			}
-
 			let request = Map.UpdateSmartTarget.Request(smartTarget: temptSmartTarget)
 			interactor.updateSmartTarget(request)
 		}
