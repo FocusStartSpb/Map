@@ -187,9 +187,6 @@ final class MapViewController: UIViewController
 		setupAddButtonViewConstraints()
 
 		// Requests
-		let updateStatusRequest = Map.UpdateStatus.Request()
-		interactor.configureLocationService(request: updateStatusRequest)
-
 		let fetchSmartTardetRequest = Map.FetchSmartTargets.Request()
 		interactor.getSmartTargets(fetchSmartTardetRequest)
 
@@ -558,6 +555,9 @@ private extension MapViewController
 	}
 
 	func appMovedFromBackground() {
+		let updateStatusRequest = Map.UpdateStatus.Request()
+		interactor.configureLocationService(request: updateStatusRequest)
+
 		notificationCenter.addObserver(self, notifications: keyboardNotifications)
 		if currentPointer != nil {
 			smartTargetMenu?.translucent(false)
