@@ -354,7 +354,7 @@ final class MapViewController: UIViewController
 private extension MapViewController
 {
 	func actionCurrentLocation() {
-		interactor.returnToCurrentLocation(request: Map.UpdateStatus.Request())
+		showLocation(coordinate: mapView.userLocation.coordinate)
 	}
 
 	func actionCreateSmartTarget() {
