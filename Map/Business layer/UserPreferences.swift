@@ -40,11 +40,11 @@ enum UserPreferences
 	static var forceRemovePin: Bool?
 
 	/// Minimum range between lowerValueOfRadius and upperValueOfRadius in meters
-	@SettingWrapper(key: Key[.minRangeOfRadius], defaultValue: 500)
+	@SettingWrapper(key: Key[.minRangeOfRadius], defaultValue: 700)
 	static var minRangeOfRadius: Double?
 
 	/// Minimum possible radius value in meters
-	@SettingWrapper(key: Key[.minValueOfRadius], defaultValue: 10)
+	@SettingWrapper(key: Key[.minValueOfRadius], defaultValue: 100)
 	static var minValueOfRadius: Double?
 
 	/// Maximum possible radius value in meters
