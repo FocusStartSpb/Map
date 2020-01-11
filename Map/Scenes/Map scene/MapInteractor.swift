@@ -56,8 +56,13 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 	private var geocoderWorker: GeocoderWorker<G>
 	private var settingsWorker: SettingsWorker
 	private var notificationWorker: NotificationWorker
-
-	private let locationManager = CLLocationManager()
+	private lazy var locationManager: CLLocationManager = {
+		let locationManager = CLLocationManager()
+		locationManager.delegate = self
+		locationManager.allowsBackgroundLocationUpdates = true
+		locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+		return locationManager
+	}()
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
@@ -97,20 +102,22 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 
 	// MARK: ...Private methods
 	private func checkAuthorizationService() {
-		let status = CLLocationManager.authorizationStatus()
-		switch status {
+		switch CLLocationManager.authorizationStatus() {
 		case .notDetermined:
 			locationManager.requestAlwaysAuthorization()
 		case .authorizedAlways, .authorizedWhenInUse:
-			locationManager.startUpdatingLocation()
-			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: true,
-																			   userCoordinate: currentCoordinate))
+			authorizationLocationResponse(true, coordinate: nil)
 		case .restricted, .denied:
-			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: false,
-																			   userCoordinate: nil))
+			authorizationLocationResponse(false, coordinate: nil)
 		@unknown default:
 			fatalError("Unknown case")
 		}
+	}
+
+	private func authorizationLocationResponse(_ isApproved: Bool, coordinate: CLLocationCoordinate2D?) {
+		let response = Map.UpdateStatus.Response(accessToLocationApproved: isApproved,
+												 userCoordinate: coordinate)
+		presenter.beginLocationUpdates(response: response)
 	}
 
 	private func saveSmartTargetCollection(_ completion: @escaping (Bool) -> Void) {
@@ -136,21 +143,21 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 	}
 
 	// MARK: ...CLLocationDelegate
-	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-		guard let latestCoordinate = locations.first?.coordinate else { return }
-		if currentCoordinate == nil {
-			presenter.beginLocationUpdates(response: Map.UpdateStatus.Response(accessToLocationApproved: true,
-																			   userCoordinate: latestCoordinate))
-		}
-		currentCoordinate = locations.first?.coordinate
-	}
-
 	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-		checkAuthorizationService()
+		switch status {
+		case .notDetermined, .restricted, .denied:
+			authorizationLocationResponse(false, coordinate: nil)
+		case .authorizedAlways, .authorizedWhenInUse:
+			authorizationLocationResponse(true, coordinate: locationManager.location?.coordinate)
+		@unknown default:
+			fatalError("Unknown case")
+		}
 	}
 
 	func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
 		notificationWorker.requestNotificationAuthorized { _ in }
+		let response = Map.StartMonitoringRegion.Response(isStarted: true)
+		presenter.presentStartMonitoringRegion(response)
 	}
 
 	func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
@@ -167,6 +174,11 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 		smartTargetCollection?.put(smartTarget)
 		saveSmartTargetCollection { _ in }
 		notificationWorker.addNotifications(for: [smartTarget])
+	}
+
+	func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+		let response = Map.StartMonitoringRegion.Response(isStarted: false)
+		presenter.presentStartMonitoringRegion(response)
 	}
 }
 
@@ -201,7 +213,6 @@ extension MapInteractor: MapBusinessLogic
 	}
 
 	func configureLocationService(request: Map.UpdateStatus.Request) {
-		locationManager.delegate = self
 		checkAuthorizationService()
 	}
 
@@ -253,20 +264,21 @@ extension MapInteractor: MapBusinessLogic
 	}
 
 	func startMonitoringRegion(_ request: Map.StartMonitoringRegion.Request) {
-		if let region = locationManager.monitoredRegions.first(where: { $0.identifier == request.smartTarget.uid }) {
-			locationManager.stopMonitoring(for: region)
-		}
 		locationManager.startMonitoring(for: request.smartTarget.region)
-		let response = Map.StartMonitoringRegion.Response(isStarted: true)
-		presenter.presentStartMonitoringRegion(response)
 	}
 
 	func stopMonitoringRegion(_ request: Map.StopMonitoringRegion.Request) {
-		guard let region = locationManager.monitoredRegions.first(where: { $0.identifier == request.uid }) else { return }
+		var isStoped = true
+		defer {
+			let response = Map.StopMonitoringRegion.Response(isStoped: isStoped)
+			presenter.presentStopMonitoringRegion(response)
+		}
+		guard let region = locationManager.monitoredRegions.first(where: { $0.identifier == request.uid }) else {
+			isStoped = false
+			return
+		}
 		locationManager.stopMonitoring(for: region)
 		notificationWorker.removeNotification(at: request.uid)
-		let response = Map.StopMonitoringRegion.Response(isStoped: true)
-		presenter.presentStopMonitoringRegion(response)
 	}
 
 	func updateSmartTargets(_ request: Map.UpdateSmartTargets.Request) {
