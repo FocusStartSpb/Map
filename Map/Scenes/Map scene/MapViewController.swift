@@ -258,7 +258,7 @@ final class MapViewController: UIViewController
 						sliderValue: interactor.temptSmartTarget?.radius ?? circleRadius,
 						sliderValuesRange: (50, 1000),
 						title: interactor.temptSmartTarget?.address,
-						leftAction: isEditing ? removeAction /*cancelAction*/ : removeAction,
+						leftAction: removeAction,
 						rightAction: saveAction,
 						sliderAction: actionChangeRadius,
 						textFieldAction: actionChangeTitle)
