@@ -69,6 +69,7 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 	var temptSmartTargetCollection: ISmartTargetCollection?
 	var smartTargetCollection: ISmartTargetCollection?
 
+	private var pendingRequesrWorkItem: DispatchWorkItem?
 	private let dispatchQueueGetAddress =
 		DispatchQueue(label: "com.map.getAddress",
 					  qos: .userInitiated,
@@ -140,6 +141,16 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 		if temptSmartTargetCollection == nil {
 			temptSmartTargetCollection = smartTargetCollection?.copy()
 		}
+	}
+
+	private func performGetAddress(after: TimeInterval, _ block: @escaping () -> Void) {
+		pendingRequesrWorkItem?.cancel()
+
+		let requestWorkItem = DispatchWorkItem(block: block)
+
+		pendingRequesrWorkItem = requestWorkItem
+
+		dispatchQueueGetAddress.asyncAfter(deadline: .now() + after, execute: requestWorkItem)
 	}
 
 	// MARK: ...CLLocationDelegate
@@ -221,7 +232,7 @@ extension MapInteractor: MapBusinessLogic
 	}
 
 	func getAddress(_ request: Map.Address.Request) {
-		dispatchQueueGetAddress.async { [weak self] in
+		performGetAddress(after: 0.35) { [weak self] in
 			self?.geocoderWorker.getGeocoderMetaData(by: request.coordinate.geocode) { result in
 				let response = Map.Address.Response(result: result,
 													coordinate: request.coordinate)
