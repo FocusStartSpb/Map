@@ -38,6 +38,10 @@ protocol MapDisplayLogic: AnyObject
 // MARK: - Class
 final class MapViewController: UIViewController
 {
+	private enum Mode
+	{
+		case edit, add, none
+	}
 	// MARK: ...Private properties
 	private var interactor: MapBusinessLogic & MapDataStore
 	let router: MapRoutingLogic & MapDataPassing
@@ -78,6 +82,7 @@ final class MapViewController: UIViewController
 	private lazy var cancelAction = MenuAction(title: "Cancel", style: .cancel, handler: actionShooseAnAction)
 
 	// Editing properties
+	private var mode: Mode = .none
 	private var isEditSmartTarget = false
 	private var isDraggedTemptPointer = false
 	private var isNewPointer = false
@@ -203,6 +208,7 @@ final class MapViewController: UIViewController
 	}
 
 	private func setupDefaultSettings() {
+		mode = .none
 		currentPointer = nil
 		smartTargetMenu = nil
 		temptLastPointer = nil
@@ -352,6 +358,7 @@ private extension MapViewController
 	}
 
 	func actionCreateSmartTarget() {
+		mode = .add
 		isNewPointer = true
 		addButtonView.isHidden = true
 		mapView.selectedAnnotations
@@ -369,6 +376,7 @@ private extension MapViewController
 	}
 
 	func actionEditSmartTarget(annotation: SmartTargetAnnotation) {
+		mode = .edit
 		setTabBarHidden(true)
 		let request = Map.GetSmartTarget.Request(uid: annotation.uid)
 		interactor.getSmartTarget(request)
@@ -555,6 +563,10 @@ private extension MapViewController
 			smartTargetMenu?.translucent(false)
 			smartTargetMenu?.isEditable = true
 		}
+
+		if mode == .edit {
+			tabBarController?.tabBar.isHidden = true
+		}
 	}
 
 	func appMovedToBackground() {
@@ -562,6 +574,7 @@ private extension MapViewController
 		if currentPointer != nil, regionIsChanging, isAnimateSmartTargetMenu {
 			actionRemove(Any.self)
 		}
+		tabBarController?.tabBar.isHidden = false
 	}
 }
 
@@ -735,7 +748,9 @@ extension MapViewController: MKMapViewDelegate
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
 		regionIsChanging = true
 		guard willTranslateKeyboard == false, isDraggedTemptPointer == false else { return }
-		animateSmartTargetMenu(hide: true)
+		if isAnimateSmartTargetMenu == false {
+			animateSmartTargetMenu(hide: true)
+		}
 		smartTargetMenu?.title = nil
 		if temptLastPointer != nil {
 			smartTargetMenu?.leftMenuAction = self.cancelAction
@@ -773,7 +788,9 @@ extension MapViewController: MKMapViewDelegate
 			return
 		}
 		if willTranslateKeyboard == false {
-			animateSmartTargetMenu(hide: false)
+			if isAnimateSmartTargetMenu == false {
+				animateSmartTargetMenu(hide: false)
+			}
 		}
 		animatePinViewHidden(false)
 		interactor.getAddress(Map.Address.Request(coordinate: temptPointer.coordinate))
