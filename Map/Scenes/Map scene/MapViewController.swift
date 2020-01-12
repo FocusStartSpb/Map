@@ -569,9 +569,6 @@ private extension MapViewController
 
 	func appMovedToBackground() {
 		notificationCenter.removeObserver(self, names: Set(keyboardNotifications.keys))
-//		if mode == .add, currentPointer != nil, regionIsChanging, isAnimateSmartTargetMenu {
-//			actionRemove(Any.self)
-//		}
 	}
 }
 
@@ -620,12 +617,10 @@ private extension MapViewController
 							constant: -offset + tabBarHeight)
 		smartTargetMenuBottomLayoutConstraint?.isActive = true
 
-		//smartTargetMenuLeadingLayoutConstraint =
-			smartTargetMenu?
-				.leadingAnchor
-				.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor,
-				constant: offset).isActive = true
-		//smartTargetMenuLeadingLayoutConstraint?.isActive = true
+		smartTargetMenu?
+			.leadingAnchor
+			.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor,
+			constant: offset).isActive = true
 
 		smartTargetMenu?
 			.trailingAnchor
