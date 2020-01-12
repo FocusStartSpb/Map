@@ -222,6 +222,22 @@ enum Map
 		}
 	}
 
+	// MARK: ...GetRemovePinAlertSettings
+	enum GetRemovePinAlertSettings
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let removePinAlertOn: Bool
+		}
+
+		struct ViewModel
+		{
+			let removePinAlertOn: Bool
+		}
+	}
+
 	// MARK: - Notifications
 
 	// MARK: ...SetNotificationServiceDelegate
