@@ -17,9 +17,7 @@ enum Map
 	// MARK: ...FetchSmartTargets
 	enum FetchSmartTargets
 	{
-		struct Request
-		{
-		}
+		struct Request { }
 
 		struct Response
 		{
