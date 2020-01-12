@@ -79,7 +79,7 @@ final class MapViewController: UIViewController
 
 	private lazy var saveAction = MenuAction(title: "Save", style: .default, handler: actionSave)
 	private lazy var removeAction = MenuAction(title: "Remove", style: .destructive, handler: actionRemove)
-	private lazy var cancelAction = MenuAction(title: "Cancel", style: .cancel, handler: actionShooseAnAction)
+	private lazy var cancelAction = MenuAction(title: "Cancel", style: .cancel, handler: actionChooseActionForPin)
 
 	// Editing properties
 	private var mode: Mode = .none
@@ -91,6 +91,7 @@ final class MapViewController: UIViewController
 	private var willTranslateKeyboard = false
 	private var regionIsChanging = false
 	private var circleRadius = 300.0
+	private var removePinRestricted = true
 
 	// Calculated properties
 	private var annotations: [SmartTargetAnnotation] {
@@ -235,6 +236,7 @@ final class MapViewController: UIViewController
 											   coordinate: coordinate)
 		mapView.addAnnotation(annotation)
 		currentPointer = annotation
+		removePinRestricted = true
 	}
 
 	private func removeTemptCircle() {
@@ -447,7 +449,7 @@ private extension MapViewController
 		setupDefaultSettings()
 	}
 
-	func actionShooseAnAction(_ sender: Any) {
+	func actionChooseActionForPin(_ sender: Any) {
 		let alertViewController = UIAlertController(title: "Choose an action", message: nil, preferredStyle: .actionSheet)
 		let removeAction = UIAlertAction(title: self.removeAction.title,
 										 style: self.removeAction.style,
@@ -468,19 +470,25 @@ private extension MapViewController
 	}
 
 	func actionRemove(_ sender: Any) {
-		guard let temptPointer = currentPointer else { return }
+		if removePinRestricted {
+		Alerts.showDeletePinAlert(on: self)
+			removePinRestricted = false
+		}
+		else {
+			guard let temptPointer = currentPointer else { return }
 
-		// Удаляем smartTarget
-		let request = Map.RemoveSmartTarget.Request(uid: temptPointer.uid)
-		interactor.removeSmartTarget(request)
+			// Удаляем smartTarget
+			let request = Map.RemoveSmartTarget.Request(uid: temptPointer.uid)
+			interactor.removeSmartTarget(request)
 
-		// Завершаем отслеживание
-		let monitoringRegionRequest = Map.StopMonitoringRegion.Request(uid: temptPointer.uid)
-		interactor.stopMonitoringRegion(monitoringRegionRequest)
+			// Завершаем отслеживание
+			let monitoringRegionRequest = Map.StopMonitoringRegion.Request(uid: temptPointer.uid)
+			interactor.stopMonitoringRegion(monitoringRegionRequest)
 
-		mapView.removeAnnotation(temptPointer)
-		smartTargetMenu?.removeFromSuperview()
-		setupDefaultSettings()
+			mapView.removeAnnotation(temptPointer)
+			smartTargetMenu?.removeFromSuperview()
+			setupDefaultSettings()
+		}
 	}
 
 	func actionCancelChanges(_ sender: Any) {
