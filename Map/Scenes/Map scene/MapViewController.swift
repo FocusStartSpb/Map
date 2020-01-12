@@ -38,6 +38,10 @@ protocol MapDisplayLogic: AnyObject
 // MARK: - Class
 final class MapViewController: UIViewController
 {
+	private enum Mode
+	{
+		case edit, add, none
+	}
 	// MARK: ...Private properties
 	private var interactor: MapBusinessLogic & MapDataStore
 	let router: MapRoutingLogic & MapDataPassing
@@ -78,6 +82,7 @@ final class MapViewController: UIViewController
 	private lazy var cancelAction = MenuAction(title: "Cancel", style: .cancel, handler: actionShooseAnAction)
 
 	// Editing properties
+	private var mode: Mode = .none
 	private var isEditSmartTarget = false
 	private var isDraggedTemptPointer = false
 	private var isNewPointer = false
@@ -182,9 +187,6 @@ final class MapViewController: UIViewController
 		setupAddButtonViewConstraints()
 
 		// Requests
-		let updateStatusRequest = Map.UpdateStatus.Request()
-		interactor.configureLocationService(request: updateStatusRequest)
-
 		let fetchSmartTardetRequest = Map.FetchSmartTargets.Request()
 		interactor.getSmartTargets(fetchSmartTardetRequest)
 
@@ -195,13 +197,6 @@ final class MapViewController: UIViewController
 		interactor.getCurrentRadius(request)
 	}
 
-	private func setInitialAttendanceData(for smartTarget: inout SmartTarget) {
-		smartTarget.entryDate = nil
-		smartTarget.exitDate = nil
-		smartTarget.numberOfVisits = 0
-		smartTarget.timeInside = 0
-	}
-
 	private func setAnnotationView(_ annotationView: MKAnnotationView?,
 								   draggable: Bool,
 								   andShowCallout canShowCallout: Bool) {
@@ -210,6 +205,7 @@ final class MapViewController: UIViewController
 	}
 
 	private func setupDefaultSettings() {
+		mode = .none
 		currentPointer = nil
 		smartTargetMenu = nil
 		temptLastPointer = nil
@@ -259,7 +255,7 @@ final class MapViewController: UIViewController
 						sliderValue: interactor.temptSmartTarget?.radius ?? circleRadius,
 						sliderValuesRange: (50, 1000),
 						title: interactor.temptSmartTarget?.address,
-						leftAction: isEditing ? removeAction /*cancelAction*/ : removeAction,
+						leftAction: removeAction,
 						rightAction: saveAction,
 						sliderAction: actionChangeRadius,
 						textFieldAction: actionChangeTitle)
@@ -355,10 +351,11 @@ final class MapViewController: UIViewController
 private extension MapViewController
 {
 	func actionCurrentLocation() {
-		interactor.returnToCurrentLocation(request: Map.UpdateStatus.Request())
+		showLocation(coordinate: mapView.userLocation.coordinate)
 	}
 
 	func actionCreateSmartTarget() {
+		mode = .add
 		isNewPointer = true
 		addButtonView.isHidden = true
 		mapView.selectedAnnotations
@@ -376,6 +373,7 @@ private extension MapViewController
 	}
 
 	func actionEditSmartTarget(annotation: SmartTargetAnnotation) {
+		mode = .edit
 		setTabBarHidden(true)
 		let request = Map.GetSmartTarget.Request(uid: annotation.uid)
 		interactor.getSmartTarget(request)
@@ -413,6 +411,17 @@ private extension MapViewController
 		temptSmartTarget.address = smartTargetMenu.title
 		temptSmartTarget.radius = Double(smartTargetMenu.sliderValue)
 
+		// Обновляем данные посещаемости
+		if temptLastPointer?.coordinate != temptPointer.coordinate {
+			temptSmartTarget.setInitialAttendance()
+		}
+		if temptSmartTarget.region.contains(mapView.userLocation.coordinate) {
+			temptSmartTarget.entryDate = Date()
+		}
+		else if temptSmartTarget.entryDate != nil {
+			temptSmartTarget.exitDate = Date()
+		}
+
 		// Обновляем аннотацию (pin)
 		temptPointer.title = smartTargetMenu.text
 
@@ -422,11 +431,6 @@ private extension MapViewController
 
 		// Сохраняем smartTarget
 		if temptLastPointer != nil {
-			if temptLastPointer?.coordinate != temptSmartTarget.coordinates {
-				// Обнуляем данные посещаемости
-				setInitialAttendanceData(for: &temptSmartTarget)
-			}
-
 			let request = Map.UpdateSmartTarget.Request(smartTarget: temptSmartTarget)
 			interactor.updateSmartTarget(request)
 		}
@@ -551,10 +555,17 @@ private extension MapViewController
 	}
 
 	func appMovedFromBackground() {
+		let updateStatusRequest = Map.UpdateStatus.Request()
+		interactor.configureLocationService(request: updateStatusRequest)
+
 		notificationCenter.addObserver(self, notifications: keyboardNotifications)
 		if currentPointer != nil {
 			smartTargetMenu?.translucent(false)
 			smartTargetMenu?.isEditable = true
+		}
+
+		if mode == .edit {
+			tabBarController?.tabBar.isHidden = true
 		}
 	}
 
@@ -563,6 +574,7 @@ private extension MapViewController
 		if currentPointer != nil, regionIsChanging, isAnimateSmartTargetMenu {
 			actionRemove(Any.self)
 		}
+		tabBarController?.tabBar.isHidden = false
 	}
 }
 
@@ -716,6 +728,11 @@ extension MapViewController: MKMapViewDelegate
 		pinView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
 		setAnnotationView(pinView, draggable: isEditSmartTarget, andShowCallout: (isEditSmartTarget == false))
 
+		if let currentPointer = currentPointer, annotation !== currentPointer {
+			pinView?.isHidden = false
+			pinView?.alpha = 1
+		}
+
 		if isNewPointer {
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
 				if self?.regionIsChanging == false {
@@ -731,7 +748,9 @@ extension MapViewController: MKMapViewDelegate
 	func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
 		regionIsChanging = true
 		guard willTranslateKeyboard == false, isDraggedTemptPointer == false else { return }
-		animateSmartTargetMenu(hide: true)
+		if isAnimateSmartTargetMenu == false {
+			animateSmartTargetMenu(hide: true)
+		}
 		smartTargetMenu?.title = nil
 		if temptLastPointer != nil {
 			smartTargetMenu?.leftMenuAction = self.cancelAction
@@ -769,7 +788,9 @@ extension MapViewController: MKMapViewDelegate
 			return
 		}
 		if willTranslateKeyboard == false {
-			animateSmartTargetMenu(hide: false)
+			if isAnimateSmartTargetMenu == false {
+				animateSmartTargetMenu(hide: false)
+			}
 		}
 		animatePinViewHidden(false)
 		interactor.getAddress(Map.Address.Request(coordinate: temptPointer.coordinate))

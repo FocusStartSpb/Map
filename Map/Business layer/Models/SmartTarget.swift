@@ -21,10 +21,10 @@ struct SmartTarget
 	var address: String?
 	var radius: Double?
 
-	var numberOfVisits = 0
-	var timeInside: TimeInterval = 0
+	private(set) var numberOfVisits = 0
+	private(set) var timeInside: TimeInterval = 0
 
-	var region: CLRegion {
+	var region: CLCircularRegion {
 		CLCircularRegion(center: coordinates, radius: radius ?? 100, identifier: uid)
 	}
 
@@ -70,6 +70,14 @@ struct SmartTarget
 		self.coordinates = coordinates
 		self.dateOfCreated = Date()
 		self.address = address
+	}
+
+	// MARK: ...Internal methods
+	mutating func setInitialAttendance() {
+		entryDate = nil
+		exitDate = nil
+		numberOfVisits = 0
+		timeInside = 0
 	}
 }
 

@@ -72,9 +72,9 @@ final class RangeSliderTableViewCell: UITableViewCell
 							 width: label.frame.width,
 							 height: label.frame.height)
 		rangeSlider.frame = CGRect(x: label.frame.maxX + 8,
-								   y: (contentView.frame.height - 20) / 2,
+								   y: (contentView.frame.height - 30) / 2,
 								   width: contentView.frame.width - label.frame.maxX - 2 * 8,
-								   height: 20)
+								   height: 30)
 	}
 }
 
