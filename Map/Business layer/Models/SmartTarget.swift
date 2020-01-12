@@ -21,6 +21,30 @@ struct SmartTarget
 	var address: String?
 	var radius: Double?
 
+	private(set) var numberOfVisits = 0
+	private(set) var timeInside: TimeInterval = 0
+
+	var region: CLCircularRegion {
+		CLCircularRegion(center: coordinates, radius: radius ?? 100, identifier: uid)
+	}
+
+	var entryDate: Date? {
+		didSet {
+			if entryDate != nil {
+				numberOfVisits += 1
+				exitDate = nil
+			}
+		}
+	}
+	var exitDate: Date? {
+		didSet {
+			if exitDate != nil {
+				timeInside += exitDate?.timeIntervalSince(entryDate ?? Date()) ?? 0
+				entryDate = nil
+			}
+		}
+	}
+
 	private enum CodingKeys: String, CodingKey
 	{
 		case uid
@@ -29,6 +53,10 @@ struct SmartTarget
 		case dateOfCreated
 		case address
 		case radius
+		case numberOfVisits
+		case timeInside
+		case entryDate
+		case exitDate
 	}
 
 	// MARK: ...Initialization
@@ -43,6 +71,14 @@ struct SmartTarget
 		self.dateOfCreated = Date()
 		self.address = address
 	}
+
+	// MARK: ...Internal methods
+	mutating func setInitialAttendance() {
+		entryDate = nil
+		exitDate = nil
+		numberOfVisits = 0
+		timeInside = 0
+	}
 }
 
 // MARK: - Codable
@@ -56,6 +92,10 @@ extension SmartTarget: Codable
 		dateOfCreated = try container.decode(Date.self, forKey: .dateOfCreated)
 		address = try? container.decode(String.self, forKey: .address)
 		radius = try? container.decode(Double.self, forKey: .radius)
+		numberOfVisits = try container.decode(Int.self, forKey: .numberOfVisits)
+		timeInside = try container.decode(TimeInterval.self, forKey: .timeInside)
+		entryDate = try? container.decode(Date.self, forKey: .entryDate)
+		exitDate = try? container.decode(Date.self, forKey: .exitDate)
 	}
 
 	func encode(to encoder: Encoder) throws {
@@ -66,6 +106,10 @@ extension SmartTarget: Codable
 		try container.encode(dateOfCreated, forKey: .dateOfCreated)
 		try container.encode(address, forKey: .address)
 		try container.encode(radius, forKey: .radius)
+		try container.encode(numberOfVisits, forKey: .numberOfVisits)
+		try container.encode(timeInside, forKey: .timeInside)
+		try container.encode(entryDate, forKey: .entryDate)
+		try container.encode(exitDate, forKey: .exitDate)
 	}
 }
 
@@ -78,6 +122,17 @@ extension SmartTarget: Comparable
 
 	static func < (lhs: Self, rhs: Self) -> Bool {
 		lhs.dateOfCreated < rhs.dateOfCreated
+	}
+}
+
+extension SmartTarget: Identity
+{
+	static func === (lhs: Self, rhs: Self) -> Bool {
+		lhs.uid == rhs.uid && lhs.address == rhs.address && lhs.radius == rhs.radius && lhs.title == rhs.title
+	}
+
+	static func !== (lhs: Self, rhs: Self) -> Bool {
+		lhs.uid != rhs.uid || lhs.address != rhs.address || lhs.radius != rhs.radius || lhs.title != rhs.title
 	}
 }
 

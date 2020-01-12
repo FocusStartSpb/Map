@@ -7,21 +7,26 @@
 
 import UIKit
 
-typealias Action = (SmartTargetMenu) -> Void
-typealias RadiusDidChange = (_ menu: SmartTargetMenu, _ value: Float) -> Void
+typealias SliderAction = (_ menu: SmartTargetMenu, _ value: Float) -> Void
+typealias TextFieldAction = (_ menu: SmartTargetMenu, _ value: String) -> Void
 
 final class SmartTargetMenu: UIView
 {
 
 	// MARK: ...Private properties
-	private let radiusRange: (min: Float, max: Float)
 	private let maxLenghtOfTitle = 30
-	private let saveAction: Action
-	private let removeAction: Action
-	private let radiusDidChange: RadiusDidChange
+	private let sliderValueDidChange: SliderAction
+	private let textFieldAction: TextFieldAction
 
 	private let blurredView: UIVisualEffectView = {
-		let blurEffect = UIBlurEffect(style: .light)
+		let style: UIBlurEffect.Style
+		if #available(iOS 13.0, *) {
+			style = .systemUltraThinMaterial
+		}
+		else {
+			style = .light
+		}
+		let blurEffect = UIBlurEffect(style: style)
 		let view = UIVisualEffectView(effect: blurEffect)
 		return view
 	}()
@@ -33,9 +38,9 @@ final class SmartTargetMenu: UIView
 		return view
 	}()
 
-	private lazy var titleTextField: UITextField = {
+	private lazy var textField: UITextField = {
 		let textField = UITextField()
-		textField.placeholder = "type title..."
+		textField.placeholder = "Type text..."
 		textField.textAlignment = .center
 		textField.delegate = self
 		textField.returnKeyType = .done
@@ -43,41 +48,37 @@ final class SmartTargetMenu: UIView
 		return textField
 	}()
 
-	private lazy var addressLabel: UILabel = {
+	private lazy var titleLabel: UILabel = {
 		let label = UILabel()
 		label.numberOfLines = 0
 		label.textAlignment = .center
 		return label
 	}()
 
-	private lazy var radiusSlider: UISlider = {
+	private lazy var slider: UISlider = {
 		let slider = UISlider()
 		slider.minimumValueImage = #imageLiteral(resourceName: "radius-of-circle")
-		slider.minimumValue = radiusRange.min
-		slider.maximumValue = radiusRange.max
-		slider.addTarget(self, action: #selector(actionChangeRadius(_:)), for: .valueChanged)
+		slider.addTarget(self, action: #selector(actionSliderValueChanged), for: .valueChanged)
 		return slider
 	}()
 
-	private var radiusLabel: UILabel = {
+	private var sliderLabel: UILabel = {
 		let label = UILabel()
 		label.textAlignment = .right
 		return label
 	}()
 
-	private let saveButton: UIButton = {
+	private lazy var leftButton: UIButton = {
 		let button = UIButton()
-		button.setTitleColor(.systemBlue, for: .normal)
-		button.setTitle("Save", for: .normal)
-		button.addTarget(self, action: #selector(actionSave), for: .touchUpInside)
+		setTitle(for: button, with: leftMenuAction)
+		button.addTarget(self, action: #selector(actionLeftButton), for: .touchUpInside)
 		return button
 	}()
 
-	private let removeButton: UIButton = {
+	private lazy var rightButton: UIButton = {
 		let button = UIButton()
-		button.setTitleColor(.systemRed, for: .normal)
-		button.setTitle("Remove", for: .normal)
-		button.addTarget(self, action: #selector(actionRemove), for: .touchUpInside)
+		setTitle(for: button, with: rightMenuAction)
+		button.addTarget(self, action: #selector(actionRightButton), for: .touchUpInside)
 		return button
 	}()
 
@@ -94,62 +95,87 @@ final class SmartTargetMenu: UIView
 	}()
 
 	// MARK: ...Properties
-	private(set) var title: String? {
-		get { titleTextField.text }
-		set { titleTextField.text = newValue }
+	var leftMenuAction: MenuAction {
+		didSet { setTitle(for: leftButton, with: leftMenuAction) }
+	}
+	var rightMenuAction: MenuAction {
+		didSet { setTitle(for: rightButton, with: rightMenuAction) }
 	}
 
-	var address: String? {
-		get { addressLabel.text }
+	private(set) var text: String? {
+		get { textField.text }
+		set { textField.text = newValue }
+	}
+
+	var title: String? {
+		get { titleLabel.text }
 		set {
-			addressLabel.text = newValue
+			titleLabel.text = newValue
 			checkAddress()
 		}
 	}
 
-	private(set) var radius: Float {
-		get { radiusSlider.value }
+	var sliderValuesRange: (min: Double, max: Double) {
+		get { (Double(slider.minimumValue), Double(slider.maximumValue)) }
 		set {
-			radiusLabel.text = "\(Int(newValue)) m"
-			radiusSlider.value = newValue
+			slider.minimumValue = Float(newValue.min)
+			slider.maximumValue = Float(newValue.max)
 		}
+	}
+
+	var sliderValue: Float {
+		get { slider.value }
+		set {
+			updateSliderLabel()
+			slider.value = newValue
+		}
+	}
+
+	var sliderFactor: Float = 1 {
+		didSet { updateSliderLabel() }
+	}
+	var sliderValueMeasuringSymbol: String = "" {
+		didSet { updateSliderLabel() }
 	}
 
 	var isEditable = true {
 		didSet {
-			radiusSlider.isEnabled = isEditable
-			saveButton.isEnabled = isEditable
-			removeButton.isEnabled = isEditable
+			slider.isEnabled = isEditable
+			leftButton.isEnabled = isEditable
+			rightButton.isEnabled = isEditable
 		}
 	}
 
 	// MARK: ...Initialization
 	/// Основной инициализатор
 	/// - Parameters:
-	///   - title: textField с заголовком
-	///   - radiusValue: Значение установленное на слайдере
-	///   - radiusRange: Диапазон значений слайдера
-	///   - address: label c адресом
-	///   - saveAction: Блок кода выполняемый при нажатии на кнопку "Save"
-	///   - removeAction: Блок кода выполняемый при нажатии на кнопку "Remove"
-	///   - radiusChange: Блок кода выполняемый при изменении значения слайдера
-	init(title: String? = nil,
-		 radiusValue: Float = 0,
-		 radiusRange: (min: Float, max: Float),
-		 address: String? = nil,
-		 saveAction: @escaping Action,
-		 removeAction: @escaping Action,
-		 radiusChange: @escaping RadiusDidChange) {
-		self.radiusRange = radiusRange
-		self.saveAction = saveAction
-		self.removeAction = removeAction
-		self.radiusDidChange = radiusChange
+	///   - textField: textField с заголовком
+	///   - sliderValue: Значение установленное на слайдере
+	///   - sliderValuesRange: Диапазон значений слайдера
+	///   - title: текст отображаемый в label`е
+	///   - leftAction: Блок кода выполняемый при нажатии на кнопку кнопку слева
+	///   - rightAction: Блок кода выполняемый при нажатии на кнопку кнопку справа
+	///   - sliderAction: Блок кода выполняемый при изменении значения слайдера
+	///   - textFieldAction: Блок кода выполняемый при изменении текста
+	init(textField: String? = nil,
+		 sliderValue: Double = 0,
+		 sliderValuesRange: (min: Double, max: Double),
+		 title: String? = nil,
+		 leftAction: MenuAction,
+		 rightAction: MenuAction,
+		 sliderAction: @escaping SliderAction,
+		 textFieldAction: @escaping TextFieldAction) {
+		self.leftMenuAction = leftAction
+		self.rightMenuAction = rightAction
+		self.sliderValueDidChange = sliderAction
+		self.textFieldAction = textFieldAction
 
 		super.init(frame: .zero)
 
+		self.text = textField
 		self.title = title
-		self.address = address
-		self.radius = min(max(radiusValue, radiusRange.min), radiusRange.max)
+		self.sliderValuesRange = sliderValuesRange
+		self.sliderValue = Float(min(max(sliderValue, sliderValuesRange.min), sliderValuesRange.max))
 
 		setup()
 	}
@@ -157,6 +183,11 @@ final class SmartTargetMenu: UIView
 	@available(*, unavailable)
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
+	}
+
+	// MARK: ...Override methods
+	@discardableResult override func becomeFirstResponder() -> Bool {
+		textField.becomeFirstResponder()
 	}
 
 	// MARK: ...Private methods
@@ -171,15 +202,15 @@ final class SmartTargetMenu: UIView
 
 		// Add subviews
 		addSubview(blurredView)
-		addSubview(radiusSlider)
-		addSubview(radiusLabel)
-		addSubview(saveButton)
-		addSubview(removeButton)
+		addSubview(slider)
+		addSubview(textField)
+		addSubview(sliderLabel)
+		addSubview(leftButton)
+		addSubview(rightButton)
 		addSubview(activityIndicator)
 
 		// Set blurred effect view
-		vibrancyView.contentView.addSubview(titleTextField)
-		vibrancyView.contentView.addSubview(addressLabel)
+		vibrancyView.contentView.addSubview(titleLabel)
 		blurredView.contentView.addSubview(vibrancyView)
 
 		// Set constrains
@@ -187,53 +218,52 @@ final class SmartTargetMenu: UIView
 	}
 
 	private func checkAddress() {
-		address == nil ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
+		title == nil ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
 	}
 
 	private func setConstraints() {
-		titleTextField.translatesAutoresizingMaskIntoConstraints = false
-		addressLabel.translatesAutoresizingMaskIntoConstraints = false
-		radiusSlider.translatesAutoresizingMaskIntoConstraints = false
-		radiusLabel.translatesAutoresizingMaskIntoConstraints = false
-		saveButton.translatesAutoresizingMaskIntoConstraints = false
-		removeButton.translatesAutoresizingMaskIntoConstraints = false
+		textField.translatesAutoresizingMaskIntoConstraints = false
+		titleLabel.translatesAutoresizingMaskIntoConstraints = false
+		slider.translatesAutoresizingMaskIntoConstraints = false
+		sliderLabel.translatesAutoresizingMaskIntoConstraints = false
+		leftButton.translatesAutoresizingMaskIntoConstraints = false
+		rightButton.translatesAutoresizingMaskIntoConstraints = false
 		activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 		blurredView.translatesAutoresizingMaskIntoConstraints = false
 		vibrancyView.translatesAutoresizingMaskIntoConstraints = false
 
 		// Set constraint for titleTextField
-		titleTextField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
-		titleTextField.topAnchor.constraint(equalTo: topAnchor, constant: layoutMargins.top).isActive = true
-		titleTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
+		textField.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+		textField.topAnchor.constraint(equalTo: topAnchor, constant: layoutMargins.top).isActive = true
 
 		// Set constraint for addressLabel
-		addressLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
-		addressLabel.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: layoutMargins.top).isActive = true
-		addressLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
-		addressLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 16).isActive = true
+		titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
+		titleLabel.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: layoutMargins.top).isActive = true
+		titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
+		titleLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 16).isActive = true
 
 		// Set constraint for activityIndicator
-		activityIndicator.centerXAnchor.constraint(equalTo: addressLabel.centerXAnchor).isActive = true
-		activityIndicator.centerYAnchor.constraint(equalTo: addressLabel.centerYAnchor).isActive = true
+		activityIndicator.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor).isActive = true
+		activityIndicator.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor).isActive = true
 
 		// Set constraint for radiusSlider
-		radiusSlider.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
-		radiusSlider.topAnchor.constraint(equalTo: addressLabel.bottomAnchor, constant: 16).isActive = true
-		radiusSlider.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 2 / 3).isActive = true
+		slider.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
+		slider.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16).isActive = true
+		slider.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 2 / 3).isActive = true
 
 		// Set constraint for radiusLabel
-		radiusLabel.topAnchor.constraint(equalTo: addressLabel.bottomAnchor, constant: 16).isActive = true
-		radiusLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
-		radiusLabel.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1 / 3).isActive = true
+		sliderLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16).isActive = true
+		sliderLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
+		sliderLabel.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1 / 3).isActive = true
 
 		// Set constraint for saveButton
-		saveButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
-		saveButton.topAnchor.constraint(equalTo: radiusSlider.bottomAnchor, constant: 16).isActive = true
-		saveButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -layoutMargins.right).isActive = true
+		leftButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
+		leftButton.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: 16).isActive = true
+		leftButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -layoutMargins.right).isActive = true
 
 		// Set constraint for removeButton
-		removeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
-		removeButton.topAnchor.constraint(equalTo: radiusSlider.bottomAnchor, constant: 16).isActive = true
+		rightButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
+		rightButton.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: 16).isActive = true
 
 		// Set constraint for blurredView
 		blurredView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
@@ -248,10 +278,24 @@ final class SmartTargetMenu: UIView
 		vibrancyView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
 	}
 
-	private func hide() {
-		UIView.animate(withDuration: 0.3,
-					   animations: { self.alpha = 0 },
-					   completion: { _ in self.isHidden = true })
+	private func setTitle(for button: UIButton, with action: MenuAction) {
+		button.setTitle(action.title, for: .normal)
+		switch action.style {
+		case .destructive:
+			button.setTitleColor(.systemRed, for: .normal)
+		case .cancel:
+			button.titleLabel?.font = .boldSystemFont(ofSize: UIFont.buttonFontSize)
+			fallthrough
+		case .default:
+			button.setTitleColor(.systemBlue, for: .normal)
+		@unknown default: break
+		}
+	}
+
+	private func updateSliderLabel() {
+		sliderLabel.text =
+			"\(Int(sliderValue * sliderFactor))" +
+			((sliderValueMeasuringSymbol.isEmpty == false) ? " \(sliderValueMeasuringSymbol)" : "")
 	}
 
 	// MARK: ...Methods
@@ -262,24 +306,50 @@ final class SmartTargetMenu: UIView
 	func translucent(_ take: Bool, value: CGFloat = 0.5) {
 		UIView.animate(withDuration: 0.3) { self.alpha = take ? value : 1 }
 	}
+
+	func hide(_ completion: (() -> Void)? = nil) {
+		UIView.animate(withDuration: 0.3, animations: { self.alpha = 0 }, completion: { _ in
+			self.isHidden = true
+			completion?()
+		})
+	}
+
+	func show(_ completion: (() -> Void)? = nil) {
+		self.isHidden = false
+		UIView.animate(withDuration: 0.3) { self.alpha = 1 }
+	}
+
+	func highlightTextField(_ flag: Bool) {
+		let placeholderColor: UIColor
+		if flag {
+			placeholderColor = .systemRed
+		}
+		else if #available(iOS 13.0, *) {
+			placeholderColor = .placeholderText
+		}
+		else {
+			placeholderColor = .gray
+		}
+		textField.attributedPlaceholder =
+			NSAttributedString(string: textField.placeholder ?? "",
+							   attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
+	}
 }
 
 // MARK: - Actions
 @objc extension SmartTargetMenu
 {
-	private func actionSave() {
-		saveAction(self)
-		hide()
+	private func actionLeftButton() {
+		leftMenuAction.handler?(leftMenuAction)
 	}
 
-	private func actionRemove() {
-		removeAction(self)
-		hide()
+	private func actionRightButton() {
+		rightMenuAction.handler?(rightMenuAction)
 	}
 
-	private func actionChangeRadius(_ sender: UISlider) {
-		radius = sender.value
-		radiusDidChange(self, radius)
+	private func actionSliderValueChanged(_ sender: UISlider) {
+		sliderValue = sender.value
+		sliderValueDidChange(self, sliderValue)
 	}
 }
 
@@ -287,8 +357,8 @@ final class SmartTargetMenu: UIView
 extension SmartTargetMenu: UITextFieldDelegate
 {
 	func textField(_ textField: UITextField,
-						  shouldChangeCharactersIn range: NSRange,
-						  replacementString string: String) -> Bool {
+				   shouldChangeCharactersIn range: NSRange,
+				   replacementString string: String) -> Bool {
 		guard
 			isEditable,
 			let text = textField.text,
@@ -296,7 +366,12 @@ extension SmartTargetMenu: UITextFieldDelegate
 				return false
 		}
 		let newString = textField.text?.replacingCharacters(in: range, with: string)
-		return newString?.count ?? 0 <= maxLenghtOfTitle
+
+		let didEdit = newString?.count ?? 0 <= maxLenghtOfTitle
+		if let newString = newString, didEdit {
+			textFieldAction(self, newString)
+		}
+		return didEdit
 	}
 
 	func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {

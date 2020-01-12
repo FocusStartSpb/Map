@@ -15,6 +15,7 @@ enum ServiceError: Error
 	case noHTTPResponse
 	case clientError
 	case serverError
+	case fileNotExists
 	case canNotLoadSmartTarget(message: String)
 	case canNotSaveSmartTarget(message: String)
 }
