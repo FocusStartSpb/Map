@@ -33,6 +33,7 @@ protocol MapDisplayLogic: AnyObject
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel)
 	func displayGetRangeRadius(_ viewModel: Map.GetRangeRadius.ViewModel)
 	func displayGetMeasuringSystem(_ viewModel: Map.GetMeasuringSystem.ViewModel)
+	func displayGetRemovePinAlertSettings(_ viewModel: Map.GetRemovePinAlertSettings.ViewModel)
 }
 
 // MARK: - Class
@@ -91,7 +92,8 @@ final class MapViewController: UIViewController
 	private var willTranslateKeyboard = false
 	private var regionIsChanging = false
 	private var circleRadius = 300.0
-	private var removePinRestricted = true
+	private var removePinWithoutAlertRestricted = true
+	private var removePinAlertOn = true
 
 	// Calculated properties
 	private var annotations: [SmartTargetAnnotation] {
@@ -236,7 +238,7 @@ final class MapViewController: UIViewController
 											   coordinate: coordinate)
 		mapView.addAnnotation(annotation)
 		currentPointer = annotation
-		removePinRestricted = true
+		removePinWithoutAlertRestricted = true
 	}
 
 	private func removeTemptCircle() {
@@ -470,9 +472,9 @@ private extension MapViewController
 	}
 
 	func actionRemove(_ sender: Any) {
-		if removePinRestricted {
+		if removePinWithoutAlertRestricted {
 		Alerts.showDeletePinAlert(on: self)
-			removePinRestricted = false
+			removePinWithoutAlertRestricted = false
 		}
 		else {
 			guard let temptPointer = currentPointer else { return }
@@ -646,6 +648,7 @@ private extension MapViewController
 // MARK: - Map display logic
 extension MapViewController: MapDisplayLogic
 {
+
 	func displaySmartTargets(_ viewModel: Map.FetchSmartTargets.ViewModel) {
 		mapView.addAnnotations(viewModel.annotations)
 	}
@@ -715,6 +718,10 @@ extension MapViewController: MapDisplayLogic
 	func displayGetMeasuringSystem(_ viewModel: Map.GetMeasuringSystem.ViewModel) {
 		smartTargetMenu?.sliderFactor = Float(viewModel.measuringFactor)
 		smartTargetMenu?.sliderValueMeasuringSymbol = viewModel.measuringSymbol
+	}
+
+	func displayGetRemovePinAlertSettings(_ viewModel: Map.GetRemovePinAlertSettings.ViewModel) {
+		removePinAlertOn = viewModel.removePinAlertOn
 	}
 }
 
