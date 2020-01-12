@@ -222,6 +222,7 @@ final class MapViewController: UIViewController
 		isDraggedTemptPointer = false
 
 		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
+		interactor.getRemovePinAlertSettings(.init())
 	}
 
 	// MARK: ...Map methods
@@ -472,7 +473,7 @@ private extension MapViewController
 	}
 
 	func actionRemove(_ sender: Any) {
-		if removePinWithoutAlertRestricted {
+		if removePinWithoutAlertRestricted && removePinAlertOn {
 		Alerts.showDeletePinAlert(on: self)
 			removePinWithoutAlertRestricted = false
 		}
