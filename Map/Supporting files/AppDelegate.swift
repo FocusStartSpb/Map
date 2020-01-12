@@ -23,8 +23,4 @@ final class AppDelegate: UIResponder, UIApplicationDelegate
 		window?.makeKeyAndVisible()
 		return true
 	}
-
-	func applicationWillResignActive(_ application: UIApplication) {
-		window?.endEditing(true)
-	}
 }
