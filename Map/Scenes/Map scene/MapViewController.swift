@@ -218,6 +218,7 @@ final class MapViewController: UIViewController
 		isEditSmartTarget = false
 		isAnimateMapView = false
 		isDraggedTemptPointer = false
+		removePinWithoutAlertRestricted = true
 
 		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
 	}
@@ -235,7 +236,6 @@ final class MapViewController: UIViewController
 											   title: target.title,
 											   coordinate: coordinate)
 		mapView.addAnnotation(annotation)
-		removePinWithoutAlertRestricted = true
 		currentPointer = annotation
 	}
 
@@ -475,10 +475,12 @@ private extension MapViewController
 
 	func actionRemove(_ sender: Any) {
 		if removePinWithoutAlertRestricted && removePinAlertOn {
-			Alerts.showDeletePinAlert(on: self)
+			Alerts.showDeletePinAlert(on: self) { [weak self] in
+				if self?.mode == .edit, self?.smartTargetMenu?.leftMenuAction.title == "Cancel" {
+					self?.actionChooseActionForPin(Any.self)
+				}
+			}
 			removePinWithoutAlertRestricted = false
-			smartTargetMenu?.leftMenuAction = removeAction
-			smartTargetMenu?.show()
 		}
 		else {
 			guard let temptPointer = currentPointer else { return }
