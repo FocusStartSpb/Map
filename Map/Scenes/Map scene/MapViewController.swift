@@ -219,7 +219,6 @@ final class MapViewController: UIViewController
 		isDraggedTemptPointer = false
 
 		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
-		interactor.getRemovePinAlertSettings(.init())
 	}
 
 	// MARK: ...Map methods
@@ -236,7 +235,6 @@ final class MapViewController: UIViewController
 											   coordinate: coordinate)
 		mapView.addAnnotation(annotation)
 		currentPointer = annotation
-		removePinWithoutAlertRestricted = true
 	}
 
 	private func removeTemptCircle() {
