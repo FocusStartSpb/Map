@@ -9,7 +9,7 @@
 protocol SmartTargetListBusinessLogic
 {
 	func loadSmartTargets(_ request: SmartTargetList.LoadSmartTargets.Request)
-	func saveSmartTargets(_ request: SmartTargetList.SaveSmartTargets.Request)
+	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request)
 	func updateSmartTargets(_ request: SmartTargetList.UpdateSmartTargets.Request)
 }
 
@@ -55,13 +55,17 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 		}
 	}
 
-	func saveSmartTargets(_ request: SmartTargetList.SaveSmartTargets.Request) {
-		self.smartTargetCollection = request.smartTargetCollection
+	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request) {
+		request.smartTargetsIndexSet.forEach { index in
+			guard let uuid = self.smartTargetCollection?.smartTargets[Int(index)].uid else { return }
+			self.smartTargetCollection?.remove(atUID: uuid)
+		}
+		self.oldSmartTargetCollection = self.smartTargetCollection?.copy()
 		guard let collection = smartTargetCollection as? T.Element else { return }
 
 		worker.saveSmartTargets(collection) { [weak self] result in
 			let result = result.map { $0 as? ISmartTargetCollection ?? SmartTargetCollection() }
-			let response = SmartTargetList.SaveSmartTargets.Response(result: result)
+			let response = SmartTargetList.DeleteSmartTargets.Response(result: result)
 			self?.presenter.presentSaveSmartTargets(response)
 		}
 	}
