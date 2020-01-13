@@ -36,7 +36,7 @@ enum UserPreferences
 	}
 
 	/// Ask for confidence when removing Smart Target
-	@SettingWrapper(key: Key[.forceRemovePin], defaultValue: false)
+	@SettingWrapper(key: Key[.forceRemovePin], defaultValue: true)
 	static var forceRemovePin: Bool?
 
 	/// Minimum range between lowerValueOfRadius and upperValueOfRadius in meters

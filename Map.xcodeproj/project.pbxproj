@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		029A19DE23CB7CAD00A4535B /* Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029A19DD23CB7CAD00A4535B /* Alerts.swift */; };
 		3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */; };
 		3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B023C364A300700935 /* DetailTargetRouter.swift */; };
 		3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B223C364B900700935 /* DetailTargetViewController.swift */; };
@@ -72,6 +73,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		029A19DD23CB7CAD00A4535B /* Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alerts.swift; sourceTree = "<group>"; };
 		3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetPresenter.swift; sourceTree = "<group>"; };
 		3A4337B023C364A300700935 /* DetailTargetRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetRouter.swift; sourceTree = "<group>"; };
 		3A4337B223C364B900700935 /* DetailTargetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetViewController.swift; sourceTree = "<group>"; };
@@ -320,7 +322,7 @@
 			path = Workers;
 			sourceTree = "<group>";
 		};
-		586F660A23BAB739007D4657 /* Swrvices */ = {
+		586F660A23BAB739007D4657 /* Services */ = {
 			isa = PBXGroup;
 			children = (
 				5837D01B23A839E000A6F125 /* DecoderService.swift */,
@@ -328,7 +330,7 @@
 				3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */,
 				58454C3823C25B7A008BB813 /* NotificationService.swift */,
 			);
-			path = Swrvices;
+			path = Services;
 			sourceTree = "<group>";
 		};
 		58A9983E23A84D7700CAACE8 /* Supporting files */ = {
@@ -347,11 +349,12 @@
 			children = (
 				58A9984223A852EE00CAACE8 /* Models */,
 				586F660923BAB728007D4657 /* Workers */,
-				586F660A23BAB739007D4657 /* Swrvices */,
+				586F660A23BAB739007D4657 /* Services */,
 				5837D01723A8388700A6F125 /* SceneBuilder.swift */,
 				58551DD723BD854300E76885 /* TabBarControllerBuilder.swift */,
 				5837D01923A838E100A6F125 /* Repository.swift */,
 				3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */,
+				029A19DD23CB7CAD00A4535B /* Alerts.swift */,
 				585F64A023B9881800B66EAA /* FilesManager.swift */,
 				585F64A223B988A700B66EAA /* SettingWrapper.swift */,
 				585F64A423B9947000B66EAA /* UserPreferences.swift */,
@@ -498,6 +501,7 @@
 				5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */,
 				5891A8EC23B3BF5200FB1D1C /* GeocoderWorker.swift in Sources */,
 				3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */,
+				029A19DE23CB7CAD00A4535B /* Alerts.swift in Sources */,
 				3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */,
 				58454C3923C25B7A008BB813 /* NotificationService.swift in Sources */,
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,

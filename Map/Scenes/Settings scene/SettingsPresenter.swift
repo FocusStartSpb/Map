@@ -47,7 +47,7 @@ extension SettingsPresenter: SettingsPresentationLogic
 	func presentSwitchState(_ response: Settings.Switch.Response) {
 		var title = ""
 		switch response.typeItems {
-		case .forceRemovePin: title = "Ask when removing an pin:"
+		case .forceRemovePin: title = "Предупреждение при удалении локации"
 		default: break
 		}
 		let viewModel = Settings.Switch.ViewModel(title: title,

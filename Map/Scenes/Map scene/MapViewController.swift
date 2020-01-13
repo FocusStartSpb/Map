@@ -33,6 +33,7 @@ protocol MapDisplayLogic: AnyObject
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel)
 	func displayGetRangeRadius(_ viewModel: Map.GetRangeRadius.ViewModel)
 	func displayGetMeasuringSystem(_ viewModel: Map.GetMeasuringSystem.ViewModel)
+	func displayGetRemovePinAlertSettings(_ viewModel: Map.GetRemovePinAlertSettings.ViewModel)
 }
 
 // MARK: - Class
@@ -79,7 +80,7 @@ final class MapViewController: UIViewController
 
 	private lazy var saveAction = MenuAction(title: "Save", style: .default, handler: actionSave)
 	private lazy var removeAction = MenuAction(title: "Remove", style: .destructive, handler: actionRemove)
-	private lazy var cancelAction = MenuAction(title: "Cancel", style: .cancel, handler: actionShooseAnAction)
+	private lazy var cancelAction = MenuAction(title: "Cancel", style: .cancel, handler: actionChooseActionForPin)
 
 	// Editing properties
 	private var mode: Mode = .none
@@ -91,6 +92,8 @@ final class MapViewController: UIViewController
 	private var willTranslateKeyboard = false
 	private var regionIsChanging = false
 	private var circleRadius = 300.0
+	private var removePinWithoutAlertRestricted = true
+	private var removePinAlertOn = true
 
 	// Calculated properties
 	private var annotations: [SmartTargetAnnotation] {
@@ -160,6 +163,8 @@ final class MapViewController: UIViewController
 		// Send Requests
 		interactor.updateSmartTargets(.init())
 		interactor.getMeasuringSystem(.init())
+		interactor.getRemovePinAlertSettings(.init())
+		removePinWithoutAlertRestricted = true
 	}
 
 	override func viewWillDisappear(_ animated: Bool) {
@@ -213,6 +218,9 @@ final class MapViewController: UIViewController
 		isEditSmartTarget = false
 		isAnimateMapView = false
 		isDraggedTemptPointer = false
+		removePinWithoutAlertRestricted = true
+
+		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
 	}
 
 	// MARK: ...Map methods
@@ -445,40 +453,42 @@ private extension MapViewController
 		setupDefaultSettings()
 	}
 
-	func actionShooseAnAction(_ sender: Any) {
-		let alertViewController = UIAlertController(title: "Choose an action", message: nil, preferredStyle: .actionSheet)
-		let removeAction = UIAlertAction(title: self.removeAction.title,
-										 style: self.removeAction.style,
-										 handler: actionRemove)
-		let cancelChangesAction = UIAlertAction(title: "Cancel changes",
-												style: .default,
-												handler: actionCancelChanges)
-		let cancelAction = UIAlertAction(title: "Cancel",
-										 style: .cancel,
-										 handler: actionCancel)
-		alertViewController.addAction(removeAction)
-		alertViewController.addAction(cancelChangesAction)
-		alertViewController.addAction(cancelAction)
-
-		present(alertViewController, animated: true)
+	func actionChooseActionForPin(_ sender: Any) {
+		Alerts.showActionsForPinAlert(on: self, removeHandler: { [weak self] in
+			self?.actionRemove(Any.self)
+		}, cancelChangesHandler: { [weak self] in
+			self?.actionCancelChanges(Any.self)
+		}, cancelHandler: { [weak self] in
+			self?.actionCancel(Any.self)
+		})
 
 		smartTargetMenu?.hide()
 	}
 
 	func actionRemove(_ sender: Any) {
-		guard let temptPointer = currentPointer else { return }
+		if removePinWithoutAlertRestricted && removePinAlertOn {
+			Alerts.showDeletePinAlert(on: self) { [weak self] in
+				if self?.mode == .edit, self?.smartTargetMenu?.leftMenuAction.title == "Cancel" {
+					self?.actionChooseActionForPin(Any.self)
+				}
+			}
+			removePinWithoutAlertRestricted = false
+		}
+		else {
+			guard let temptPointer = currentPointer else { return }
 
-		// Удаляем smartTarget
-		let request = Map.RemoveSmartTarget.Request(uid: temptPointer.uid)
-		interactor.removeSmartTarget(request)
+			// Удаляем smartTarget
+			let request = Map.RemoveSmartTarget.Request(uid: temptPointer.uid)
+			interactor.removeSmartTarget(request)
 
-		// Завершаем отслеживание
-		let monitoringRegionRequest = Map.StopMonitoringRegion.Request(uid: temptPointer.uid)
-		interactor.stopMonitoringRegion(monitoringRegionRequest)
+			// Завершаем отслеживание
+			let monitoringRegionRequest = Map.StopMonitoringRegion.Request(uid: temptPointer.uid)
+			interactor.stopMonitoringRegion(monitoringRegionRequest)
 
-		mapView.removeAnnotation(temptPointer)
-		smartTargetMenu?.removeFromSuperview()
-		setupDefaultSettings()
+			mapView.removeAnnotation(temptPointer)
+			smartTargetMenu?.removeFromSuperview()
+			setupDefaultSettings()
+		}
 	}
 
 	func actionCancelChanges(_ sender: Any) {
@@ -633,6 +643,7 @@ private extension MapViewController
 // MARK: - Map display logic
 extension MapViewController: MapDisplayLogic
 {
+
 	func displaySmartTargets(_ viewModel: Map.FetchSmartTargets.ViewModel) {
 		mapView.addAnnotations(viewModel.annotations)
 	}
@@ -699,6 +710,10 @@ extension MapViewController: MapDisplayLogic
 	func displayGetMeasuringSystem(_ viewModel: Map.GetMeasuringSystem.ViewModel) {
 		smartTargetMenu?.sliderFactor = Float(viewModel.measuringFactor)
 		smartTargetMenu?.sliderValueMeasuringSymbol = viewModel.measuringSymbol
+	}
+
+	func displayGetRemovePinAlertSettings(_ viewModel: Map.GetRemovePinAlertSettings.ViewModel) {
+		removePinAlertOn = viewModel.removePinAlertOn
 	}
 }
 
@@ -785,6 +800,7 @@ extension MapViewController: MKMapViewDelegate
 				animateSmartTargetMenu(hide: false)
 			}
 		}
+		removePinWithoutAlertRestricted = true
 		animatePinViewHidden(false)
 		interactor.getAddress(Map.Address.Request(coordinate: temptPointer.coordinate))
 	}
@@ -820,6 +836,7 @@ extension MapViewController: MKMapViewDelegate
 			if temptLastPointer != nil {
 				smartTargetMenu?.leftMenuAction = cancelAction
 			}
+			removePinWithoutAlertRestricted = true
 		default: break
 		}
 	}
