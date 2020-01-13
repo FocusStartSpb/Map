@@ -92,12 +92,14 @@ final class SceneBuilder
 	}
 
 	func getDetailTargetScene(smartTargetListViewController: SmartTargetListViewController,
-							  smartTarget: SmartTarget) -> DetailTargetViewController {
-		let presenter = DetailTargetPresenter(smartTarget: smartTarget)
+							  smartTarget: SmartTarget,
+							  smartTargetCollection: ISmartTargetCollection) -> DetailTargetViewController {
 		let router = DetailTargetRouter()
+		let presenter = DetailTargetPresenter(smartTarget: smartTarget, smartTargetCollection: smartTargetCollection)
 		let viewController = DetailTargetViewController(presenter: presenter,
 														router: router,
 														smartTargetEditable: smartTargetListViewController.isEditing)
+		presenter.attachViewController(detailTargetViewController: viewController)
 		router.attachViewController(detailTargetViewController: viewController)
 		return viewController
 	}
