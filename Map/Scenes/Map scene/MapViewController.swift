@@ -269,7 +269,6 @@ final class MapViewController: UIViewController
 		interactor.getRangeRadius(.init())
 		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
 		interactor.getMeasuringSystem(.init())
-		interactor.getRemovePinAlertSettings(.init())
 
 		view.addSubview(menu)
 		setupSmartTargetMenuConstraints()
