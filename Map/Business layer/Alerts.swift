@@ -5,14 +5,13 @@
 //  Created by Ekaterina Khudzhamkulova on 12.01.2020.
 //
 
-import Foundation
 import UIKit
 
 enum Alerts
 {
 	private static func showBasicAlert(on vc: UIViewController, with title: String, message: String) {
 		let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-		alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+		alert.addAction(UIAlertAction(title: "OK", style: .default))
 		vc.present(alert, animated: true)
 	}
 
