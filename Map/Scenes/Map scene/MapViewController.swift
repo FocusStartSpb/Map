@@ -840,6 +840,7 @@ extension MapViewController: MKMapViewDelegate
 			if temptLastPointer != nil {
 				smartTargetMenu?.leftMenuAction = cancelAction
 			}
+			removePinWithoutAlertRestricted = true
 		default: break
 		}
 	}
