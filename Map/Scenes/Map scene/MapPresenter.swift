@@ -5,7 +5,7 @@
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
 
-import MapKit
+import Foundation
 
 // MARK: - MapPresentationLogic protocol
 protocol MapPresentationLogic
