@@ -474,8 +474,10 @@ private extension MapViewController
 
 	func actionRemove(_ sender: Any) {
 		if removePinWithoutAlertRestricted && removePinAlertOn {
-		Alerts.showDeletePinAlert(on: self)
+			Alerts.showDeletePinAlert(on: self)
 			removePinWithoutAlertRestricted = false
+			smartTargetMenu?.leftMenuAction = removeAction
+			smartTargetMenu?.show()
 		}
 		else {
 			guard let temptPointer = currentPointer else { return }
@@ -803,6 +805,7 @@ extension MapViewController: MKMapViewDelegate
 				animateSmartTargetMenu(hide: false)
 			}
 		}
+		removePinWithoutAlertRestricted = true
 		animatePinViewHidden(false)
 		interactor.getAddress(Map.Address.Request(coordinate: temptPointer.coordinate))
 	}
