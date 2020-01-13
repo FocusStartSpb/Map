@@ -164,6 +164,7 @@ final class MapViewController: UIViewController
 		interactor.updateSmartTargets(.init())
 		interactor.getMeasuringSystem(.init())
 		interactor.getRemovePinAlertSettings(.init())
+		removePinWithoutAlertRestricted = true
 	}
 
 	override func viewWillDisappear(_ animated: Bool) {
