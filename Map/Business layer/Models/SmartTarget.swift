@@ -11,10 +11,8 @@ import CoreLocation
 struct SmartTarget
 {
 
-	// MARK: ...Private properties
-	private let dateOfCreated: Date
-
 	// MARK: ...Properties
+	let dateOfCreated: Date
 	let uid: String
 	var title: String
 	var coordinates: CLLocationCoordinate2D
