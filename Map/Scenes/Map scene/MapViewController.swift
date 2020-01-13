@@ -454,21 +454,13 @@ private extension MapViewController
 	}
 
 	func actionChooseActionForPin(_ sender: Any) {
-		let alertViewController = UIAlertController(title: "Choose an action", message: nil, preferredStyle: .actionSheet)
-		let removeAction = UIAlertAction(title: self.removeAction.title,
-										 style: self.removeAction.style,
-										 handler: actionRemove)
-		let cancelChangesAction = UIAlertAction(title: "Cancel changes",
-												style: .default,
-												handler: actionCancelChanges)
-		let cancelAction = UIAlertAction(title: "Cancel",
-										 style: .cancel,
-										 handler: actionCancel)
-		alertViewController.addAction(removeAction)
-		alertViewController.addAction(cancelChangesAction)
-		alertViewController.addAction(cancelAction)
-
-		present(alertViewController, animated: true)
+		Alerts.showActionsForPinAlert(on: self, removeHandler: { [weak self] in
+			self?.actionRemove(Any.self)
+		}, cancelChangesHandler: { [weak self] in
+			self?.actionCancelChanges(Any.self)
+		}, cancelHandler: { [weak self] in
+			self?.actionCancel(Any.self)
+		})
 
 		smartTargetMenu?.hide()
 	}
