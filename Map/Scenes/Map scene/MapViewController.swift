@@ -234,6 +234,7 @@ final class MapViewController: UIViewController
 											   title: target.title,
 											   coordinate: coordinate)
 		mapView.addAnnotation(annotation)
+		removePinWithoutAlertRestricted = true
 		currentPointer = annotation
 	}
 
