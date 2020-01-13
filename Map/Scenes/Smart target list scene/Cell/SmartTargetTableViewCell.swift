@@ -50,7 +50,7 @@ final class SmartTargetTableViewCell: UITableViewCell
 			self.containerView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 5),
 			self.containerView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -5),
 			self.containerView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
-			self.containerView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -20),
+			self.containerView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
 		])
 		if #available(iOS 13.0, *) {
 			self.containerView.backgroundColor = .systemBackground
@@ -82,9 +82,11 @@ final class SmartTargetTableViewCell: UITableViewCell
 		self.containerView.addSubview(titleLabel)
 		self.titleLabel.translatesAutoresizingMaskIntoConstraints = false
 		NSLayoutConstraint.activate([
-			self.titleLabel.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
+			self.titleLabel.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor,
+													 constant: 5),
 			self.titleLabel.topAnchor.constraint(equalTo: self.timeOfCreationLabel.bottomAnchor),
-			self.titleLabel.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor),
+			self.titleLabel.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor,
+													  constant: -5),
 			self.titleLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 10),
 		])
 		self.titleLabel.numberOfLines = 0
@@ -96,9 +98,11 @@ final class SmartTargetTableViewCell: UITableViewCell
 		self.containerView.addSubview(addressLabel)
 		self.addressLabel.translatesAutoresizingMaskIntoConstraints = false
 		NSLayoutConstraint.activate([
-			self.addressLabel.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
+			self.addressLabel.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor,
+													   constant: 5),
 			self.addressLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: 10),
-			self.addressLabel.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor),
+			self.addressLabel.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor,
+														constant: -5),
 			self.addressLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 10),
 			self.addressLabel.bottomAnchor.constraint(equalTo: self.containerView.bottomAnchor, constant: -5),
 		])
@@ -125,15 +129,16 @@ final class SmartTargetTableViewCell: UITableViewCell
 		}
 	}
 
-	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-		updateBackgroundColors()
-		print("traitcollectiondidchange in tableviewcell")
+	private func dateFormat(dateOfCreation: Date?) -> String {
+		let dateFormatted = DateFormatter()
+		guard let dateOfCreation = dateOfCreation else { return "" }
+		dateFormatted.dateStyle = .medium
+		let dateString = dateFormatted.string(from: dateOfCreation)
+		return dateString
 	}
 
-	override func setEditing(_ editing: Bool, animated: Bool) {
-		super.setEditing(editing, animated: animated)
-		self.editingAccessoryType = .disclosureIndicator
-		self.backgroundColor = .clear
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		updateBackgroundColors()
 	}
 }
 // MARK: - ISmartTargetTableViewCell
@@ -142,6 +147,6 @@ extension SmartTargetTableViewCell: ISmartTargetTableViewCell
 	func fillLabels(with smartTarget: SmartTarget?) {
 		self.titleLabel.text = smartTarget?.title
 		self.addressLabel.text = smartTarget?.address
-		self.timeOfCreationLabel.text = "12.12.2012"
+		self.timeOfCreationLabel.text = dateFormat(dateOfCreation: smartTarget?.dateOfCreated)
 	}
 }
