@@ -11,7 +11,7 @@ import Foundation
 protocol SmartTargetListPresentationLogic
 {
 	func presentLoadSmartTargets(_ response: SmartTargetList.LoadSmartTargets.Response)
-	func presentSaveSmartTargets(_ response: SmartTargetList.SaveSmartTargets.Response)
+	func presentSaveSmartTargets(_ response: SmartTargetList.DeleteSmartTargets.Response)
 	func presentUpdateSmartTargets(_ response: SmartTargetList.UpdateSmartTargets.Response)
 }
 
@@ -38,7 +38,7 @@ extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 		viewController?.displayLoadSmartTargets(viewModel)
 	}
 
-	func presentSaveSmartTargets(_ response: SmartTargetList.SaveSmartTargets.Response) {
+	func presentSaveSmartTargets(_ response: SmartTargetList.DeleteSmartTargets.Response) {
 		let didSave: Bool
 		switch response.result {
 		case .success:
@@ -47,30 +47,23 @@ extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 			didSave = false
 			print(error)
 		}
-		let viewModel = SmartTargetList.SaveSmartTargets.ViewModel(didSave: didSave)
-		viewController?.displaySaveSmartTargets(viewModel)
+		let viewModel = SmartTargetList.DeleteSmartTargets.ViewModel(didDelete: didSave)
+		viewController?.displayDeleteSmartTargets(viewModel)
 	}
 
 	func presentUpdateSmartTargets(_ response: SmartTargetList.UpdateSmartTargets.Response) {
-		let addedIndexPaths = response
-			.addedSmartTargets
-			.reduce(into: (counter: 0, indexPaths: [IndexPath]())) { result, _ in
-				result.indexPaths.append(IndexPath(row: result.counter, section: 0))
-				result.counter += 1
-			}
-			.indexPaths
-		let removedIndexPaths = response
+		let addedIndexSet = IndexSet(response
 			.collection
-			.indexes(at: response.removedSmartTargets)
-			.map { IndexPath(row: $0, section: 0) }
-		let updatedIndexPaths = response
+			.indexes(at: response.addedSmartTargets))
+		let updatedIndexSet = IndexSet(response
 			.collection
-			.indexes(at: response.updatedSmartTargets)
-			.map { IndexPath(row: $0, section: 0) }
-		let viewModel =
-			SmartTargetList.UpdateSmartTargets.ViewModel(addedIndexPaths: addedIndexPaths,
-														 removedIndexPaths: removedIndexPaths,
-														 updatedIndexPaths: updatedIndexPaths)
+			.indexes(at: response.updatedSmartTargets))
+		let removedIndexSet = IndexSet(response
+			.collection
+			.indexes(at: response.removedSmartTargets))
+		let viewModel = SmartTargetList.UpdateSmartTargets.ViewModel(addedIndexSet: addedIndexSet,
+																	 removedIndexSet: removedIndexSet,
+																	 updatedIndexSet: updatedIndexSet)
 		viewController?.displayUpdateSmartTargets(viewModel)
 	}
 }
