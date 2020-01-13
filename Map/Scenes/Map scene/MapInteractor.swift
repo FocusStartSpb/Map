@@ -6,7 +6,6 @@
 //
 
 import CoreLocation
-import UIKit
 
 // MARK: MapBusinessLogic protocol
 protocol MapBusinessLogic
@@ -14,7 +13,6 @@ protocol MapBusinessLogic
 	func getSmartTargets(_ request: Map.FetchSmartTargets.Request)
 	func getSmartTarget(_ request: Map.GetSmartTarget.Request)
 	func configureLocationService(request: Map.UpdateStatus.Request)
-	func returnToCurrentLocation(request: Map.UpdateStatus.Request)
 	func getAddress(_ request: Map.Address.Request)
 
 	// Adding, updating, removing smart targets
@@ -226,10 +224,6 @@ extension MapInteractor: MapBusinessLogic
 	}
 
 	func configureLocationService(request: Map.UpdateStatus.Request) {
-		checkAuthorizationService()
-	}
-
-	func returnToCurrentLocation(request: Map.UpdateStatus.Request) {
 		checkAuthorizationService()
 	}
 

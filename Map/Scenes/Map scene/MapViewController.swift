@@ -107,12 +107,10 @@ final class MapViewController: UIViewController
 	private let latitudalMeters = 5_000.0
 	private let longtitudalMeters = 5_000.0
 	private let currentLocationButtonSize: CGFloat = 40.0
-	private let currentLocationOffset: CGFloat = 20.0
+	private let offset: CGFloat = 20.0
 
 	// Constraints of smart target menu
 	private var smartTargetMenuBottomLayoutConstraint: NSLayoutConstraint?
-	private var smartTargetMenuLeadingLayoutConstraint: NSLayoutConstraint?
-	private var smartTargetMenuTopLayoutConstraint: NSLayoutConstraint?
 
 	private var smartTargetMenuBottomConstant: CGFloat = 0
 
@@ -149,7 +147,6 @@ final class MapViewController: UIViewController
 	}
 
 	// MARK: ...View lifecycle
-
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		setup()
@@ -157,7 +154,6 @@ final class MapViewController: UIViewController
 
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		currentLocationButton.isHidden = (mapView.showsUserLocation == false)
 
 		tabBarController?.delegate = self
 
@@ -214,7 +210,7 @@ final class MapViewController: UIViewController
 		temptLastPointer = nil
 		interactor.temptSmartTarget = nil
 		removeTemptCircle()
-		setTabBarHidden(false)
+		setTabBarVisible(true)
 
 		addButtonView.isHidden = false
 		isEditSmartTarget = false
@@ -255,7 +251,7 @@ final class MapViewController: UIViewController
 	}
 
 	// MARK: ...Menu methods
-	private func createSmartTargetMenu(isEditing: Bool) -> SmartTargetMenu {
+	private func createSmartTargetMenu() -> SmartTargetMenu {
 		SmartTargetMenu(textField: interactor.temptSmartTarget?.title,
 						sliderValue: interactor.temptSmartTarget?.radius ?? circleRadius,
 						sliderValuesRange: (50, 1000),
@@ -266,9 +262,8 @@ final class MapViewController: UIViewController
 						textFieldAction: actionChangeTitle)
 	}
 
-	private func showSmartTargetMenu(isEditing: Bool) {
-
-		let menu = createSmartTargetMenu(isEditing: isEditing)
+	private func showSmartTargetMenu() {
+		let menu = createSmartTargetMenu()
 		smartTargetMenu = menu
 
 		interactor.getRangeRadius(.init())
@@ -276,34 +271,39 @@ final class MapViewController: UIViewController
 		interactor.getMeasuringSystem(.init())
 		interactor.getRemovePinAlertSettings(.init())
 
-		smartTargetMenu?.sliderValue = Float(circleRadius)
-
 		view.addSubview(menu)
 		setupSmartTargetMenuConstraints()
+
+		animateShowMenu()
+	}
+}
+
+// MARK: - Animations
+extension MapViewController
+{
+	private func animateShowMenu() {
 		view.layoutIfNeeded()
 
-		let needHide = regionIsChanging
+		smartTargetMenu?.transform = CGAffineTransform(translationX: 0, y: smartTargetMenu?.frame.height ?? 0)
+		smartTargetMenu?.alpha = 0
 
-		UIView.animate(withDuration: 0.3, animations: {
-			self.isAnimateSmartTargetMenu = true
-			let tabBarHeight = isEditing ? (self.tabBarController?.tabBar.frame.height ?? 0) : 0
-			self.smartTargetMenuBottomLayoutConstraint?.constant =
-				-self.currentLocationOffset + tabBarHeight
-			self.smartTargetMenuLeadingLayoutConstraint?.isActive = false
-			menu.leadingAnchor
-				.constraint(equalTo: self.view.leadingAnchor,
-							constant: self.currentLocationOffset)
-				.isActive = true
-			self.view.layoutIfNeeded()
+		UIView.animate(withDuration: 0.5,
+					   delay: 0,
+					   usingSpringWithDamping: 0.6,
+					   initialSpringVelocity: 1,
+					   options: .layoutSubviews,
+					   animations: {
+						self.isAnimateSmartTargetMenu = true
+						self.smartTargetMenu?.alpha = 1
+						self.smartTargetMenu?.transform = .identity
 		}, completion: { _ in
 			self.isAnimateSmartTargetMenu = false
-			if needHide, self.isEditSmartTarget {
+			if self.regionIsChanging, self.isEditSmartTarget {
 				self.animateSmartTargetMenu(hide: true)
 			}
 		})
 	}
 
-	// MARK: ...Animations
 	private func animateSmartTargetMenu(hide flag: Bool) {
 		guard
 			let bottomSmartTargetMenuConstraint = smartTargetMenuBottomLayoutConstraint,
@@ -371,7 +371,7 @@ private extension MapViewController
 		isEditSmartTarget = true
 		interactor.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate)
 		addCurrentPointer(at: mapView.centerCoordinate)
-		showSmartTargetMenu(isEditing: false)
+		showSmartTargetMenu()
 		if regionIsChanging == false {
 			interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
 			impactFeedbackGenerator.prepare()
@@ -380,7 +380,7 @@ private extension MapViewController
 
 	func actionEditSmartTarget(annotation: SmartTargetAnnotation) {
 		mode = .edit
-		setTabBarHidden(true)
+		setTabBarVisible(false)
 		let request = Map.GetSmartTarget.Request(uid: annotation.uid)
 		interactor.getSmartTarget(request)
 		addButtonView.isHidden = true
@@ -390,7 +390,7 @@ private extension MapViewController
 		addTemptCircle(at: annotation.coordinate,
 					   with: interactor.temptSmartTarget?.radius ?? circleRadius)
 		temptLastPointer = currentPointer?.copy()
-		showSmartTargetMenu(isEditing: true)
+		showSmartTargetMenu()
 	}
 
 	func actionSave(_ sender: Any) {
@@ -552,9 +552,9 @@ private extension MapViewController
 
 	func keyboardWillDisappear(notification: NSNotification?) {
 		willTranslateKeyboard = true
-		let tabBarHeight = (tabBarController?.tabBar.isHidden == false) ? 0 : tabBarController?.tabBar.frame.height ?? 0
+		let tabBarHeight = tabBarIsVisible ? 0 : tabBarController?.tabBar.frame.height ?? 0
 		animateMapViewFrame(withBottomOffset: 0, layoutIfNeeded: false)
-		smartTargetMenuBottomConstant = -currentLocationOffset + tabBarHeight
+		smartTargetMenuBottomConstant = -offset + tabBarHeight
 		animateSmartTargetMenu(withBottomOffset: smartTargetMenuBottomConstant, layoutIfNeeded: false)
 	}
 
@@ -577,16 +577,12 @@ private extension MapViewController
 		}
 
 		if mode == .edit {
-			tabBarController?.tabBar.isHidden = true
+			setTabBarVisible(false, duration: 0)
 		}
 	}
 
 	func appMovedToBackground() {
 		notificationCenter.removeObserver(self, names: Set(keyboardNotifications.keys))
-		if currentPointer != nil, regionIsChanging, isAnimateSmartTargetMenu {
-			actionRemove(Any.self)
-		}
-		tabBarController?.tabBar.isHidden = false
 	}
 }
 
@@ -605,20 +601,20 @@ private extension MapViewController
 	func setupCurrentLocationButtonConstraints() {
 		currentLocationButton.translatesAutoresizingMaskIntoConstraints = false
 		currentLocationButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
-													  constant: currentLocationOffset).isActive = true
+													  constant: offset).isActive = true
 		currentLocationButton.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
 		currentLocationButton.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
 		currentLocationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-														constant: -currentLocationOffset).isActive = true
+														constant: -offset).isActive = true
 	}
 
 	func setupAddButtonViewConstraints() {
 		addButtonView.translatesAutoresizingMaskIntoConstraints = false
 
 		addButtonView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
-												constant: -currentLocationOffset).isActive = true
+												constant: -offset).isActive = true
 		addButtonView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-											  constant: -currentLocationOffset).isActive = true
+											  constant: -offset).isActive = true
 		addButtonView.heightAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
 		addButtonView.widthAnchor.constraint(equalToConstant: currentLocationButtonSize).isActive = true
 	}
@@ -626,23 +622,24 @@ private extension MapViewController
 	func setupSmartTargetMenuConstraints() {
 		smartTargetMenu?.translatesAutoresizingMaskIntoConstraints = false
 
+		let tabBarHeight = (mode == .edit) ? (self.tabBarController?.tabBar.frame.height ?? 0) : 0
+
 		smartTargetMenuBottomLayoutConstraint =
 			smartTargetMenu?
 				.bottomAnchor
 				.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-							constant: -currentLocationOffset)
+							constant: -offset + tabBarHeight)
 		smartTargetMenuBottomLayoutConstraint?.isActive = true
 
-		smartTargetMenuLeadingLayoutConstraint =
-			smartTargetMenu?
-				.leadingAnchor
-				.constraint(equalTo: addButtonView.leadingAnchor)
-		smartTargetMenuLeadingLayoutConstraint?.isActive = true
+		smartTargetMenu?
+			.leadingAnchor
+			.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor,
+			constant: offset).isActive = true
 
 		smartTargetMenu?
 			.trailingAnchor
 			.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
-						constant: -currentLocationOffset)
+						constant: -offset)
 			.isActive = true
 	}
 }
@@ -660,14 +657,11 @@ extension MapViewController: MapDisplayLogic
 	}
 
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel) {
-		mapView.showsUserLocation = viewModel.isShownUserPosition
-		guard viewModel.isShownUserPosition else {
-			currentLocationButton.isHidden = true
-			return
+		if viewModel.isShownUserPosition, mapView.showsUserLocation == false, let coordinate = viewModel.userCoordinate {
+			showLocation(coordinate: coordinate)
 		}
-		currentLocationButton.isHidden = false
-		guard let coordinate = viewModel.userCoordinate else { return }
-		showLocation(coordinate: coordinate)
+		mapView.showsUserLocation = viewModel.isShownUserPosition
+		currentLocationButton.isHidden = (viewModel.isShownUserPosition == false)
 	}
 
 	func displayAddress(_ viewModel: Map.Address.ViewModel) {
@@ -748,6 +742,7 @@ extension MapViewController: MKMapViewDelegate
 		if let currentPointer = currentPointer, annotation !== currentPointer {
 			pinView?.isHidden = false
 			pinView?.alpha = 1
+			pinView?.canShowCallout = true
 		}
 
 		if isNewPointer {
