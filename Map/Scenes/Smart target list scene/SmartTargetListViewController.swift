@@ -10,7 +10,7 @@ import UIKit
 protocol SmartTargetListDisplayLogic: AnyObject
 {
 	func displayLoadSmartTargets(_ viewModel: SmartTargetList.LoadSmartTargets.ViewModel)
-	func displaySaveSmartTargets(_ viewModel: SmartTargetList.SaveSmartTargets.ViewModel)
+	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel)
 	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel)
 }
 
@@ -30,7 +30,6 @@ final class SmartTargetListViewController: UIViewController
 
 	private enum StaticConstants
 	{
-		static let editButtonTitle = "Edit"
 		static let navigationItemTitle = "List of smart object"
 		static let reuseIdentifier = "Cell"
 		static let selectedCellBackgroundColorInDarkMode = #colorLiteral(red: 0.3045190282, green: 0.3114352223, blue: 0.3184640712, alpha: 1)
@@ -73,7 +72,6 @@ final class SmartTargetListViewController: UIViewController
 	private func updateNavigationBar() {
 		self.navigationController?.navigationBar.prefersLargeTitles = true
 		self.navigationItem.title = StaticConstants.navigationItemTitle
-		self.navigationItem.leftBarButtonItem = self.editButtonItem
 	}
 
 	private func setupTargetsTableView() {
@@ -109,13 +107,6 @@ final class SmartTargetListViewController: UIViewController
 	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
 		checkUserInterfaceStyle()
 	}
-
-	override func setEditing(_ editing: Bool, animated: Bool) {
-		super.setEditing(editing, animated: animated)
-		self.targetsTableView.setEditing(editing, animated: animated)
-		self.targetsTableView.beginUpdates()
-		self.targetsTableView.endUpdates()
-	}
 }
 
 // MARK: - Smart target list display logic
@@ -124,22 +115,26 @@ extension SmartTargetListViewController: SmartTargetListDisplayLogic
 	func displayLoadSmartTargets(_ viewModel: SmartTargetList.LoadSmartTargets.ViewModel) {
 	}
 
-	func displaySaveSmartTargets(_ viewModel: SmartTargetList.SaveSmartTargets.ViewModel) {
+	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel) {
 	}
 
 	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel) {
 		targetsTableView.beginUpdates()
-		targetsTableView.deleteRows(at: viewModel.removedIndexPaths, with: .automatic)
-		targetsTableView.insertRows(at: viewModel.addedIndexPaths, with: .automatic)
-		targetsTableView.reloadRows(at: viewModel.updatedIndexPaths, with: .automatic)
+		targetsTableView.deleteSections(viewModel.removedIndexSet, with: .fade)
+		targetsTableView.reloadSections(viewModel.updatedIndexSet, with: .fade)
+		targetsTableView.insertSections(viewModel.addedIndexSet, with: .fade)
 		targetsTableView.endUpdates()
 	}
 }
 // MARK: - TableViewDataSource
 extension SmartTargetListViewController: UITableViewDataSource
 {
+	func numberOfSections(in tableView: UITableView) -> Int {
+		return interactor.smartTargetsCount
+	}
+
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		interactor.smartTargetsCount
+		return 1
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -148,13 +143,21 @@ extension SmartTargetListViewController: UITableViewDataSource
 			else {
 			return UITableViewCell()
 		}
-		cell.fillLabels(with: interactor.smartTargetCollection?.smartTargets[indexPath.row])
+		cell.fillLabels(with: interactor.smartTargetCollection?.smartTargets[indexPath.section])
 		return cell
 	}
 }
 // MARK: - TableViewDelegate
 extension SmartTargetListViewController: UITableViewDelegate
 {
+	func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+		return 15
+	}
+
+	func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+		UIView()
+	}
+
 	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 		UITableView.automaticDimension
 	}
@@ -171,11 +174,25 @@ extension SmartTargetListViewController: UITableViewDelegate
 			}
 		}
 		UIView.animate(withDuration: 0.2, animations: { cell.containerView.backgroundColor = selectedBackgroundColor })
-		self.router.routeToDetail(indexPathAtRow: indexPath.row)
-		self.setEditing(false, animated: false)
+		self.router.routeToDetail(indexPathAtRow: indexPath.section)
 		tableView.deselectRow(at: indexPath, animated: false)
 		UIView.animate(withDuration: 0.2, delay: 0.5,
 						   animations: { cell.containerView.backgroundColor = backgroundColorDefault })
+	}
+
+	func tableView(_ tableView: UITableView,
+				   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+		return UISwipeActionsConfiguration(actions: [
+			UIContextualAction(style:
+								.destructive,
+							   title: "Delete",
+							   handler: { (_, _, completion: @escaping (Bool) -> Void) in
+								let indexSet = IndexSet(arrayLiteral: indexPath.section)
+								self.interactor.deleteSmartTargets(SmartTargetList.DeleteSmartTargets.Request(smartTargetsIndexSet: indexSet))
+								tableView.deleteSections(indexSet, with: .fade)
+								completion(true)
+		}),
+		])
 	}
 }
 
