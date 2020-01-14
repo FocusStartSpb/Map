@@ -33,6 +33,7 @@ protocol MapPresentationLogic
 	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response)
 	func presentGetRangeRadius(_ response: Map.GetRangeRadius.Response)
 	func presentGetMeasuringSystem(_ response: Map.GetMeasuringSystem.Response)
+	func presentGetRemovePinAlertSettings(_ response: Map.GetRemovePinAlertSettings.Response)
 }
 
 // MARK: - Class
@@ -49,6 +50,7 @@ final class MapPresenter
 // MARK: - Map presentation logic
 extension MapPresenter: MapPresentationLogic
 {
+
 	func presentSmartTargets(_ response: Map.FetchSmartTargets.Response) {
 		let annotationArray = annotations(from: response.smartTargetCollection.smartTargets)
 		let viewModel = Map.FetchSmartTargets.ViewModel(annotations: annotationArray)
@@ -151,5 +153,10 @@ extension MapPresenter: MapPresentationLogic
 		let viewModel = Map.GetMeasuringSystem.ViewModel(measuringSymbol: symbol,
 														 measuringFactor: factor)
 		viewController?.displayGetMeasuringSystem(viewModel)
+	}
+
+	func presentGetRemovePinAlertSettings(_ response: Map.GetRemovePinAlertSettings.Response) {
+		let viewModel = Map.GetRemovePinAlertSettings.ViewModel(removePinAlertOn: response.removePinAlertOn)
+		viewController?.displayGetRemovePinAlertSettings(viewModel)
 	}
 }

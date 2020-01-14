@@ -33,6 +33,7 @@ protocol MapBusinessLogic
 	func getCurrentRadius(_ request: Map.GetCurrentRadius.Request)
 	func getRangeRadius(_ request: Map.GetRangeRadius.Request)
 	func getMeasuringSystem(_ request: Map.GetMeasuringSystem.Request)
+	func getRemovePinAlertSettings(_ request: Map.GetRemovePinAlertSettings.Request)
 }
 
 // MARK: - MapDataStore protocol
@@ -194,6 +195,7 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 // MARK: - Map display logic
 extension MapInteractor: MapBusinessLogic
 {
+
 	func getSmartTarget(_ request: Map.GetSmartTarget.Request) {
 		guard let smartTarget = smartTargetCollection?[request.uid] else { return }
 		let response = Map.GetSmartTarget.Response(smartTarget: smartTarget)
@@ -314,6 +316,12 @@ extension MapInteractor: MapBusinessLogic
 		let measuringSystem = settingsWorker.measuringSystem ?? .kilometer
 		let response = Map.GetMeasuringSystem.Response(measuringSystem: measuringSystem)
 		presenter.presentGetMeasuringSystem(response)
+	}
+
+	func getRemovePinAlertSettings(_ request: Map.GetRemovePinAlertSettings.Request) {
+		let alertOn = settingsWorker.forceRemovePin ?? true
+		let response = Map.GetRemovePinAlertSettings.Response(removePinAlertOn: alertOn)
+		presenter.presentGetRemovePinAlertSettings(response)
 	}
 }
 
