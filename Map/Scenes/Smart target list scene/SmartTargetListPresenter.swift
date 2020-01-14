@@ -13,6 +13,7 @@ protocol SmartTargetListPresentationLogic
 	func presentLoadSmartTargets(_ response: SmartTargetList.LoadSmartTargets.Response)
 	func presentSaveSmartTargets(_ response: SmartTargetList.DeleteSmartTargets.Response)
 	func presentUpdateSmartTargets(_ response: SmartTargetList.UpdateSmartTargets.Response)
+	func presentUpdateSmartTarget(_ response: SmartTargetList.UpdateSmartTarget.Response)
 }
 
 // MARK: - Class
@@ -52,9 +53,7 @@ extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 	}
 
 	func presentUpdateSmartTargets(_ response: SmartTargetList.UpdateSmartTargets.Response) {
-		let addedIndexSet = IndexSet(response
-			.collection
-			.indexes(at: response.addedSmartTargets))
+		let addedIndexSet = IndexSet(0..<response.addedSmartTargets.count)
 		let updatedIndexSet = IndexSet(response
 			.collection
 			.indexes(at: response.updatedSmartTargets))
@@ -65,5 +64,11 @@ extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 																	 removedIndexSet: removedIndexSet,
 																	 updatedIndexSet: updatedIndexSet)
 		viewController?.displayUpdateSmartTargets(viewModel)
+	}
+
+	func presentUpdateSmartTarget(_ response: SmartTargetList.UpdateSmartTarget.Response) {
+		let updateTargetIndexSet = IndexSet(integer: response.editedSmartTargetIndex)
+		let viewModel = SmartTargetList.UpdateSmartTarget.ViewModel(updatedIndexSet: updateTargetIndexSet)
+		viewController?.updateEditedSmartTarget(viewModel)
 	}
 }

@@ -69,4 +69,19 @@ enum SmartTargetList
 			let updatedIndexSet: IndexSet
 		}
 	}
+
+	enum UpdateSmartTarget
+	{
+		struct Request {}
+
+		struct Response
+		{
+			let editedSmartTargetIndex: Int
+		}
+
+		struct ViewModel
+		{
+			let updatedIndexSet: IndexSet
+		}
+	}
 }

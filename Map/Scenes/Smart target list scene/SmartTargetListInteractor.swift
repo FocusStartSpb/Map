@@ -11,6 +11,7 @@ protocol SmartTargetListBusinessLogic
 	func loadSmartTargets(_ request: SmartTargetList.LoadSmartTargets.Request)
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request)
 	func updateSmartTargets(_ request: SmartTargetList.UpdateSmartTargets.Request)
+	func updateSmartTarget(_ request: SmartTargetList.UpdateSmartTarget.Request)
 }
 
 // MARK: - SmartTargetListDataStore protocol
@@ -19,6 +20,8 @@ protocol SmartTargetListDataStore
 	var smartTargetsCount: Int { get }
 	var oldSmartTargetCollection: ISmartTargetCollection? { get set }
 	var smartTargetCollection: ISmartTargetCollection? { get set }
+	var editedSmartTarget: SmartTarget? { get set }
+	var didUpdateSmartTargets: Bool { get set }
 }
 
 // MARK: - Class
@@ -31,6 +34,8 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 	// MARK: ...Map data store
 	var oldSmartTargetCollection: ISmartTargetCollection?
 	var smartTargetCollection: ISmartTargetCollection?
+	var didUpdateSmartTargets = false
+	var editedSmartTarget: SmartTarget?
 
 	// MARK: ...Initialization
 	init(presenter: SmartTargetListPresentationLogic, worker: DataBaseWorker<T>) {
@@ -60,7 +65,10 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 			guard let uuid = self.smartTargetCollection?.smartTargets[Int(index)].uid else { return }
 			self.smartTargetCollection?.remove(atUID: uuid)
 		}
-		self.oldSmartTargetCollection = self.smartTargetCollection?.copy()
+		saveSmartTargetCollection()
+	}
+
+	private func saveSmartTargetCollection() {
 		guard let collection = smartTargetCollection as? T.Element else { return }
 
 		worker.saveSmartTargets(collection) { [weak self] result in
@@ -81,8 +89,18 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 																   removedSmartTargets: differences.removed,
 																   updatedSmartTargets: differences.updated)
 		presenter.presentUpdateSmartTargets(response)
+		if didUpdateSmartTargets == false {
+			oldSmartTargetCollection = smartTargetCollection.copy()
+			didUpdateSmartTargets = true
+		}
+	}
 
-		oldSmartTargetCollection = smartTargetCollection.copy()
+	func updateSmartTarget(_ request: SmartTargetList.UpdateSmartTarget.Request) {
+		guard let editedSmartTarget = self.editedSmartTarget else { return }
+		guard let smartTargetIndex = self.smartTargetCollection?.index(at: editedSmartTarget) else { return }
+		let response = SmartTargetList.UpdateSmartTarget.Response(editedSmartTargetIndex: smartTargetIndex)
+		self.saveSmartTargetCollection()
+		presenter.presentUpdateSmartTarget(response)
 	}
 }
 
