@@ -31,11 +31,11 @@ enum SmartTargetList
 	}
 
 	// MARK: ...SaveSmartTargets
-	enum SaveSmartTargets
+	enum DeleteSmartTargets
 	{
 		struct Request
 		{
-			let smartTargetCollection: SmartTargetCollection
+			let smartTargetsIndexSet: IndexSet
 		}
 
 		struct Response
@@ -45,7 +45,7 @@ enum SmartTargetList
 
 		struct ViewModel
 		{
-			let didSave: Bool
+			let didDelete: Bool
 		}
 	}
 
@@ -64,9 +64,24 @@ enum SmartTargetList
 
 		struct ViewModel
 		{
-			let addedIndexPaths: [IndexPath]
-			let removedIndexPaths: [IndexPath]
-			let updatedIndexPaths: [IndexPath]
+			let addedIndexSet: IndexSet
+			let removedIndexSet: IndexSet
+			let updatedIndexSet: IndexSet
+		}
+	}
+
+	enum UpdateSmartTarget
+	{
+		struct Request {}
+
+		struct Response
+		{
+			let editedSmartTargetIndex: Int
+		}
+
+		struct ViewModel
+		{
+			let updatedIndexSet: IndexSet
 		}
 	}
 }

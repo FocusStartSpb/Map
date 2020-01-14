@@ -15,7 +15,7 @@ protocol SmartTargetListRoutingLogic
 // MARK: - SmartTargetListDataPassing protocol
 protocol SmartTargetListDataPassing
 {
-	var dataStore: SmartTargetListDataStore? { get }
+	var dataStore: SmartTargetListDataStore? { get set }
 }
 
 // MARK: - Class
@@ -41,19 +41,16 @@ extension SmartTargetListRouter: SmartTargetListRoutingLogic
 	func routeToDetail(indexPathAtRow: Int) {
 		guard let viewController = viewController else { return }
 		guard let smartTarget = dataStore?.smartTargetCollection?.smartTargets[indexPathAtRow] else { return }
+		guard let smartTargetCollection = dataStore?.smartTargetCollection else { return }
 		let detailViewController = factory.getDetailTargetScene(smartTargetListViewController: viewController,
-									 smartTarget: smartTarget)
+									 smartTarget: smartTarget,
+									 smartTargetCollection: smartTargetCollection)
 		self.navigateToDetail(source: viewController, destination: detailViewController)
 	}
 
 	private func navigateToDetail(source: SmartTargetListViewController,
 								  destination: DetailTargetViewController) {
-		if source.isEditing {
-			source.navigationController?.pushViewController(destination, animated: true)
-		}
-		else {
-			source.present(destination, animated: true)
-		}
+		source.navigationController?.pushViewController(destination, animated: true)
 	}
 
 	func routeToMap(_ mapViewController: MapViewController) {
@@ -68,6 +65,7 @@ extension SmartTargetListRouter: SmartTargetListRoutingLogic
 
 		// Обнавляем временный коллекшен
 		dataStore?.oldSmartTargetCollection = sourceDataStore.smartTargetCollection?.copy()
+		dataStore?.didUpdateSmartTargets = false
 	}
 
 	// MARK: ...Navigation

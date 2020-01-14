@@ -9,33 +9,29 @@ import Foundation
 
 protocol IDetailTargetRouter
 {
-	func dismissDetail()
 	func saveChange()
-	func popDetail()
+	func popDetail(to destination: SmartTargetListViewController, smartTarget: SmartTarget)
 	func attachViewController(detailTargetViewController: DetailTargetViewController)
 }
 
 final class DetailTargetRouter
 {
-	private weak var viewController: DetailTargetViewController?
+	private weak var detailViewController: DetailTargetViewController?
 }
 // MARK: - IDetailTargetRouter()
 extension DetailTargetRouter: IDetailTargetRouter
 {
-	@objc func dismissDetail() {
-		viewController?.dismiss(animated: true, completion: nil)
-	}
-
 	func saveChange() {
-		viewController?.navigationController?.popViewController(animated: true)
+		detailViewController?.navigationController?.popViewController(animated: true)
 		return
 	}
 
-	func popDetail() {
-		viewController?.navigationController?.popViewController(animated: true)
+	func popDetail(to destination: SmartTargetListViewController, smartTarget: SmartTarget) {
+		destination.router.dataStore?.editedSmartTarget = smartTarget
+		detailViewController?.navigationController?.popToViewController(destination, animated: true)
 	}
 
 	func attachViewController(detailTargetViewController: DetailTargetViewController) {
-		self.viewController = detailTargetViewController
+		self.detailViewController = detailTargetViewController
 	}
 }

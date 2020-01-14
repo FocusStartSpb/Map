@@ -32,24 +32,24 @@ extension MapRouter: MapRoutingLogic
 			let viewController = viewController,
 			let sourceDataStore = dataStore,
 			var destinationDataStore = smartTargetListViewController.router.dataStore else { return }
+		passDataToSmartTargetList(source: sourceDataStore, destination: &destinationDataStore)
 
-		passDataToMap(source: sourceDataStore, destination: &destinationDataStore)
+		navigateToSmartTargetList(source: viewController, destination: smartTargetListViewController)
 
-		navigateToMap(source: viewController, destination: smartTargetListViewController)
-
-		// Обнавляем временный коллекшен
+		// Обновляем временный коллекшен
 		dataStore?.temptSmartTargetCollection = sourceDataStore.smartTargetCollection?.copy()
 	}
 
 	// MARK: ...Navigation
-	private func navigateToMap(source: MapViewController, destination: SmartTargetListViewController) {
-		source.tabBarController?.selectedViewController = destination
+	private func navigateToSmartTargetList(source: MapViewController, destination: SmartTargetListViewController) {
+		source.tabBarController?.selectedViewController = destination.navigationController
 	}
 
 	// MARK: ...Passing data
-	private func passDataToMap(source: MapDataStore, destination: inout SmartTargetListDataStore) {
+	private func passDataToSmartTargetList(source: MapDataStore, destination: inout SmartTargetListDataStore) {
 		destination.smartTargetCollection = source.smartTargetCollection
 		destination.oldSmartTargetCollection = source.temptSmartTargetCollection?.copy()
+		destination.didUpdateSmartTargets = false
 	}
 }
 

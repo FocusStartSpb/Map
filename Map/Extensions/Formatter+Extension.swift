@@ -16,4 +16,11 @@ extension Formatter
 		formatter.locale = Locale.current
 		return formatter
 	}()
+
+	static let full: DateFormatter = {
+		let formatter = DateFormatter()
+		formatter.dateFormat = "MMMM dd, yyyy 'at' hh:mm:ss"
+		formatter.locale = Locale.current
+		return formatter
+	}()
 }

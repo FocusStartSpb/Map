@@ -4,7 +4,6 @@
 //
 //  Created by Антон on 29.12.2019.
 //
-
 import MapKit
 
 final class DetailTargetViewController: UIViewController
@@ -14,6 +13,13 @@ final class DetailTargetViewController: UIViewController
 	{
 		static let width = UIScreen.main.bounds.width
 		static let height = UIScreen.main.bounds.height
+	}
+
+	private enum ButtonTitles
+	{
+		static let editButtonTitleDefault = "Edit (only title and target location)"
+		static let editButtonTitleEditableMode = "Save changes"
+		static let cancelButtonTitle = "Cancel"
 	}
 
 	private enum FontForDetailScreen
@@ -26,7 +32,41 @@ final class DetailTargetViewController: UIViewController
 
 	private let presenter: IDetailTargetPresenter
 	private let router: IDetailTargetRouter
-	private let smartTargetEditable: Bool
+	private var smartTargetEditable = false {
+		didSet {
+			if smartTargetEditable {
+				self.navigationController?.setNavigationBarHidden(true, animated: true)
+				UIView.animate(withDuration: 0.2, animations: {
+					self.editButtonLeadingAnchorToScrollView?.isActive = false
+					self.editButtonLeadingAnchorToCancelButton?.isActive = true
+					self.cancelButtonWidthAnchorEqualZero?.isActive = false
+					self.cancelButtonWidthAnchorIfEditModeEnabled?.isActive = true
+					self.cancelButton.layoutIfNeeded()
+					self.editButton.layoutIfNeeded()
+					self.editButton.setTitle(ButtonTitles.editButtonTitleEditableMode, for: .normal)
+					self.titleTextViewEditable()
+					self.mapViewEditable()
+				})
+			}
+			else {
+				self.navigationController?.setNavigationBarHidden(false, animated: true)
+				UIView.animate(withDuration: 0.2, animations: {
+					self.titleTextView.text = self.presenter.getTitleText()
+					self.editButton.setTitle(ButtonTitles.editButtonTitleDefault, for: .normal)
+					self.titleTextViewNotEditable()
+					self.mapViewNotEditable()
+					self.cancelButtonWidthAnchorIfEditModeEnabled?.isActive = false
+					self.cancelButtonWidthAnchorEqualZero?.isActive = true
+					self.editButtonLeadingAnchorToCancelButton?.isActive = false
+					self.editButtonLeadingAnchorToScrollView?.isActive = true
+					self.mapViewNotEditable()
+					self.titleTextViewNotEditable()
+					self.cancelButton.layoutIfNeeded()
+					self.editButton.layoutIfNeeded()
+				})
+			}
+		}
+	}
 	private var userInterfaceIsDark: Bool {
 		if #available(iOS 12.0, *) {
 			return self.traitCollection.userInterfaceStyle == .dark ? true : false
@@ -34,7 +74,6 @@ final class DetailTargetViewController: UIViewController
 		return false
 	}
 
-	private let dismissView = DismissView()
 	private let mapView = MKMapView()
 	private let scrollView = UIScrollView()
 	private let titleDescriptionLabel = UILabel()
@@ -43,6 +82,13 @@ final class DetailTargetViewController: UIViewController
 	private let dateOfCreationLabel = UILabel()
 	private let addresDescriptionLabel = UILabel()
 	private let addressLabel = UILabel()
+	private let editButton = ButtonForDetailScreen(backgroundColor: .systemBlue, frame: .zero)
+	private var editButtonWidthAnchor: NSLayoutConstraint?
+	private var editButtonLeadingAnchorToScrollView: NSLayoutConstraint?
+	private var editButtonLeadingAnchorToCancelButton: NSLayoutConstraint?
+	private let cancelButton = ButtonForDetailScreen(backgroundColor: .systemRed, frame: .zero)
+	private var cancelButtonWidthAnchorEqualZero: NSLayoutConstraint?
+	private var cancelButtonWidthAnchorIfEditModeEnabled: NSLayoutConstraint?
 
 	init(presenter: IDetailTargetPresenter,
 		 router: IDetailTargetRouter,
@@ -65,21 +111,14 @@ final class DetailTargetViewController: UIViewController
 		setup()
 	}
 
-	override func viewWillAppear(_ animated: Bool) {
-		super.viewWillAppear(animated)
-		self.navigationController?.navigationBar.isTranslucent = false
-	}
-
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
-		self.navigationController?.navigationBar.isTranslucent = true
+		self.navigationController?.setNavigationBarHidden(false, animated: true)
 	}
 
 	// MARK: - Private methods
 	private func setup() {
-		presenter.getTarget()
 		self.navigationItem.largeTitleDisplayMode = .never
-		self.navigationItem.title = "Edit"
 		setupUI()
 		self.view.addGestureRecognizer(UITapGestureRecognizer(target: self,
 															  action: #selector(hideKeyboard)))
@@ -87,39 +126,82 @@ final class DetailTargetViewController: UIViewController
 
 	// MARK: - Setup UI
 	private func setupUI() {
-		setupDismissView()
 		setupScrollView()
 		setupTitleDescriptionLabel()
 		setupTitleTextView()
 		setupDateOfCreationLabel()
 		setupAddresLabel()
 		setupMapView()
+		setupEditButton()
+		setupCancelButton()
 		checkUserInterfaceStyle()
 	}
-	// MARK: - dismissView
-	private func setupDismissView() {
-		guard self.smartTargetEditable == false else { return }
-		self.view.addSubview(dismissView)
-		self.dismissView.translatesAutoresizingMaskIntoConstraints = false
-		NSLayoutConstraint.activate([
-			self.dismissView.topAnchor.constraint(equalTo: self.view.topAnchor),
-			self.dismissView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-			self.dismissView.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
-			self.dismissView.heightAnchor.constraint(equalToConstant: 40),
-		])
-		self.dismissView.addGestureRecognizer(UITapGestureRecognizer(target: self,
-																	 action: #selector(dismissDetail)))
+
+	@objc private func editButtonAction() {
+		UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+		if self.editButton.currentTitle == ButtonTitles.editButtonTitleEditableMode {
+			guard let smartTargetVC = self.navigationController?.viewControllers.first as? SmartTargetListViewController
+				else { return }
+			self.router.popDetail(to: smartTargetVC,
+								  smartTarget: presenter
+									.saveChanges(title: self.titleTextView.text,
+												 coordinates: CLLocationCoordinate2D(latitude: -122.23,
+																					 longitude: 34.123)))
+		}
+		self.smartTargetEditable = true
 	}
+
+	@objc private func cancelButtonAction() {
+		self.smartTargetEditable = false
+	}
+
+	private func checkUserInterfaceStyle() {
+		if self.userInterfaceIsDark == true {
+			self.view.backgroundColor = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
+			self.navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+		}
+		else {
+			self.view.backgroundColor = #colorLiteral(red: 0.9871620841, green: 0.9871620841, blue: 0.9871620841, alpha: 1)
+			self.navigationController?.navigationBar.barTintColor = .white
+		}
+	}
+
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		checkUserInterfaceStyle()
+	}
+
+	// MARK: - hideKeyboard
+	@objc private func hideKeyboard() {
+		self.view.endEditing(true)
+	}
+}
+// MARK: - UITextViewDelegate
+extension DetailTargetViewController: UITextViewDelegate
+{
+	func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+		if text == "\n" {
+			textView.resignFirstResponder()
+			return false
+		}
+		return true
+	}
+
+	func textViewDidBeginEditing(_ textView: UITextView) {
+		self.mapView.isUserInteractionEnabled = false
+	}
+
+	func textViewDidEndEditing(_ textView: UITextView) {
+		self.mapView.isUserInteractionEnabled = true
+	}
+}
+
+extension DetailTargetViewController
+{
 	// MARK: - scrollView
 	private func setupScrollView() {
 		self.view.addSubview(scrollView)
 		self.scrollView.translatesAutoresizingMaskIntoConstraints = false
-		switch self.smartTargetEditable {
-		case true:
-			self.scrollView.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor).isActive = true
-		default:
-			self.scrollView.topAnchor.constraint(equalTo: self.dismissView.bottomAnchor).isActive = true
-		}
+		self.scrollView.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor).isActive = true
 		NSLayoutConstraint.activate([
 			self.scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
 			self.scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
@@ -138,11 +220,27 @@ final class DetailTargetViewController: UIViewController
 			self.titleDescriptionLabel.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
 			self.titleDescriptionLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 20),
 		])
-		self.titleDescriptionLabel.text = "Title"
 		self.titleDescriptionLabel.font = UIFont.systemFont(ofSize: 20)
 		self.titleDescriptionLabel.textAlignment = .center
 	}
 	// MARK: - titleTextView
+	private func titleTextViewEditable() {
+		self.titleTextView.isUserInteractionEnabled = true
+		UIView.animate(withDuration: 0.3, animations: {
+			self.titleTextView.backgroundColor = self.userInterfaceIsDark ? #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1) : #colorLiteral(red: 0.896545194, green: 0.896545194, blue: 0.896545194, alpha: 1)
+			self.titleTextView.returnKeyType = .done
+			self.titleTextView.delegate = self
+		})
+	}
+
+	private func titleTextViewNotEditable() {
+		self.titleTextView.isUserInteractionEnabled = false
+		UIView.animate(withDuration: 0.2, animations: {
+			self.titleTextView.font = FontForDetailScreen.titleLabelFont
+			self.titleTextView.backgroundColor = .clear
+		})
+	}
+
 	private func setupTitleTextView() {
 		self.scrollView.addSubview(titleTextView)
 		titleTextView.translatesAutoresizingMaskIntoConstraints = false
@@ -154,16 +252,9 @@ final class DetailTargetViewController: UIViewController
 		])
 		self.titleTextView.text = presenter.getTitleText()
 		self.titleTextView.isScrollEnabled = false
-		self.titleTextView.isUserInteractionEnabled = (self.smartTargetEditable == true)
-		self.titleTextView.font = FontForDetailScreen.titleLabelFont
-		self.titleTextView.backgroundColor = .clear
 		self.titleTextView.textAlignment = .center
 		self.titleTextView.layer.cornerRadius = 10
-		guard self.smartTargetEditable else { return }
-		self.titleTextView.layer.borderWidth = 0.1
-		self.titleTextView.backgroundColor = self.userInterfaceIsDark ? #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1) : #colorLiteral(red: 0.896545194, green: 0.896545194, blue: 0.896545194, alpha: 1)
-		self.titleTextView.returnKeyType = .done
-		self.titleTextView.delegate = self
+		titleTextViewNotEditable()
 	}
 	// MARK: - dateOfCreationLabel
 	private func setupDateOfCreationLabel() {
@@ -198,6 +289,22 @@ final class DetailTargetViewController: UIViewController
 		self.addressLabel.textAlignment = .center
 	}
 	// MARK: - mapView
+	private func mapViewEditable() {
+		UIView.animate(withDuration: 0.2, animations: {
+			self.mapView.layer.cornerRadius = 30
+		})
+		self.mapView.isUserInteractionEnabled = true
+		//do something
+	}
+
+	private func mapViewNotEditable() {
+		UIView.animate(withDuration: 0.2, animations: {
+			self.mapView.layer.cornerRadius = 0
+		})
+		self.mapView.isUserInteractionEnabled = false
+		//do something
+	}
+
 	private func setupMapView() {
 		self.scrollView.addSubview(mapView)
 		self.mapView.translatesAutoresizingMaskIntoConstraints = false
@@ -207,50 +314,48 @@ final class DetailTargetViewController: UIViewController
 		NSLayoutConstraint.activate([
 			topAnchor,
 			self.mapView.heightAnchor.constraint(equalToConstant: ScreenProperties.height / 2),
-			self.mapView.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
-			self.mapView.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor,
-												 constant: -20),
-			self.mapView.trailingAnchor.constraint(equalTo: self.scrollView.trailingAnchor),
-			self.mapView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor),
+			self.mapView.widthAnchor.constraint(equalToConstant: ScreenProperties.width - 10),
+			self.mapView.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
 		])
-		self.mapView.isUserInteractionEnabled = self.smartTargetEditable
+		self.mapViewNotEditable()
 	}
-
-	private func checkUserInterfaceStyle() {
-		if self.userInterfaceIsDark == true {
-			self.view.backgroundColor = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
-			self.dismissView.backgroundColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
-			self.navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
-		}
-		else {
-			self.view.backgroundColor = #colorLiteral(red: 0.9871620841, green: 0.9871620841, blue: 0.9871620841, alpha: 1)
-			self.dismissView.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-			self.navigationController?.navigationBar.barTintColor = .white
-		}
+	// MARK: ...EditButton
+	private func setupEditButton() {
+		self.editButton.translatesAutoresizingMaskIntoConstraints = false
+		self.scrollView.addSubview(editButton)
+		self.editButtonLeadingAnchorToCancelButton = self.editButton
+			.leadingAnchor.constraint(equalTo: self.cancelButton.trailingAnchor, constant: 15)
+		self.editButtonLeadingAnchorToScrollView = self.editButton
+			.leadingAnchor.constraint(equalTo: self.mapView.leadingAnchor)
+		self.editButtonLeadingAnchorToScrollView?.isActive = true
+		NSLayoutConstraint.activate([
+			self.editButton.topAnchor.constraint(equalTo: self.mapView.bottomAnchor, constant: 10),
+			self.editButton.heightAnchor.constraint(equalToConstant: 50),
+			//			self.editButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 130),
+			self.editButton.trailingAnchor.constraint(equalTo: self.mapView.trailingAnchor),
+			self.editButton.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor,
+													constant: -15),
+		])
+		self.editButton.setTitle(ButtonTitles.editButtonTitleDefault, for: .normal)
+		self.editButton.addTarget(self, action: #selector(editButtonAction), for: .touchUpInside)
 	}
-
-	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-		checkUserInterfaceStyle()
-	}
-
-	// MARK: - hideKeyboard
-	@objc func hideKeyboard() {
-		self.view.endEditing(true)
-	}
-
-	// MARK: - Dismiss function
-	@objc func dismissDetail() {
-		self.smartTargetEditable ? self.router.popDetail() : self.router.dismissDetail()
-	}
-}
-// MARK: - UITextViewDelegate
-extension DetailTargetViewController: UITextViewDelegate
-{
-	func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-		if text == "\n" {
-			textView.resignFirstResponder()
-			return false
-		}
-		return true
+	// MARK: ...CancelButton
+	private func setupCancelButton() {
+		self.cancelButton.translatesAutoresizingMaskIntoConstraints = false
+		self.scrollView.addSubview(cancelButton)
+		self.cancelButtonWidthAnchorEqualZero = self.cancelButton.widthAnchor.constraint(equalToConstant: 0)
+		self.cancelButtonWidthAnchorEqualZero?.isActive = true
+		self.cancelButtonWidthAnchorIfEditModeEnabled = self.cancelButton
+			.widthAnchor.constraint(equalTo: self.editButton.widthAnchor, multiplier: 2 / 3)
+		NSLayoutConstraint.activate([
+			self.cancelButton.topAnchor.constraint(equalTo: self.mapView.bottomAnchor, constant: 10),
+			self.cancelButton.heightAnchor.constraint(equalToConstant: 50),
+			self.cancelButton.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor,
+													   constant: 15),
+			self.cancelButton.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor,
+													  constant: -15),
+		])
+		self.cancelButton.setTitle(ButtonTitles.cancelButtonTitle, for: .normal)
+		self.cancelButton.addTarget(self, action: #selector(cancelButtonAction), for: .touchUpInside)
 	}
 }

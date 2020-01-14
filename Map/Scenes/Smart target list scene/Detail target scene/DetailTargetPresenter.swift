@@ -6,21 +6,27 @@
 //
 
 import Foundation
+import CoreLocation
 
 protocol IDetailTargetPresenter
 {
-	func getTarget()
 	func getTitleText() -> String
 	func getAddressText() -> String
 	func getDateOfCreation() -> String
+	func saveChanges(title: String?, coordinates: CLLocationCoordinate2D) -> SmartTarget
+	func attachViewController(detailTargetViewController: DetailTargetViewController)
 }
 
 final class DetailTargetPresenter
 {
 	private let smartTarget: SmartTarget
+	private let smartTargetCollection: ISmartTargetCollection
+	private weak var viewController: DetailTargetViewController?
 
-	init(smartTarget: SmartTarget) {
+	init(smartTarget: SmartTarget,
+		 smartTargetCollection: ISmartTargetCollection) {
 		self.smartTarget = smartTarget
+		self.smartTargetCollection = smartTargetCollection
 	}
 }
 
@@ -31,15 +37,26 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 		return self.smartTarget.title
 	}
 
-	func getTarget() {
-		print("Below will be a test print")
-	}
-
 	func getDateOfCreation() -> String {
-		return "Date of creation \n 01.01.2020" //ну тип заглушка
+		return Formatter.full.string(from: smartTarget.dateOfCreated)
 	}
 
 	func getAddressText() -> String {
 		return "\("Address: \n" + (smartTarget.address ?? "not found"))"
+	}
+
+	func attachViewController(detailTargetViewController: DetailTargetViewController) {
+		self.viewController = detailTargetViewController
+	}
+
+	func saveChanges(title: String?, coordinates: CLLocationCoordinate2D) -> SmartTarget {
+		let title = title ?? ""
+		var modifiedTarget = self.smartTarget
+		modifiedTarget.title = title
+		if modifiedTarget.coordinates != coordinates {
+			modifiedTarget.coordinates = coordinates
+		}
+		self.smartTargetCollection.put(modifiedTarget)
+		return modifiedTarget
 	}
 }
