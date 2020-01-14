@@ -129,14 +129,6 @@ final class SmartTargetTableViewCell: UITableViewCell
 		}
 	}
 
-	private func dateFormat(dateOfCreation: Date?) -> String {
-		let dateFormatted = DateFormatter()
-		guard let dateOfCreation = dateOfCreation else { return "" }
-		dateFormatted.dateStyle = .medium
-		let dateString = dateFormatted.string(from: dateOfCreation)
-		return dateString
-	}
-
 	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
 		updateBackgroundColors()
 	}

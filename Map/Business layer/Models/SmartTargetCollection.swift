@@ -16,7 +16,6 @@ protocol ISmartTargetCollection: Codable
 	@discardableResult func put(_ smartTarget: SmartTarget) -> Int
 	func add(_ smartTargets: [SmartTarget])
 	@discardableResult func remove(atUID uid: String) -> Int?
-	func replace(on new: SmartTarget)
 
 	func smartTarget(at uid: String) -> SmartTarget?
 	func smartTargets(at uids: [String]) -> [SmartTarget]
@@ -79,11 +78,6 @@ extension SmartTargetCollection: ISmartTargetCollection
 		guard let index = smartTargets.firstIndex(where: { $0.uid == uid }) else { return nil }
 		smartTargets.remove(at: index)
 		return index
-	}
-
-	func replace(on new: SmartTarget) {
-		guard let index = self.index(at: new) else { return }
-		self.smartTargets[index] = new
 	}
 
 	func smartTarget(at uid: String) -> SmartTarget? {
