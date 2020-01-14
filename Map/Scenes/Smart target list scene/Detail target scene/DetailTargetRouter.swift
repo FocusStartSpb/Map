@@ -10,7 +10,7 @@ import Foundation
 protocol IDetailTargetRouter
 {
 	func saveChange()
-	func popDetail()
+	func popDetail(to destination: SmartTargetListViewController, smartTarget: SmartTarget)
 	func attachViewController(detailTargetViewController: DetailTargetViewController)
 }
 
@@ -26,8 +26,9 @@ extension DetailTargetRouter: IDetailTargetRouter
 		return
 	}
 
-	func popDetail() {
-		detailViewController?.navigationController?.popViewController(animated: true)
+	func popDetail(to destination: SmartTargetListViewController, smartTarget: SmartTarget) {
+		destination.router.dataStore?.editedSmartTarget = smartTarget
+		detailViewController?.navigationController?.popToViewController(destination, animated: true)
 	}
 
 	func attachViewController(detailTargetViewController: DetailTargetViewController) {

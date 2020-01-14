@@ -140,9 +140,13 @@ final class DetailTargetViewController: UIViewController
 	@objc private func editButtonAction() {
 		UIImpactFeedbackGenerator(style: .medium).impactOccurred()
 		if self.editButton.currentTitle == ButtonTitles.editButtonTitleEditableMode {
-			self.presenter.saveChanges(title: self.titleTextView.text,
-									   coordinates: CLLocationCoordinate2D(latitude: -12213123.123, longitude: -123123123.123))
-			self.router.popDetail()
+			guard let smartTargetVC = self.navigationController?.viewControllers.first as? SmartTargetListViewController
+				else { return }
+			self.router.popDetail(to: smartTargetVC,
+								  smartTarget: presenter
+									.saveChanges(title: self.titleTextView.text,
+												 coordinates: CLLocationCoordinate2D(latitude: -122.23,
+																					 longitude: 34.123)))
 		}
 		self.smartTargetEditable = true
 	}
