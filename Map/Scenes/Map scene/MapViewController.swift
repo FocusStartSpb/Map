@@ -914,10 +914,12 @@ extension MapViewController: UITabBarControllerDelegate
 {
 	func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
 		tabBarController.delegate = nil
-		guard let viewController = viewController as? SmartTargetListViewController else {
+		guard let navigationController = viewController as? UINavigationController else {
 			return true
 		}
-		router.routeToSmartTargetList(viewController)
+		guard let tableListController = navigationController.viewControllers.first as? SmartTargetListViewController
+			else { return true }
+		router.routeToSmartTargetList(tableListController)
 		return false
 	}
 }
