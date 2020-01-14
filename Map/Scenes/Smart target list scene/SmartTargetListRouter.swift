@@ -15,7 +15,7 @@ protocol SmartTargetListRoutingLogic
 // MARK: - SmartTargetListDataPassing protocol
 protocol SmartTargetListDataPassing
 {
-	var dataStore: SmartTargetListDataStore? { get }
+	var dataStore: SmartTargetListDataStore? { get set }
 }
 
 // MARK: - Class
@@ -65,6 +65,7 @@ extension SmartTargetListRouter: SmartTargetListRoutingLogic
 
 		// Обнавляем временный коллекшен
 		dataStore?.oldSmartTargetCollection = sourceDataStore.smartTargetCollection?.copy()
+		dataStore?.didUpdateSmartTargets = false
 	}
 
 	// MARK: ...Navigation
