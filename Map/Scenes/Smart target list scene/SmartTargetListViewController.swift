@@ -12,14 +12,15 @@ protocol SmartTargetListDisplayLogic: AnyObject
 	func displayLoadSmartTargets(_ viewModel: SmartTargetList.LoadSmartTargets.ViewModel)
 	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel)
 	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel)
+	func updateEditedSmartTarget(_ viewModel: SmartTargetList.UpdateSmartTarget.ViewModel)
 }
 
 // MARK: - Class
 final class SmartTargetListViewController: UIViewController
 {
 	// MARK: ...Private properties
-	private let interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore
-	let router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
+	private var interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore
+	var router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
 	private let targetsTableView = UITableView()
 	private var userInterfaceIsDark: Bool {
 		if #available(iOS 12.0, *) {
@@ -65,6 +66,7 @@ final class SmartTargetListViewController: UIViewController
 
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
+		interactor.updateSmartTarget(.init())
 		interactor.updateSmartTargets(.init())
 	}
 
@@ -124,6 +126,10 @@ extension SmartTargetListViewController: SmartTargetListDisplayLogic
 		targetsTableView.reloadSections(viewModel.updatedIndexSet, with: .fade)
 		targetsTableView.insertSections(viewModel.addedIndexSet, with: .fade)
 		targetsTableView.endUpdates()
+	}
+
+	func updateEditedSmartTarget(_ viewModel: SmartTargetList.UpdateSmartTarget.ViewModel) {
+		targetsTableView.reloadSections(viewModel.updatedIndexSet, with: .fade)
 	}
 }
 // MARK: - TableViewDataSource
@@ -200,6 +206,7 @@ extension SmartTargetListViewController: UITabBarControllerDelegate
 {
 	func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
 		tabBarController.delegate = nil
+		interactor.didUpdateSmartTargets = false
 		guard let viewController = viewController as? MapViewController else {
 			return true
 		}
