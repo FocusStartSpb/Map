@@ -13,7 +13,7 @@ protocol IDetailTargetPresenter
 	func getTitleText() -> String
 	func getAddressText() -> String
 	func getDateOfCreation() -> String
-	func saveChanges(title: String?, coordinates: CLLocationCoordinate2D)
+	func saveChanges(title: String?, coordinates: CLLocationCoordinate2D) -> SmartTarget
 	func attachViewController(detailTargetViewController: DetailTargetViewController)
 }
 
@@ -28,13 +28,6 @@ final class DetailTargetPresenter
 		self.smartTarget = smartTarget
 		self.smartTargetCollection = smartTargetCollection
 	}
-
-	private func dateFormatted(dateOfCreated: Date) -> String {
-		let formatter = DateFormatter()
-		formatter.dateFormat = "MMMM dd, yyyy 'at' hh:mm:ss"
-		let dateString = formatter.string(from: dateOfCreated)
-		return dateString
-	}
 }
 
 // MARK: - IDetailTargetInteractor
@@ -45,7 +38,7 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 	}
 
 	func getDateOfCreation() -> String {
-		return dateFormatted(dateOfCreated: smartTarget.dateOfCreated)
+		return Formatter.full.string(from: smartTarget.dateOfCreated)
 	}
 
 	func getAddressText() -> String {
@@ -56,13 +49,14 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 		self.viewController = detailTargetViewController
 	}
 
-	func saveChanges(title: String?, coordinates: CLLocationCoordinate2D) {
-		guard let title = title else { return }
+	func saveChanges(title: String?, coordinates: CLLocationCoordinate2D) -> SmartTarget {
+		let title = title ?? ""
 		var modifiedTarget = self.smartTarget
 		modifiedTarget.title = title
 		if modifiedTarget.coordinates != coordinates {
 			modifiedTarget.coordinates = coordinates
 		}
-		self.smartTargetCollection.replace(on: modifiedTarget)
+		self.smartTargetCollection.put(modifiedTarget)
+		return modifiedTarget
 	}
 }

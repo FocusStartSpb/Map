@@ -147,6 +147,6 @@ extension SmartTargetTableViewCell: ISmartTargetTableViewCell
 	func fillLabels(with smartTarget: SmartTarget?) {
 		self.titleLabel.text = smartTarget?.title
 		self.addressLabel.text = smartTarget?.address
-		self.timeOfCreationLabel.text = dateFormat(dateOfCreation: smartTarget?.dateOfCreated)
+		self.timeOfCreationLabel.text = Formatter.medium.string(from: smartTarget?.dateOfCreated ?? Date())
 	}
 }
