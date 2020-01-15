@@ -15,7 +15,7 @@ enum Map
 	// MARK: Use cases
 
 	// MARK: ...FetchSmartTargets
-	enum FetchSmartTargets
+	enum FetchAnnotations
 	{
 		struct Request { }
 
@@ -106,24 +106,26 @@ enum Map
 		}
 	}
 
-	// MARK: ...UpdateSmartTargets
-	enum UpdateSmartTargets
+	// MARK: ...UpdateAnnotations
+	enum UpdateAnnotations
 	{
-		struct Request { }
+		struct Request
+		{
+			let annotations: [SmartTargetAnnotation]
+		}
 
 		struct Response
 		{
+			let annotations: [SmartTargetAnnotation]
 			let collection: ISmartTargetCollection
-			let addedSmartTargets: [SmartTarget]
-			let removedSmartTargets: [SmartTarget]
-			let updatedSmartTargets: [SmartTarget]
+			let difference: Difference
 		}
 
 		struct ViewModel
 		{
-			let addedUIDs: [String]
-			let removedUIDs: [String]
-			let updatedUIDs: [String]
+			let needUpdate: Bool
+			let removedAnnotations: [SmartTargetAnnotation]
+			let addedAnnotations: [SmartTargetAnnotation]
 		}
 	}
 

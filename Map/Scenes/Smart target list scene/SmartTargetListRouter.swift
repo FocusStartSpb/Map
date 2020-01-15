@@ -39,18 +39,14 @@ extension SmartTargetListRouter: SmartTargetListRoutingLogic
 {
 	// MARK: ...Routing
 	func routeToDetail(indexPathAtRow: Int) {
-		guard let viewController = viewController else { return }
-		guard let smartTarget = dataStore?.smartTargetCollection?.smartTargets[indexPathAtRow] else { return }
-		guard let smartTargetCollection = dataStore?.smartTargetCollection else { return }
-		let detailViewController = factory.getDetailTargetScene(smartTargetListViewController: viewController,
-									 smartTarget: smartTarget,
-									 smartTargetCollection: smartTargetCollection)
-		self.navigateToDetail(source: viewController, destination: detailViewController)
-	}
+		guard
+			let viewController = viewController,
+			let smartTarget = dataStore?.smartTargetCollection.smartTargets[indexPathAtRow],
+			let smartTargetCollection = dataStore?.smartTargetCollection else { return }
 
-	private func navigateToDetail(source: SmartTargetListViewController,
-								  destination: DetailTargetViewController) {
-		source.navigationController?.pushViewController(destination, animated: true)
+		let detailViewController = factory.getDetailTargetScene(smartTarget: smartTarget,
+																smartTargetCollection: smartTargetCollection)
+		navigateToDetail(source: viewController, destination: detailViewController)
 	}
 
 	func routeToMap(_ mapViewController: MapViewController) {
@@ -62,10 +58,6 @@ extension SmartTargetListRouter: SmartTargetListRoutingLogic
 		passDataToMap(source: sourceDataStore, destination: &destinationDataStore)
 
 		navigateToMap(source: viewController, destination: mapViewController)
-
-		// Обнавляем временный коллекшен
-		dataStore?.oldSmartTargetCollection = sourceDataStore.smartTargetCollection?.copy()
-		dataStore?.didUpdateSmartTargets = false
 	}
 
 	// MARK: ...Navigation
@@ -73,11 +65,13 @@ extension SmartTargetListRouter: SmartTargetListRoutingLogic
 		source.tabBarController?.selectedViewController = destination
 	}
 
-	// MARK: ...Passing data
-	private func passDataToMap(source: SmartTargetListDataStore, destination: inout MapDataStore) {
-		destination.smartTargetCollection = source.smartTargetCollection
-		destination.temptSmartTargetCollection = source.oldSmartTargetCollection
+	private func navigateToDetail(source: SmartTargetListViewController,
+								  destination: DetailTargetViewController) {
+		source.navigationController?.pushViewController(destination, animated: true)
 	}
+
+	// MARK: ...Passing data
+	private func passDataToMap(source: SmartTargetListDataStore, destination: inout MapDataStore) { }
 }
 
 // MARK: - Smart target list data passing
