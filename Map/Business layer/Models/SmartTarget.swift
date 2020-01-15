@@ -147,3 +147,10 @@ extension SmartTarget: CustomStringConvertible
 {
 	var description: String { "uid: " + uid + ", title: " + title }
 }
+
+extension SmartTarget
+{
+	var annotation: SmartTargetAnnotation {
+		SmartTargetAnnotation(uid: uid, title: title, coordinate: coordinates)
+	}
+}
