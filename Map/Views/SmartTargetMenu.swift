@@ -12,9 +12,7 @@ typealias TextFieldAction = (_ menu: SmartTargetMenu, _ value: String) -> Void
 
 final class SmartTargetMenu: UIView
 {
-
 	// MARK: ...Private properties
-	private let maxLenghtOfTitle = 30
 	private let sliderValueDidChange: SliderAction
 	private let textFieldAction: TextFieldAction
 
@@ -195,7 +193,7 @@ final class SmartTargetMenu: UIView
 
 		// Set corner radius
 		layer.cornerRadius = 10
-		self.clipsToBounds = true
+		clipsToBounds = true
 
 		// Set layout margins
 		layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
@@ -288,7 +286,8 @@ final class SmartTargetMenu: UIView
 			fallthrough
 		case .default:
 			button.setTitleColor(.systemBlue, for: .normal)
-		@unknown default: break
+		@unknown default:
+			fatalError("Cannot finde case")
 		}
 	}
 
@@ -337,17 +336,17 @@ final class SmartTargetMenu: UIView
 }
 
 // MARK: - Actions
-@objc extension SmartTargetMenu
+@objc private extension SmartTargetMenu
 {
-	private func actionLeftButton() {
+	func actionLeftButton() {
 		leftMenuAction.handler?(leftMenuAction)
 	}
 
-	private func actionRightButton() {
+	func actionRightButton() {
 		rightMenuAction.handler?(rightMenuAction)
 	}
 
-	private func actionSliderValueChanged(_ sender: UISlider) {
+	func actionSliderValueChanged(_ sender: UISlider) {
 		sliderValue = sender.value
 		sliderValueDidChange(self, sliderValue)
 	}
@@ -367,7 +366,7 @@ extension SmartTargetMenu: UITextFieldDelegate
 		}
 		let newString = textField.text?.replacingCharacters(in: range, with: string)
 
-		let didEdit = newString?.count ?? 0 <= maxLenghtOfTitle
+		let didEdit = newString?.count ?? 0 <= Constants.maxLenghtOfTitle
 		if let newString = newString, didEdit {
 			textFieldAction(self, newString)
 		}

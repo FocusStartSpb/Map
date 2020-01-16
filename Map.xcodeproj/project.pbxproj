@@ -42,6 +42,12 @@
 		58551DD823BD854300E76885 /* TabBarControllerBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58551DD723BD854300E76885 /* TabBarControllerBuilder.swift */; };
 		58551DDA23BDA38A00E76885 /* MapRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58551DD923BDA38A00E76885 /* MapRouter.swift */; };
 		585AC99723D09D8A008D357A /* DetailTargetViewController+MKMapViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC99623D09D8A008D357A /* DetailTargetViewController+MKMapViewDelegate.swift */; };
+		585AC99923D0DB49008D357A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC99823D0DB49008D357A /* Constants.swift */; };
+		585AC99B23D0E1AC008D357A /* MapViewController+NotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC99A23D0E1AC008D357A /* MapViewController+NotificationCenter.swift */; };
+		585AC99D23D0E20A008D357A /* MapViewController+MapDisplayLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC99C23D0E20A008D357A /* MapViewController+MapDisplayLogic.swift */; };
+		585AC99F23D0E36D008D357A /* MapViewController+UITabBarControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC99E23D0E36D008D357A /* MapViewController+UITabBarControllerDelegate.swift */; };
+		585AC9A123D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC9A023D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift */; };
+		585AC9A323D0E420008D357A /* MapViewController+MKMapViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC9A223D0E420008D357A /* MapViewController+MKMapViewDelegate.swift */; };
 		585BBB8823B219170001F749 /* ButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8723B219170001F749 /* ButtonView.swift */; };
 		585BBB8A23B27DD40001F749 /* UIColor+Adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */; };
 		585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */; };
@@ -111,6 +117,12 @@
 		58551DD723BD854300E76885 /* TabBarControllerBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarControllerBuilder.swift; sourceTree = "<group>"; };
 		58551DD923BDA38A00E76885 /* MapRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRouter.swift; sourceTree = "<group>"; };
 		585AC99623D09D8A008D357A /* DetailTargetViewController+MKMapViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DetailTargetViewController+MKMapViewDelegate.swift"; sourceTree = "<group>"; };
+		585AC99823D0DB49008D357A /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		585AC99A23D0E1AC008D357A /* MapViewController+NotificationCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapViewController+NotificationCenter.swift"; sourceTree = "<group>"; };
+		585AC99C23D0E20A008D357A /* MapViewController+MapDisplayLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapViewController+MapDisplayLogic.swift"; sourceTree = "<group>"; };
+		585AC99E23D0E36D008D357A /* MapViewController+UITabBarControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapViewController+UITabBarControllerDelegate.swift"; sourceTree = "<group>"; };
+		585AC9A023D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapViewController+NotificationServiceDelegate.swift"; sourceTree = "<group>"; };
+		585AC9A223D0E420008D357A /* MapViewController+MKMapViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapViewController+MKMapViewDelegate.swift"; sourceTree = "<group>"; };
 		585BBB8723B219170001F749 /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
 		585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Adjust.swift"; sourceTree = "<group>"; };
 		585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetAnnotation.swift; sourceTree = "<group>"; };
@@ -244,6 +256,11 @@
 				584EE5C223A833D70013087A /* MapPresenter.swift */,
 				58551DD923BDA38A00E76885 /* MapRouter.swift */,
 				584EE5C523A833D70013087A /* MapModels.swift */,
+				585AC99A23D0E1AC008D357A /* MapViewController+NotificationCenter.swift */,
+				585AC99C23D0E20A008D357A /* MapViewController+MapDisplayLogic.swift */,
+				585AC99E23D0E36D008D357A /* MapViewController+UITabBarControllerDelegate.swift */,
+				585AC9A023D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift */,
+				585AC9A223D0E420008D357A /* MapViewController+MKMapViewDelegate.swift */,
 			);
 			path = "Map scene";
 			sourceTree = "<group>";
@@ -361,6 +378,7 @@
 				585F64A023B9881800B66EAA /* FilesManager.swift */,
 				585F64A223B988A700B66EAA /* SettingWrapper.swift */,
 				585F64A423B9947000B66EAA /* UserPreferences.swift */,
+				585AC99823D0DB49008D357A /* Constants.swift */,
 			);
 			path = "Business layer";
 			sourceTree = "<group>";
@@ -505,17 +523,22 @@
 				3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */,
 				029A19DE23CB7CAD00A4535B /* Alerts.swift in Sources */,
 				3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */,
+				585AC99B23D0E1AC008D357A /* MapViewController+NotificationCenter.swift in Sources */,
+				585AC99F23D0E36D008D357A /* MapViewController+UITabBarControllerDelegate.swift in Sources */,
 				58454C3923C25B7A008BB813 /* NotificationService.swift in Sources */,
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,
+				585AC99D23D0E20A008D357A /* MapViewController+MapDisplayLogic.swift in Sources */,
 				3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */,
 				3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */,
 				3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */,
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
+				585AC9A123D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift in Sources */,
 				58EEE41B23C4404300CE9229 /* UIViewController+Extension.swift in Sources */,
 				3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */,
 				582ED16D23AE8458001AD44E /* Decodable+Initialization.swift in Sources */,
 				58454F2F23BE875C00EE0D71 /* Identity.swift in Sources */,
 				584EE5C823A833D70013087A /* MapPresenter.swift in Sources */,
+				585AC9A323D0E420008D357A /* MapViewController+MKMapViewDelegate.swift in Sources */,
 				585F64DD23BA928B00B66EAA /* RangeSliderThumbLayer.swift in Sources */,
 				58A9984123A852AC00CAACE8 /* SmartTarget.swift in Sources */,
 				58454F3223BE87C400EE0D71 /* Array+Difference.swift in Sources */,
@@ -537,6 +560,7 @@
 				3ABCDC9323B7B71B0050F4B2 /* SmartTargetTableViewCell.swift in Sources */,
 				585F64AF23B9989900B66EAA /* SettingsModels.swift in Sources */,
 				585F64A123B9881800B66EAA /* FilesManager.swift in Sources */,
+				585AC99923D0DB49008D357A /* Constants.swift in Sources */,
 				58A9984423AC19A500CAACE8 /* DataBaseService.swift in Sources */,
 				5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */,
 				585BBB8A23B27DD40001F749 /* UIColor+Adjust.swift in Sources */,
