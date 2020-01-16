@@ -10,7 +10,7 @@ import Foundation
 // MARK: - MapPresentationLogic protocol
 protocol MapPresentationLogic
 {
-	func presentSmartTargets(_ response: Map.FetchSmartTargets.Response)
+	func presentAnnotations(_ response: Map.FetchAnnotations.Response)
 	func presentSmartTarget(_ response: Map.GetSmartTarget.Response)
 	func beginLocationUpdates(response: Map.UpdateStatus.Response)
 	func presentAddress(_ response: Map.Address.Response)
@@ -20,7 +20,7 @@ protocol MapPresentationLogic
 	func presentRemoveSmartTarget(_ response: Map.RemoveSmartTarget.Response)
 	func presentUpdateSmartTarget(_ response: Map.UpdateSmartTarget.Response)
 
-	func presentUpdateSmartTargets(_ response: Map.UpdateSmartTargets.Response)
+	func presentUpdateAnnotations(_ response: Map.UpdateAnnotations.Response)
 
 	// Notifications
 	func presentSetNotificationServiceDelegate(_ response: Map.SetNotificationServiceDelegate.Response)
@@ -41,20 +41,16 @@ final class MapPresenter
 {
 	// MARK: ...Internal properties
 	weak var viewController: MapDisplayLogic?
-
-	private func annotations(from targets: [SmartTarget]) -> [SmartTargetAnnotation] {
-		targets.map { SmartTargetAnnotation(uid: $0.uid, title: $0.title, coordinate: $0.coordinates) }
-	}
 }
 
 // MARK: - Map presentation logic
 extension MapPresenter: MapPresentationLogic
 {
 
-	func presentSmartTargets(_ response: Map.FetchSmartTargets.Response) {
-		let annotationArray = annotations(from: response.smartTargetCollection.smartTargets)
-		let viewModel = Map.FetchSmartTargets.ViewModel(annotations: annotationArray)
-		viewController?.displaySmartTargets(viewModel)
+	func presentAnnotations(_ response: Map.FetchAnnotations.Response) {
+		let annotationArray = response.smartTargetCollection.smartTargets.map { $0.annotation }
+		let viewModel = Map.FetchAnnotations.ViewModel(annotations: annotationArray)
+		viewController?.displayAnnotations(viewModel)
 	}
 
 	func presentSmartTarget(_ response: Map.GetSmartTarget.Response) {
@@ -120,12 +116,29 @@ extension MapPresenter: MapPresentationLogic
 		}
 	}
 
-	func presentUpdateSmartTargets(_ response: Map.UpdateSmartTargets.Response) {
-		let viewModel =
-			Map.UpdateSmartTargets.ViewModel(addedUIDs: response.addedSmartTargets.map { $0.uid },
-											 removedUIDs: response.removedSmartTargets.map { $0.uid },
-											 updatedUIDs: response.updatedSmartTargets.map { $0.uid })
-		viewController?.displayUpdateSmartTargets(viewModel)
+	func presentUpdateAnnotations(_ response: Map.UpdateAnnotations.Response) {
+
+		var removedAnnotations = [SmartTargetAnnotation]()
+		var addedAnnotations = [SmartTargetAnnotation]()
+
+		defer {
+			let viewModel = Map.UpdateAnnotations.ViewModel(needUpdate: response.difference.isEmpty == false,
+															removedAnnotations: removedAnnotations,
+															addedAnnotations: addedAnnotations)
+			viewController?.displayUpdateAnnotations(viewModel)
+		}
+
+		guard response.difference.isEmpty == false else { return }
+
+		removedAnnotations = response.annotations.filter { annotation in
+			response.difference.removed.contains { annotation.uid == $0.uid } ||
+			response.difference.updated.contains { annotation.uid == $0.uid }
+		}
+		addedAnnotations =
+			(response.difference.added + response.difference.updated).reduce(into: [SmartTargetAnnotation]()) {
+				guard let annotation = response.collection[$1.uid]?.annotation else { return }
+				$0.append(annotation)
+			}
 	}
 
 	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response) {

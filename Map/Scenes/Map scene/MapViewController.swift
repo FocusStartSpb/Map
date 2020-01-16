@@ -10,7 +10,7 @@ import MapKit
 // MARK: - MapDisplayLogic protocol
 protocol MapDisplayLogic: AnyObject
 {
-	func displaySmartTargets(_ viewModel: Map.FetchSmartTargets.ViewModel)
+	func displayAnnotations(_ viewModel: Map.FetchAnnotations.ViewModel)
 	func displaySmartTarget(_ viewModel: Map.GetSmartTarget.ViewModel)
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel)
 	func displayAddress(_ viewModel: Map.Address.ViewModel)
@@ -20,7 +20,7 @@ protocol MapDisplayLogic: AnyObject
 	func displayRemoveSmartTarget(_ viewModel: Map.RemoveSmartTarget.ViewModel)
 	func displayUpdateSmartTarget(_ viewModel: Map.UpdateSmartTarget.ViewModel)
 
-	func displayUpdateSmartTargets(_ viewModel: Map.UpdateSmartTargets.ViewModel)
+	func displayUpdateAnnotations(_ viewModel: Map.UpdateAnnotations.ViewModel)
 
 	// Notifications
 	func displaySetNotificationServiceDelegate(_ viewModel: Map.SetNotificationServiceDelegate.ViewModel)
@@ -45,7 +45,7 @@ final class MapViewController: UIViewController
 	}
 	// MARK: ...Private properties
 	private var interactor: MapBusinessLogic & MapDataStore
-	let router: MapRoutingLogic & MapDataPassing
+	var router: MapRoutingLogic & MapDataPassing
 
 	// UI elements
 	private let impactFeedbackGenerator: UIImpactFeedbackGenerator = {
@@ -96,11 +96,13 @@ final class MapViewController: UIViewController
 	private var removePinWithoutAlertRestricted = true
 	private var removePinAlertOn = true
 
+	private var isObservableToKeyboard = false
+
 	// Calculated properties
 	private var annotations: [SmartTargetAnnotation] {
 		mapView
 			.annotations
-			.filter { $0 is SmartTargetAnnotation }
+			//.filter { $0 is SmartTargetAnnotation }
 			.compactMap { $0 as? SmartTargetAnnotation }
 	}
 
@@ -160,9 +162,14 @@ final class MapViewController: UIViewController
 
 		// Add notifications
 		notificationCenter.addObserver(self, notifications: applicationNotifications)
+		if isObservableToKeyboard == false {
+			notificationCenter.addObserver(self, notifications: keyboardNotifications)
+			isObservableToKeyboard = true
+		}
 
 		// Send Requests
-		interactor.updateSmartTargets(.init())
+		let updateSmartTargetsRequest = Map.UpdateAnnotations.Request(annotations: annotations)
+		interactor.updateAnnotations(updateSmartTargetsRequest)
 		interactor.getMeasuringSystem(.init())
 		interactor.getRemovePinAlertSettings(.init())
 		removePinWithoutAlertRestricted = true
@@ -173,6 +180,8 @@ final class MapViewController: UIViewController
 
 		// Remove notifications
 		notificationCenter.removeObserver(self, names: Set(applicationNotifications.keys))
+		notificationCenter.removeObserver(self, names: Set(keyboardNotifications.keys))
+		isObservableToKeyboard = false
 	}
 
 	// MARK: ...Private methods
@@ -189,8 +198,8 @@ final class MapViewController: UIViewController
 		setupAddButtonViewConstraints()
 
 		// Requests
-		let fetchSmartTardetRequest = Map.FetchSmartTargets.Request()
-		interactor.getSmartTargets(fetchSmartTardetRequest)
+		let fetchSmartTardetRequest = Map.FetchAnnotations.Request()
+		interactor.getAnnotations(fetchSmartTardetRequest)
 
 		let notificationRequest = Map.SetNotificationServiceDelegate.Request(notificationDelegate: self)
 		interactor.setNotificationServiceDelegate(notificationRequest)
@@ -567,7 +576,11 @@ private extension MapViewController
 		let updateStatusRequest = Map.UpdateStatus.Request()
 		interactor.configureLocationService(request: updateStatusRequest)
 
-		notificationCenter.addObserver(self, notifications: keyboardNotifications)
+		if isObservableToKeyboard == false {
+			notificationCenter.addObserver(self, notifications: keyboardNotifications)
+			isObservableToKeyboard = true
+		}
+
 		if currentPointer != nil {
 			smartTargetMenu?.translucent(false)
 			smartTargetMenu?.isEditable = true
@@ -580,6 +593,7 @@ private extension MapViewController
 
 	func appMovedToBackground() {
 		notificationCenter.removeObserver(self, names: Set(keyboardNotifications.keys))
+		isObservableToKeyboard = false
 	}
 }
 
@@ -645,7 +659,7 @@ private extension MapViewController
 extension MapViewController: MapDisplayLogic
 {
 
-	func displaySmartTargets(_ viewModel: Map.FetchSmartTargets.ViewModel) {
+	func displayAnnotations(_ viewModel: Map.FetchAnnotations.ViewModel) {
 		mapView.addAnnotations(viewModel.annotations)
 	}
 
@@ -677,16 +691,10 @@ extension MapViewController: MapDisplayLogic
 
 	func displayUpdateSmartTarget(_ viewModel: Map.UpdateSmartTarget.ViewModel) { }
 
-	func displayUpdateSmartTargets(_ viewModel: Map.UpdateSmartTargets.ViewModel) {
-		let removedAnnotations = annotations.filter {
-			viewModel.removedUIDs.contains($0.uid) || viewModel.updatedUIDs.contains($0.uid)
-		}
-		let addedAnnotations = annotations.filter {
-			viewModel.addedUIDs.contains($0.uid) || viewModel.updatedUIDs.contains($0.uid)
-		}
-
-		mapView.removeAnnotations(removedAnnotations)
-		mapView.addAnnotations(addedAnnotations)
+	func displayUpdateAnnotations(_ viewModel: Map.UpdateAnnotations.ViewModel) {
+		guard viewModel.needUpdate else { return }
+		mapView.removeAnnotations(viewModel.removedAnnotations)
+		mapView.addAnnotations(viewModel.addedAnnotations)
 	}
 
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel) {
@@ -932,12 +940,18 @@ extension MapViewController: UITabBarControllerDelegate
 {
 	func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
 		tabBarController.delegate = nil
-		guard let navigationController = viewController as? UINavigationController else {
-			return true
+		guard let navigationController = tabBarController
+			.viewControllers?
+			.first(where: { $0 is UINavigationController }) as? UINavigationController,
+			let smartTargetListViewController = navigationController.topViewController as? SmartTargetListViewController else {
+				return false
 		}
-		guard let tableListController = navigationController.viewControllers.first as? SmartTargetListViewController
-			else { return true }
-		router.routeToSmartTargetList(tableListController)
-		return false
+		smartTargetListViewController.router.dataStore?.didUpdateAllSmartTargets = false
+
+		if viewController === navigationController {
+			router.routeToSmartTargetList(smartTargetListViewController)
+			return false
+		}
+		return true
 	}
 }

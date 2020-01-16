@@ -15,7 +15,11 @@ final class SceneBuilder
 	}
 
 	// MARK: ...Internal methods
-	func getMapScene<T: ISmartTargetRepository>(withRepository repository: T) -> MapViewController
+	private func getMapScene<T: ISmartTargetRepository>
+		(withRepository repository: T,
+		 collection: ISmartTargetCollection,
+		 temptCollection: ISmartTargetCollection)
+		-> MapViewController
 		where T.Element: ISmartTargetCollection {
 
 		let presenter = MapPresenter()
@@ -31,7 +35,9 @@ final class SceneBuilder
 									   dataBaseWorker: dataBaseWorker,
 									   geocoderWorker: geocoderWorker,
 									   settingsWorker: settingsWorker,
-									   notificationWorker: notificationWorker)
+									   notificationWorker: notificationWorker,
+									   collection: collection,
+									   temptCollection: temptCollection)
 		let router = MapRouter()
 		let viewController = MapViewController(interactor: interactor, router: router)
 
@@ -44,15 +50,23 @@ final class SceneBuilder
 		return viewController
 	}
 
-	func getSmartTargetListScene<T: ISmartTargetRepository>(withRepository repository: T) -> SmartTargetListViewController
-		where T.Element: ISmartTargetCollection {
+	private func getSmartTargetListScene<T: ISmartTargetRepository>
+		(withRepository repository: T,
+		 collection: ISmartTargetCollection,
+		 temptCollection: ISmartTargetCollection)
+		-> SmartTargetListViewController where T.Element: ISmartTargetCollection {
 
 		let presenter = SmartTargetListPresenter()
 		let worker = DataBaseWorker(repository: repository)
-		let interactor = SmartTargetListInteractor(presenter: presenter, worker: worker)
+		let interactor = SmartTargetListInteractor(presenter: presenter,
+												   worker: worker,
+												   collection: collection,
+												   oldCollection: temptCollection)
 		let router = SmartTargetListRouter(factory: self)
 		let viewController = SmartTargetListViewController(interactor: interactor, router: router)
+
 		_ = UINavigationController(rootViewController: viewController)
+
 		presenter.viewController = viewController
 		router.viewController = viewController
 		router.dataStore = interactor
@@ -61,7 +75,7 @@ final class SceneBuilder
 		return viewController
 	}
 
-	func getSettingsScene() -> SettingsViewController {
+	private func getSettingsScene() -> SettingsViewController {
 
 		let presenter = SettingsPresenter()
 		let settingsWorker = SettingsSceneWorker()
@@ -71,17 +85,22 @@ final class SceneBuilder
 		_ = UINavigationController(rootViewController: viewController)
 
 		presenter.viewController = viewController
-
 		viewController.tabBarItem = UITabBarItem(title: "Settings", image: #imageLiteral(resourceName: "icons8-settings"), selectedImage: #imageLiteral(resourceName: "icons8-settings-fill"))
 
 		return viewController
 	}
 
-	func getInitialController() -> UIViewController {
+	func getInitialController(withCollection collection: ISmartTargetCollection,
+							  temptCollection: ISmartTargetCollection) -> UIViewController {
+
 		let dataBaseService = DataBaseService<SmartTargetCollection>()
 		let repository = SmartTargetRepository(dataBaseService: dataBaseService)
-		let mapViewController = getMapScene(withRepository: repository)
-		let smartTargetListViewController = getSmartTargetListScene(withRepository: repository)
+		let mapViewController = getMapScene(withRepository: repository,
+											collection: collection,
+											temptCollection: temptCollection)
+		let smartTargetListViewController = getSmartTargetListScene(withRepository: repository,
+																	collection: collection,
+																	temptCollection: temptCollection)
 		let settingsViewController = getSettingsScene()
 
 		return getTabBarController {
@@ -91,14 +110,12 @@ final class SceneBuilder
 		}
 	}
 
-	func getDetailTargetScene(smartTargetListViewController: SmartTargetListViewController,
-							  smartTarget: SmartTarget,
+	func getDetailTargetScene(smartTarget: SmartTarget,
 							  smartTargetCollection: ISmartTargetCollection) -> DetailTargetViewController {
 		let router = DetailTargetRouter()
 		let presenter = DetailTargetPresenter(smartTarget: smartTarget, smartTargetCollection: smartTargetCollection)
 		let viewController = DetailTargetViewController(presenter: presenter,
-														router: router,
-														smartTargetEditable: smartTargetListViewController.isEditing)
+														router: router)
 		presenter.attachViewController(detailTargetViewController: viewController)
 		router.attachViewController(detailTargetViewController: viewController)
 		return viewController
