@@ -24,7 +24,6 @@ protocol IDetailTargetPresenter
 final class DetailTargetPresenter<G: IDecoderGeocoder>
 {
 	private let smartTarget: SmartTarget
-	private let smartTargetCollection: ISmartTargetCollection
 
 	var editRadius: CLLocationDistance
 	var editCoordinate: CLLocationCoordinate2D
@@ -38,10 +37,8 @@ final class DetailTargetPresenter<G: IDecoderGeocoder>
 				  attributes: .concurrent)
 
 	init(smartTarget: SmartTarget,
-		 smartTargetCollection: ISmartTargetCollection,
 		 geocoderWorker: GeocoderWorker<G>) {
 		self.smartTarget = smartTarget
-		self.smartTargetCollection = smartTargetCollection
 		self.geocoderWorker = geocoderWorker
 		self.editRadius = smartTarget.radius ?? 0
 		self.editCoordinate = smartTarget.coordinates

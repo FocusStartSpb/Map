@@ -110,15 +110,13 @@ final class SceneBuilder
 		}
 	}
 
-	func getDetailTargetScene(smartTarget: SmartTarget,
-							  smartTargetCollection: ISmartTargetCollection) -> DetailTargetViewController {
+	func getDetailTargetScene(smartTarget: SmartTarget) -> DetailTargetViewController {
 		let router = DetailTargetRouter()
 		let decoderService = DecoderService()
 		let geocoderService = GeocoderService()
 		let geocoderWorker = GeocoderWorker(service: geocoderService,
 											decoder: decoderService)
 		let presenter = DetailTargetPresenter(smartTarget: smartTarget,
-											  smartTargetCollection: smartTargetCollection,
 											  geocoderWorker: geocoderWorker)
 		let viewController = DetailTargetViewController(presenter: presenter,
 														router: router)
