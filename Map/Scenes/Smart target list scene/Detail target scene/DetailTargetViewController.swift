@@ -78,6 +78,7 @@ final class DetailTargetViewController: UIViewController
 	private(set) lazy var mapView: MKMapView = {
 		let mapView = MKMapView()
 		mapView.delegate = self
+		mapView.showsCompass = false
 		return mapView
 	}()
 
