@@ -22,12 +22,17 @@ extension DetailTargetViewController
 	}
 
 	func setSmartTargetRegion(coordinate: CLLocationCoordinate2D,
-									  region: MKCoordinateRegion? = nil,
-									  animated: Bool) {
-		let radius = presenter.editRadius * 4
-		var region = region ?? MKCoordinateRegion(center: coordinate, latitudinalMeters: radius, longitudinalMeters: radius)
-		region.center = coordinate
-		mapView.setRegion(region, animated: animated)
+							  camera: MKMapCamera? = nil,
+							  animated: Bool) {
+		if let camera = camera {
+			camera.centerCoordinate = coordinate
+			mapView.setCamera(camera, animated: animated)
+		}
+		else {
+			let radius = presenter.editRadius * 4
+			let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: radius, longitudinalMeters: radius)
+			mapView.setRegion(region, animated: animated)
+		}
 	}
 }
 
@@ -84,7 +89,7 @@ extension DetailTargetViewController: MKMapViewDelegate
 			setupOverlay()
 		case (.ending, .none): // 4 - 0
 			impactFeedbackGenerator.impactOccurred()
-			setSmartTargetRegion(coordinate: presenter.editCoordinate, region: mapView.region, animated: true)
+			setSmartTargetRegion(coordinate: presenter.editCoordinate, camera: mapView.camera, animated: true)
 			presenter.getAddressText { self.addressText = $0 }
 			setupOverlay()
 		default: break
