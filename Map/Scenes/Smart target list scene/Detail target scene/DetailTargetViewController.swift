@@ -31,7 +31,7 @@ final class DetailTargetViewController: UIViewController
 		static let addressLabelFont = UIFont.systemFont(ofSize: 25, weight: .regular)
 	}
 
-	private var presenter: IDetailTargetPresenter
+	var presenter: IDetailTargetPresenter
 	private let router: IDetailTargetRouter
 	private var smartTargetEditable: Bool {
 		didSet {
@@ -75,7 +75,7 @@ final class DetailTargetViewController: UIViewController
 		return false
 	}
 
-	private lazy var mapView: MKMapView = {
+	private(set) lazy var mapView: MKMapView = {
 		let mapView = MKMapView()
 		mapView.delegate = self
 		return mapView
@@ -96,7 +96,7 @@ final class DetailTargetViewController: UIViewController
 	private var cancelButtonWidthAnchorEqualZero: NSLayoutConstraint?
 	private var cancelButtonWidthAnchorIfEditModeEnabled: NSLayoutConstraint?
 
-	private let impactFeedbackGenerator: UIImpactFeedbackGenerator = {
+	let impactFeedbackGenerator: UIImpactFeedbackGenerator = {
 		if #available(iOS 13.0, *) {
 			return UIImpactFeedbackGenerator(style: .soft)
 		}
@@ -118,6 +118,14 @@ final class DetailTargetViewController: UIViewController
 		let indicator = UIActivityIndicatorView(style: style)
 		return indicator
 	}()
+
+	var addressText: String? {
+		get { addressLabel.text }
+		set {
+			addressLabel.text = newValue
+			newValue == nil ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
+		}
+	}
 
 	init(presenter: IDetailTargetPresenter,
 		 router: IDetailTargetRouter) {
@@ -176,15 +184,23 @@ final class DetailTargetViewController: UIViewController
 			guard let smartTargetVC = self.navigationController?.viewControllers.first as? SmartTargetListViewController
 				else { return }
 			self.router.popDetail(to: smartTargetVC,
-								  smartTarget: presenter
-									.saveChanges(title: self.titleTextView.text,
-												 coordinates: CLLocationCoordinate2D(latitude: -122.23,
-																					 longitude: 34.123)))
+								  smartTarget: presenter.saveChanges(title: self.titleTextView.text,
+																	 address: addressText))
 		}
 		self.smartTargetEditable = true
 	}
 
 	@objc private func cancelButtonAction() {
+		if let annotation = mapView
+			.annotations
+			.first(where: { $0 is SmartTargetAnnotation }) as? SmartTargetAnnotation {
+			self.mapView.removeAnnotation(annotation)
+			self.mapView.removeOverlays(self.mapView.overlays)
+			self.presenter.setupInitialData()
+			self.setupAnnotation()
+			self.setupOverlay()
+			self.setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: true)
+		}
 		self.smartTargetEditable = false
 	}
 

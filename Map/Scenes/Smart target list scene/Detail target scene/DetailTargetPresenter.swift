@@ -12,12 +12,14 @@ protocol IDetailTargetPresenter
 	var editRadius: CLLocationDegrees { get set }
 	var editCoordinate: CLLocationCoordinate2D { get set }
 
+	func setupInitialData()
+
 	func getTitleText() -> String
 	func getAddressText(completion: @escaping (String) -> Void)
 	func getDateOfCreation() -> String
 	func getAnnotation() -> SmartTargetAnnotation
 	func getCircleOverlay() -> MKCircle
-	func saveChanges(title: String?, coordinates: CLLocationCoordinate2D) -> SmartTarget
+	func saveChanges(title: String?, address: String?) -> SmartTarget
 	func attachViewController(detailTargetViewController: DetailTargetViewController)
 }
 
@@ -48,6 +50,12 @@ final class DetailTargetPresenter<G: IDecoderGeocoder>
 // MARK: - IDetailTargetInteractor
 extension DetailTargetPresenter: IDetailTargetPresenter
 {
+
+	func setupInitialData() {
+		editRadius = smartTarget.radius ?? editRadius
+		editCoordinate = smartTarget.coordinates
+	}
+
 	func getTitleText() -> String {
 		return self.smartTarget.title
 	}
@@ -89,14 +97,13 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 		self.viewController = detailTargetViewController
 	}
 
-	func saveChanges(title: String?, coordinates: CLLocationCoordinate2D) -> SmartTarget {
+	func saveChanges(title: String?, address: String?) -> SmartTarget {
 		let title = title ?? ""
 		var modifiedTarget = self.smartTarget
 		modifiedTarget.title = title
-//		if modifiedTarget.coordinates != coordinates {
-//			modifiedTarget.coordinates = coordinates
-//		}
-		self.smartTargetCollection.put(modifiedTarget)
+		modifiedTarget.coordinates = editCoordinate
+		modifiedTarget.radius = editRadius
+		modifiedTarget.address = address
 		return modifiedTarget
 	}
 }
