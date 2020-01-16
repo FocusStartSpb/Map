@@ -64,7 +64,7 @@ extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 
 	func presentUpdateSmartTarget(_ response: SmartTargetList.UpdateSmartTarget.Response) {
 		var updateTargetIndexSet = IndexSet()
-		let needUpdate = response.editedSmartTarget === response.oldSmartTarget
+		let needUpdate = response.editedSmartTarget !== response.oldSmartTarget
 
 		defer {
 			let viewModel = SmartTargetList.UpdateSmartTarget.ViewModel(needUpdate: needUpdate,
