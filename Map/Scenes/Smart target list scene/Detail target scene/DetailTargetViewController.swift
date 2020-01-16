@@ -4,6 +4,7 @@
 //
 //  Created by Антон on 29.12.2019.
 //
+// swiftlint:disable file_length
 import MapKit
 
 final class DetailTargetViewController: UIViewController
@@ -30,7 +31,7 @@ final class DetailTargetViewController: UIViewController
 		static let addressLabelFont = UIFont.systemFont(ofSize: 25, weight: .regular)
 	}
 
-	private let presenter: IDetailTargetPresenter
+	private var presenter: IDetailTargetPresenter
 	private let router: IDetailTargetRouter
 	private var smartTargetEditable = false {
 		didSet {
@@ -74,7 +75,12 @@ final class DetailTargetViewController: UIViewController
 		return false
 	}
 
-	private let mapView = MKMapView()
+	private lazy var mapView: MKMapView = {
+		let mapView = MKMapView()
+		mapView.delegate = self
+		return mapView
+	}()
+
 	private let scrollView = UIScrollView()
 	private let titleDescriptionLabel = UILabel()
 	private let titleTextView = UITextView()
@@ -89,6 +95,29 @@ final class DetailTargetViewController: UIViewController
 	private let cancelButton = ButtonForDetailScreen(backgroundColor: .systemRed, frame: .zero)
 	private var cancelButtonWidthAnchorEqualZero: NSLayoutConstraint?
 	private var cancelButtonWidthAnchorIfEditModeEnabled: NSLayoutConstraint?
+
+	private let impactFeedbackGenerator: UIImpactFeedbackGenerator = {
+		if #available(iOS 13.0, *) {
+			return UIImpactFeedbackGenerator(style: .soft)
+		}
+		else {
+			return UIImpactFeedbackGenerator(style: .light)
+		}
+	}()
+
+	private lazy var showPinButtonView = ButtonView(type: .add, tapAction: actionShowPin)
+
+	private let activityIndicator: UIActivityIndicatorView = {
+		let style: UIActivityIndicatorView.Style
+		if #available(iOS 13.0, *) {
+			style = .medium
+		}
+		else {
+			style = .gray
+		}
+		let indicator = UIActivityIndicatorView(style: style)
+		return indicator
+	}()
 
 	init(presenter: IDetailTargetPresenter,
 		 router: IDetailTargetRouter,
@@ -135,6 +164,11 @@ final class DetailTargetViewController: UIViewController
 		setupEditButton()
 		setupCancelButton()
 		checkUserInterfaceStyle()
+		setupShowPinButtonView()
+		setupActivityIndicator()
+		setupAnnotation()
+		setupOverlay()
+		setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: false)
 	}
 
 	@objc private func editButtonAction() {
@@ -284,9 +318,12 @@ extension DetailTargetViewController
 			self.addressLabel.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
 		])
 		self.addressLabel.numberOfLines = 0
-		self.addressLabel.text = presenter.getAddressText()
 		self.addressLabel.font = FontForDetailScreen.addressLabelFont
 		self.addressLabel.textAlignment = .center
+		presenter.getAddressText {
+			self.addressLabel.text = $0
+			self.activityIndicator.stopAnimating()
+		}
 	}
 	// MARK: - mapView
 	private func mapViewEditable() {
@@ -357,5 +394,112 @@ extension DetailTargetViewController
 		])
 		self.cancelButton.setTitle(ButtonTitles.cancelButtonTitle, for: .normal)
 		self.cancelButton.addTarget(self, action: #selector(cancelButtonAction), for: .touchUpInside)
+	}
+
+	private func setupShowPinButtonView() {
+		self.showPinButtonView.translatesAutoresizingMaskIntoConstraints = false
+		self.scrollView.addSubview(showPinButtonView)
+		NSLayoutConstraint.activate([
+			self.showPinButtonView.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -8),
+			self.showPinButtonView.topAnchor.constraint(equalTo: mapView.topAnchor, constant: 8),
+			self.showPinButtonView.heightAnchor.constraint(equalToConstant: 40),
+			self.showPinButtonView.widthAnchor.constraint(equalToConstant: 40),
+		])
+	}
+
+	private func setupActivityIndicator() {
+		self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+		self.scrollView.addSubview(activityIndicator)
+		NSLayoutConstraint.activate([
+			self.activityIndicator.centerXAnchor.constraint(equalTo: addressLabel.centerXAnchor),
+			self.activityIndicator.centerYAnchor.constraint(equalTo: addressLabel.centerYAnchor),
+		])
+	}
+
+	private func setupAnnotation() {
+		let annotaion = presenter.getAnnotation()
+		mapView.addAnnotation(annotaion)
+		mapView.showAnnotations([annotaion], animated: false)
+	}
+
+	private func setupOverlay() {
+		let overlay = presenter.getCircleOverlay()
+		mapView.addOverlay(overlay)
+	}
+
+	private func setSmartTargetRegion(coordinate: CLLocationCoordinate2D,
+									  region: MKCoordinateRegion? = nil,
+									  animated: Bool) {
+		let radius = presenter.editRadius * 4
+		var region = region ?? MKCoordinateRegion(center: coordinate, latitudinalMeters: radius, longitudinalMeters: radius)
+		region.center = coordinate
+		mapView.setRegion(region, animated: animated)
+	}
+}
+
+extension DetailTargetViewController: MKMapViewDelegate
+{
+	func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+		if annotation is MKUserLocation { return nil }
+		let pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: nil)
+		pinView.animatesDrop = false
+		pinView.isDraggable = true
+		pinView.canShowCallout = false
+		return pinView
+	}
+
+	func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+		let renderer = MKCircleRenderer(overlay: overlay)
+		if #available(iOS 13.0, *) {
+			renderer.fillColor = UIColor.systemBackground.withAlphaComponent(0.5)
+		}
+		else {
+			renderer.fillColor = UIColor.white.withAlphaComponent(0.5)
+		}
+		renderer.strokeColor = .systemBlue
+		renderer.lineWidth = 1
+		return renderer
+	}
+
+	func mapView(_ mapView: MKMapView, didAdd renderers: [MKOverlayRenderer]) {
+	}
+
+	func mapView(_ mapView: MKMapView,
+				 annotationView view: MKAnnotationView,
+				 didChange newState: MKAnnotationView.DragState,
+				 fromOldState oldState: MKAnnotationView.DragState) {
+		switch (oldState, newState) {
+		case (.none, .starting): // 0 - 1
+			mapView.removeOverlays(mapView.overlays)
+		case (.starting, .dragging): // 1 - 2
+			addressLabel.text = nil
+			activityIndicator.startAnimating()
+		case (.dragging, .ending), // 2 - 4
+			 (.dragging, .canceling), // 2 - 3
+			 (.starting, .canceling), // 1 - 3
+			 (.starting, .ending): // 1 - 4
+			impactFeedbackGenerator.prepare()
+			presenter.editCoordinate = view.annotation?.coordinate ?? presenter.editCoordinate
+		case (.canceling, .none): // 3 - 0
+			impactFeedbackGenerator.impactOccurred()
+			setupOverlay()
+		case (.ending, .none): // 4 - 0
+			impactFeedbackGenerator.impactOccurred()
+			setSmartTargetRegion(coordinate: presenter.editCoordinate, region: mapView.region, animated: true)
+			presenter.getAddressText {
+				self.addressLabel.text = $0
+				self.activityIndicator.stopAnimating()
+			}
+			setupOverlay()
+		default: break
+		}
+	}
+}
+
+// MARK: - Actions
+private extension DetailTargetViewController
+{
+	func actionShowPin() {
+		setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: true)
 	}
 }
