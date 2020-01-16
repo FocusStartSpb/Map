@@ -96,9 +96,9 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 		let title = title ?? ""
 		var modifiedTarget = self.smartTarget
 		modifiedTarget.title = title
-		if modifiedTarget.coordinates != coordinates {
-			modifiedTarget.coordinates = coordinates
-		}
+//		if modifiedTarget.coordinates != coordinates {
+//			modifiedTarget.coordinates = coordinates
+//		}
 		self.smartTargetCollection.put(modifiedTarget)
 		return modifiedTarget
 	}

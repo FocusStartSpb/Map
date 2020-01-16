@@ -7,6 +7,15 @@
 
 import Foundation
 
+struct Difference
+{
+	var added = [SmartTarget]()
+	var removed = [SmartTarget]()
+	var updated = [SmartTarget]()
+
+	var isEmpty: Bool { added.isEmpty && removed.isEmpty && updated.isEmpty }
+}
+
 // MARK: - ISmartTargetCollection protocol
 protocol ISmartTargetCollection: Codable
 {
@@ -20,6 +29,8 @@ protocol ISmartTargetCollection: Codable
 	func smartTarget(at uid: String) -> SmartTarget?
 	func smartTargets(at uids: [String]) -> [SmartTarget]
 
+	func replaceSmartTargets(with smartTargets: [SmartTarget])
+
 	func index(at uid: String) -> Int?
 	func index(at smartTarget: SmartTarget) -> Int?
 	func indexes(at uids: [String]) -> [Int]
@@ -28,7 +39,7 @@ protocol ISmartTargetCollection: Codable
 
 	func contains(_ smartTarget: SmartTarget) -> Bool
 	func smartTargetsOfDifference(from other: ISmartTargetCollection) ->
-		(added: [SmartTarget], removed: [SmartTarget], updated: [SmartTarget])
+		Difference
 
 	func copy() -> Self
 }
@@ -89,6 +100,10 @@ extension SmartTargetCollection: ISmartTargetCollection
 			.compactMap { $0 }
 	}
 
+	func replaceSmartTargets(with smartTargets: [SmartTarget]) {
+		self.smartTargets = smartTargets
+	}
+
 	func index(at uid: String) -> Int? {
 		smartTargets.firstIndex { $0.uid == uid }
 	}
@@ -115,13 +130,12 @@ extension SmartTargetCollection: ISmartTargetCollection
 		smartTargets.contains(smartTarget)
 	}
 
-	func smartTargetsOfDifference(from other: ISmartTargetCollection) ->
-		(added: [SmartTarget], removed: [SmartTarget], updated: [SmartTarget]) {
+	func smartTargetsOfDifference(from other: ISmartTargetCollection) -> Difference {
 
 		let otherSmartTargets = other.smartTargets
 		let difference = smartTargets.difference(from: otherSmartTargets)
 		return difference
-			.reduce(into: (added: [SmartTarget](), removed: [SmartTarget](), updated: [SmartTarget]())) { result, smartTarget in
+			.reduce(into: Difference()) { result, smartTarget in
 				if let dif = otherSmartTargets.first(where: { $0 == smartTarget }) {
 					if let same = smartTargets.first(where: { dif == $0 }) {
 						if same !== smartTarget {

@@ -14,7 +14,7 @@ protocol MapRoutingLogic
 // MARK: - MapDataPassing protocol
 protocol MapDataPassing
 {
-	var dataStore: MapDataStore? { get }
+	var dataStore: MapDataStore? { get set }
 }
 
 final class MapRouter
@@ -37,7 +37,7 @@ extension MapRouter: MapRoutingLogic
 		navigateToSmartTargetList(source: viewController, destination: smartTargetListViewController)
 
 		// Обновляем временный коллекшен
-		dataStore?.temptSmartTargetCollection = sourceDataStore.smartTargetCollection?.copy()
+		//dataStore?.temptSmartTargetCollection = sourceDataStore.smartTargetCollection?.copy()
 	}
 
 	// MARK: ...Navigation
@@ -47,9 +47,9 @@ extension MapRouter: MapRoutingLogic
 
 	// MARK: ...Passing data
 	private func passDataToSmartTargetList(source: MapDataStore, destination: inout SmartTargetListDataStore) {
-		destination.smartTargetCollection = source.smartTargetCollection
-		destination.oldSmartTargetCollection = source.temptSmartTargetCollection?.copy()
-		destination.didUpdateSmartTargets = false
+		//destination.smartTargetCollection = source.smartTargetCollection
+		//destination.oldSmartTargetCollection = source.temptSmartTargetCollection?.copy()
+		//destination.didUpdateAllSmartTargets = false
 	}
 }
 

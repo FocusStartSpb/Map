@@ -33,7 +33,7 @@ final class DetailTargetViewController: UIViewController
 
 	private var presenter: IDetailTargetPresenter
 	private let router: IDetailTargetRouter
-	private var smartTargetEditable = false {
+	private var smartTargetEditable: Bool {
 		didSet {
 			if smartTargetEditable {
 				self.navigationController?.setNavigationBarHidden(true, animated: true)
@@ -120,11 +120,10 @@ final class DetailTargetViewController: UIViewController
 	}()
 
 	init(presenter: IDetailTargetPresenter,
-		 router: IDetailTargetRouter,
-		 smartTargetEditable: Bool) {
+		 router: IDetailTargetRouter) {
 		self.presenter = presenter
 		self.router = router
-		self.smartTargetEditable = smartTargetEditable
+		self.smartTargetEditable = false
 		super.init(nibName: nil, bundle: nil)
 		self.hidesBottomBarWhenPushed = true
 	}
