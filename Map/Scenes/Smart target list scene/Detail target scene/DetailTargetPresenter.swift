@@ -17,16 +17,19 @@ protocol IDetailTargetPresenter
 	func attachViewController(detailTargetViewController: DetailTargetViewController)
 }
 
-final class DetailTargetPresenter
+final class DetailTargetPresenter<G: IDecoderGeocoder>
 {
 	private let smartTarget: SmartTarget
 	private let smartTargetCollection: ISmartTargetCollection
 	private weak var viewController: DetailTargetViewController?
+	private var geocoderWorker: GeocoderWorker<G>
 
 	init(smartTarget: SmartTarget,
-		 smartTargetCollection: ISmartTargetCollection) {
+		 smartTargetCollection: ISmartTargetCollection,
+		 geocoderWorker: GeocoderWorker<G>) {
 		self.smartTarget = smartTarget
 		self.smartTargetCollection = smartTargetCollection
+		self.geocoderWorker = geocoderWorker
 	}
 }
 

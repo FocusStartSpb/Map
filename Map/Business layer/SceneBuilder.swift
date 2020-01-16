@@ -95,7 +95,13 @@ final class SceneBuilder
 							  smartTarget: SmartTarget,
 							  smartTargetCollection: ISmartTargetCollection) -> DetailTargetViewController {
 		let router = DetailTargetRouter()
-		let presenter = DetailTargetPresenter(smartTarget: smartTarget, smartTargetCollection: smartTargetCollection)
+		let decoderService = DecoderService()
+		let geocoderService = GeocoderService()
+		let geocoderWorker = GeocoderWorker(service: geocoderService,
+											decoder: decoderService)
+		let presenter = DetailTargetPresenter(smartTarget: smartTarget,
+											  smartTargetCollection: smartTargetCollection,
+											  geocoderWorker: geocoderWorker)
 		let viewController = DetailTargetViewController(presenter: presenter,
 														router: router,
 														smartTargetEditable: smartTargetListViewController.isEditing)
