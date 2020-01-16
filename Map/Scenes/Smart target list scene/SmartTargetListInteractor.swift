@@ -83,10 +83,11 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 	}
 
 	func updateSmartTarget(_ request: SmartTargetList.UpdateSmartTarget.Request) {
-		guard didUpdateAllSmartTargets,
+		guard editedSmartTarget != nil,
 			let editedSmartTarget = self.editedSmartTarget,
-			let oldSmartTarget = self.smartTargetCollection[editedSmartTarget.uid],
-			let smartTargetIndex = self.smartTargetCollection.index(at: editedSmartTarget) else { return }
+			let oldSmartTarget = self.smartTargetCollection[editedSmartTarget.uid] else { return }
+		let smartTargetIndex = smartTargetCollection.put(editedSmartTarget)
+		self.editedSmartTarget = nil
 		let response = SmartTargetList.UpdateSmartTarget.Response(editedSmartTarget: editedSmartTarget,
 																  oldSmartTarget: oldSmartTarget,
 																  editedSmartTargetIndex: smartTargetIndex)
