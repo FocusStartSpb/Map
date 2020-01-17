@@ -8,9 +8,9 @@
 // swiftlint:disable:next required_final
 class SettingsWorker
 {
-	var measuringSystem: UserPreferences.MeasuringSystem? {
-		get { UserPreferences.measuringSystem }
-		set { UserPreferences.measuringSystem = newValue }
+	var measurementSystem: UserPreferences.MeasurementSystem? {
+		get { UserPreferences.measurementSystem }
+		set { UserPreferences.measurementSystem = newValue }
 	}
 
 	var sorting: UserPreferences.Sorting? {

@@ -8,9 +8,10 @@
 // swiftlint:disable let_var_whitespace
 enum UserPreferences
 {
-	enum MeasuringSystem: String, CaseIterable
+	enum MeasurementSystem: String, CaseIterable
 	{
-		case mile, kilometer
+		case imperial = "Имперская"
+		case metric = "Метрическая"
 	}
 
 	enum Sorting: String, CaseIterable
@@ -18,13 +19,12 @@ enum UserPreferences
 		case data, address, title
 	}
 
-	@SettingWrapper(key: Key[.measuringSystem], defaultValue: MeasuringSystem.kilometer.rawValue)
-	private static var _measuringSystem: String?
-
-	/// Setting Measuring System
-	static var measuringSystem: MeasuringSystem? {
-		set { _measuringSystem = newValue?.rawValue }
-		get { MeasuringSystem(rawValue: _measuringSystem ?? "") }
+	@SettingWrapper(key: Key[.measurementSystem], defaultValue: MeasurementSystem.metric.rawValue)
+	private static var _measurementSystem: String?
+	/// Setting Measurement System
+	static var measurementSystem: MeasurementSystem? {
+		set { _measurementSystem = newValue?.rawValue }
+		get { MeasurementSystem(rawValue: _measurementSystem ?? "") }
 	}
 
 	@SettingWrapper(key: Key[.sorting], defaultValue: Sorting.data.rawValue)
@@ -61,7 +61,7 @@ enum UserPreferences
 
 	enum Key: String, CaseIterable
 	{
-		case measuringSystem
+		case measurementSystem
 		case sorting
 		case forceRemovePin
 		case minRangeOfRadius

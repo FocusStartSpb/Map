@@ -32,7 +32,7 @@ protocol MapPresentationLogic
 	// Settings
 	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response)
 	func presentGetRangeRadius(_ response: Map.GetRangeRadius.Response)
-	func presentGetMeasuringSystem(_ response: Map.GetMeasuringSystem.Response)
+	func presentGetMeasurementSystem(_ response: Map.GetMeasurementSystem.Response)
 	func presentGetRemovePinAlertSettings(_ response: Map.GetRemovePinAlertSettings.Response)
 }
 
@@ -160,12 +160,12 @@ extension MapPresenter: MapPresentationLogic
 		viewController?.displayGetRangeRadius(viewModel)
 	}
 
-	func presentGetMeasuringSystem(_ response: Map.GetMeasuringSystem.Response) {
-		let symbol = response.measuringSystem.symbol
-		let factor = response.measuringSystem.factor
-		let viewModel = Map.GetMeasuringSystem.ViewModel(measuringSymbol: symbol,
-														 measuringFactor: factor)
-		viewController?.displayGetMeasuringSystem(viewModel)
+	func presentGetMeasurementSystem(_ response: Map.GetMeasurementSystem.Response) {
+		let symbol = response.measurementSystem.symbol
+		let factor = response.measurementSystem.factor
+		let viewModel = Map.GetMeasurementSystem.ViewModel(measurementSymbol: symbol,
+														   measurementFactor: factor)
+		viewController?.displayGetMeasurementSystem(viewModel)
 	}
 
 	func presentGetRemovePinAlertSettings(_ response: Map.GetRemovePinAlertSettings.Response) {
