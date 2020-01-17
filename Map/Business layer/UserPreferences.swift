@@ -40,23 +40,23 @@ enum UserPreferences
 	static var forceRemovePin: Bool?
 
 	/// Minimum range between lowerValueOfRadius and upperValueOfRadius in meters
-	@SettingWrapper(key: Key[.minRangeOfRadius], defaultValue: 700)
+	@SettingWrapper(key: Key[.minRangeOfRadius], defaultValue: Constants.Radius.defaultMinimumRange)
 	static var minRangeOfRadius: Double?
 
 	/// Minimum possible radius value in meters
-	@SettingWrapper(key: Key[.minValueOfRadius], defaultValue: 100)
+	@SettingWrapper(key: Key[.minValueOfRadius], defaultValue: Constants.Radius.defaultMinimumValue)
 	static var minValueOfRadius: Double?
 
 	/// Maximum possible radius value in meters
-	@SettingWrapper(key: Key[.maxValueOfRadius], defaultValue: 5_000)
+	@SettingWrapper(key: Key[.maxValueOfRadius], defaultValue: Constants.Radius.defaultMaximumValue)
 	static var maxValueOfRadius: Double?
 
 	/// Minimum radius value in meters set by user
-	@SettingWrapper(key: Key[.lowerValueOfRadius], defaultValue: 300)
+	@SettingWrapper(key: Key[.lowerValueOfRadius], defaultValue: Constants.Radius.defaultLowerValue)
 	static var lowerValueOfRadius: Double?
 
 	/// Maximum radius value in meters set by user
-	@SettingWrapper(key: Key[.upperValueOfRadius], defaultValue: 1_000)
+	@SettingWrapper(key: Key[.upperValueOfRadius], defaultValue: Constants.Radius.defaultUpperValue)
 	static var upperValueOfRadius: Double?
 
 	enum Key: String, CaseIterable
