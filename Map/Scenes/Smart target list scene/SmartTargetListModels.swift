@@ -84,4 +84,19 @@ enum SmartTargetList
 			let updatedIndexSet: IndexSet
 		}
 	}
+
+	enum ShowEmptyView
+	{
+		struct Request {}
+
+		struct Response
+		{
+			let showEmptyView: Bool
+		}
+
+		struct ViewModel
+		{
+			let showEmptyView: Bool
+		}
+	}
 }

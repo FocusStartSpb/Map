@@ -13,6 +13,7 @@ protocol SmartTargetListDisplayLogic: AnyObject
 	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel)
 	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel)
 	func updateEditedSmartTarget(_ viewModel: SmartTargetList.UpdateSmartTarget.ViewModel)
+	func showEmptyView(_ viewModel: SmartTargetList.ShowEmptyView.ViewModel)
 }
 
 // MARK: - Class
@@ -22,6 +23,7 @@ final class SmartTargetListViewController: UIViewController
 	private var interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore
 	var router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
 	private let targetsTableView = UITableView()
+	private let emptyView = EmptyView()
 	private var userInterfaceIsDark: Bool {
 		if #available(iOS 12.0, *) {
 			return self.traitCollection.userInterfaceStyle == .dark ? true : false
@@ -131,11 +133,16 @@ extension SmartTargetListViewController: SmartTargetListDisplayLogic
 	func updateEditedSmartTarget(_ viewModel: SmartTargetList.UpdateSmartTarget.ViewModel) {
 		targetsTableView.reloadSections(viewModel.updatedIndexSet, with: .fade)
 	}
+
+	func showEmptyView(_ viewModel: SmartTargetList.ShowEmptyView.ViewModel) {
+		viewModel.showEmptyView == true ? self.emptyView.pinToSuperview(superview: self.view) : self.emptyView.leave()
+	}
 }
 // MARK: - TableViewDataSource
 extension SmartTargetListViewController: UITableViewDataSource
 {
 	func numberOfSections(in tableView: UITableView) -> Int {
+		interactor.showEmptyView(.init())
 		return interactor.smartTargetsCount
 	}
 
