@@ -126,11 +126,19 @@ extension SmartTarget: Comparable
 extension SmartTarget: Identity
 {
 	static func === (lhs: Self, rhs: Self) -> Bool {
-		lhs.uid == rhs.uid && lhs.address == rhs.address && lhs.radius == rhs.radius && lhs.title == rhs.title
+		lhs.uid == rhs.uid &&
+		lhs.address == rhs.address &&
+		lhs.radius == rhs.radius &&
+		lhs.title == rhs.title &&
+		lhs.coordinates == rhs.coordinates
 	}
 
 	static func !== (lhs: Self, rhs: Self) -> Bool {
-		lhs.uid != rhs.uid || lhs.address != rhs.address || lhs.radius != rhs.radius || lhs.title != rhs.title
+		lhs.uid != rhs.uid ||
+		lhs.address != rhs.address ||
+		lhs.radius != rhs.radius ||
+		lhs.title != rhs.title ||
+		lhs.coordinates != rhs.coordinates
 	}
 }
 
@@ -146,4 +154,11 @@ extension SmartTarget: Hashable
 extension SmartTarget: CustomStringConvertible
 {
 	var description: String { "uid: " + uid + ", title: " + title }
+}
+
+extension SmartTarget
+{
+	var annotation: SmartTargetAnnotation {
+		SmartTargetAnnotation(uid: uid, title: title, coordinate: coordinates)
+	}
 }

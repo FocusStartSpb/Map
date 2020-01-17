@@ -10,7 +10,6 @@ import Foundation
 // MARK: - SmartTargetListPresentationLogic
 protocol SmartTargetListPresentationLogic
 {
-	func presentLoadSmartTargets(_ response: SmartTargetList.LoadSmartTargets.Response)
 	func presentSaveSmartTargets(_ response: SmartTargetList.DeleteSmartTargets.Response)
 	func presentUpdateSmartTargets(_ response: SmartTargetList.UpdateSmartTargets.Response)
 	func presentUpdateSmartTarget(_ response: SmartTargetList.UpdateSmartTarget.Response)
@@ -27,19 +26,6 @@ final class SmartTargetListPresenter
 // MARK: - Smart target list presentation logic
 extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 {
-	func presentLoadSmartTargets(_ response: SmartTargetList.LoadSmartTargets.Response) {
-		let didLoad: Bool
-		switch response.result {
-		case .success:
-			didLoad = true
-		case .failure(let error):
-			didLoad = false
-			print(error)
-		}
-		let viewModel = SmartTargetList.LoadSmartTargets.ViewModel(didLoad: didLoad)
-		viewController?.displayLoadSmartTargets(viewModel)
-	}
-
 	func presentSaveSmartTargets(_ response: SmartTargetList.DeleteSmartTargets.Response) {
 		let didSave: Bool
 		switch response.result {
@@ -54,23 +40,41 @@ extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 	}
 
 	func presentUpdateSmartTargets(_ response: SmartTargetList.UpdateSmartTargets.Response) {
-		let addedIndexSet = IndexSet(0..<response.addedSmartTargets.count)
-		let updatedIndexSet = IndexSet(response
+		var addedIndexSet = IndexSet()
+		var removedIndexSet = IndexSet()
+		var updatedIndexSet = IndexSet()
+
+		defer {
+			let viewModel = SmartTargetList.UpdateSmartTargets.ViewModel(needUpdate: response.difference.isEmpty == false,
+																		 addedIndexSet: addedIndexSet,
+																		 removedIndexSet: removedIndexSet,
+																		 updatedIndexSet: updatedIndexSet)
+			viewController?.displayUpdateSmartTargets(viewModel)
+		}
+
+		guard response.difference.isEmpty == false else { return }
+
+		addedIndexSet = IndexSet(0..<response.difference.added.count)
+		updatedIndexSet = IndexSet(response
 			.collection
-			.indexes(at: response.updatedSmartTargets))
-		let removedIndexSet = IndexSet(response
+			.indexes(at: response.difference.updated))
+		removedIndexSet = IndexSet(response
 			.collection
-			.indexes(at: response.removedSmartTargets))
-		let viewModel = SmartTargetList.UpdateSmartTargets.ViewModel(addedIndexSet: addedIndexSet,
-																	 removedIndexSet: removedIndexSet,
-																	 updatedIndexSet: updatedIndexSet)
-		viewController?.displayUpdateSmartTargets(viewModel)
+			.indexes(at: response.difference.removed))
 	}
 
 	func presentUpdateSmartTarget(_ response: SmartTargetList.UpdateSmartTarget.Response) {
-		let updateTargetIndexSet = IndexSet(integer: response.editedSmartTargetIndex)
-		let viewModel = SmartTargetList.UpdateSmartTarget.ViewModel(updatedIndexSet: updateTargetIndexSet)
-		viewController?.updateEditedSmartTarget(viewModel)
+		var updateTargetIndexSet = IndexSet()
+		let needUpdate = response.editedSmartTarget !== response.oldSmartTarget
+
+		defer {
+			let viewModel = SmartTargetList.UpdateSmartTarget.ViewModel(needUpdate: needUpdate,
+																		updatedIndexSet: updateTargetIndexSet)
+			viewController?.updateEditedSmartTarget(viewModel)
+		}
+
+		guard needUpdate else { return }
+		updateTargetIndexSet = IndexSet(integer: response.editedSmartTargetIndex)
 	}
 
 	func presentEmptyView(_ response: SmartTargetList.ShowEmptyView.Response) {

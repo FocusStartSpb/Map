@@ -12,24 +12,6 @@ enum SmartTargetList
 {
 	// MARK: Use cases
 
-	// MARK: ...LoadSmartTargets
-	enum LoadSmartTargets
-	{
-		struct Request
-		{
-		}
-
-		struct Response
-		{
-			let result: SmartTargetsResult
-		}
-
-		struct ViewModel
-		{
-			let didLoad: Bool
-		}
-	}
-
 	// MARK: ...SaveSmartTargets
 	enum DeleteSmartTargets
 	{
@@ -57,13 +39,12 @@ enum SmartTargetList
 		struct Response
 		{
 			let collection: ISmartTargetCollection
-			let addedSmartTargets: [SmartTarget]
-			let removedSmartTargets: [SmartTarget]
-			let updatedSmartTargets: [SmartTarget]
+			let difference: Difference
 		}
 
 		struct ViewModel
 		{
+			let needUpdate: Bool
 			let addedIndexSet: IndexSet
 			let removedIndexSet: IndexSet
 			let updatedIndexSet: IndexSet
@@ -76,11 +57,14 @@ enum SmartTargetList
 
 		struct Response
 		{
+			let editedSmartTarget: SmartTarget
+			let oldSmartTarget: SmartTarget
 			let editedSmartTargetIndex: Int
 		}
 
 		struct ViewModel
 		{
+			let needUpdate: Bool
 			let updatedIndexSet: IndexSet
 		}
 	}

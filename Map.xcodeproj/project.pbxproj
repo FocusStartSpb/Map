@@ -42,6 +42,7 @@
 		58551DD623BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58551DD523BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift */; };
 		58551DD823BD854300E76885 /* TabBarControllerBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58551DD723BD854300E76885 /* TabBarControllerBuilder.swift */; };
 		58551DDA23BDA38A00E76885 /* MapRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58551DD923BDA38A00E76885 /* MapRouter.swift */; };
+		585AC99723D09D8A008D357A /* DetailTargetViewController+MKMapViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC99623D09D8A008D357A /* DetailTargetViewController+MKMapViewDelegate.swift */; };
 		585BBB8823B219170001F749 /* ButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8723B219170001F749 /* ButtonView.swift */; };
 		585BBB8A23B27DD40001F749 /* UIColor+Adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */; };
 		585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */; };
@@ -111,6 +112,7 @@
 		58551DD523BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserPreferences.MeasuringSystem+Extension.swift"; sourceTree = "<group>"; };
 		58551DD723BD854300E76885 /* TabBarControllerBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarControllerBuilder.swift; sourceTree = "<group>"; };
 		58551DD923BDA38A00E76885 /* MapRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRouter.swift; sourceTree = "<group>"; };
+		585AC99623D09D8A008D357A /* DetailTargetViewController+MKMapViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DetailTargetViewController+MKMapViewDelegate.swift"; sourceTree = "<group>"; };
 		585BBB8723B219170001F749 /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
 		585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Adjust.swift"; sourceTree = "<group>"; };
 		585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetAnnotation.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */,
 				3A4337B023C364A300700935 /* DetailTargetRouter.swift */,
 				3A4337B223C364B900700935 /* DetailTargetViewController.swift */,
+				585AC99623D09D8A008D357A /* DetailTargetViewController+MKMapViewDelegate.swift */,
 				3AC8713323C3915000B06657 /* View */,
 			);
 			path = "Detail target scene";
@@ -544,6 +547,7 @@
 				586F660C23BBF065007D4657 /* MenuAction.swift in Sources */,
 				58A9984823AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift in Sources */,
 				585F64AD23B9989900B66EAA /* SettingsWorker.swift in Sources */,
+				585AC99723D09D8A008D357A /* DetailTargetViewController+MKMapViewDelegate.swift in Sources */,
 				585F64AC23B9989900B66EAA /* SettingsPresenter.swift in Sources */,
 				3A7C5B1023C8CA3700FB732A /* ButtonForDetailScreen.swift in Sources */,
 			);

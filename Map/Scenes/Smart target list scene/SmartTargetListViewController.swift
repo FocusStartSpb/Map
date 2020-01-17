@@ -9,7 +9,6 @@ import UIKit
 // MARK: - SmartTargetListDisplayLogic protocol
 protocol SmartTargetListDisplayLogic: AnyObject
 {
-	func displayLoadSmartTargets(_ viewModel: SmartTargetList.LoadSmartTargets.ViewModel)
 	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel)
 	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel)
 	func updateEditedSmartTarget(_ viewModel: SmartTargetList.UpdateSmartTarget.ViewModel)
@@ -57,7 +56,6 @@ final class SmartTargetListViewController: UIViewController
 		super.viewDidLoad()
 		updateNavigationBar()
 		checkUserInterfaceStyle()
-		interactor.loadSmartTargets(SmartTargetList.LoadSmartTargets.Request())
 		setupTargetsTableView()
 	}
 
@@ -116,13 +114,11 @@ final class SmartTargetListViewController: UIViewController
 // MARK: - Smart target list display logic
 extension SmartTargetListViewController: SmartTargetListDisplayLogic
 {
-	func displayLoadSmartTargets(_ viewModel: SmartTargetList.LoadSmartTargets.ViewModel) {
-	}
-
 	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel) {
 	}
 
 	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel) {
+		guard viewModel.needUpdate else { return }
 		targetsTableView.beginUpdates()
 		targetsTableView.deleteSections(viewModel.removedIndexSet, with: .fade)
 		targetsTableView.reloadSections(viewModel.updatedIndexSet, with: .fade)
@@ -131,6 +127,7 @@ extension SmartTargetListViewController: SmartTargetListDisplayLogic
 	}
 
 	func updateEditedSmartTarget(_ viewModel: SmartTargetList.UpdateSmartTarget.ViewModel) {
+		guard viewModel.needUpdate else { return }
 		targetsTableView.reloadSections(viewModel.updatedIndexSet, with: .fade)
 	}
 
@@ -156,7 +153,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 			else {
 			return UITableViewCell()
 		}
-		cell.fillLabels(with: interactor.smartTargetCollection?.smartTargets[indexPath.section])
+		cell.fillLabels(with: interactor.smartTargetCollection.smartTargets[indexPath.section])
 		return cell
 	}
 }
@@ -213,11 +210,17 @@ extension SmartTargetListViewController: UITabBarControllerDelegate
 {
 	func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
 		tabBarController.delegate = nil
-		interactor.didUpdateSmartTargets = false
-		guard let viewController = viewController as? MapViewController else {
-			return true
+		guard let mapViewController = tabBarController
+			.viewControllers?
+			.first(where: { $0 is MapViewController }) as? MapViewController else {
+				return false
 		}
-		router.routeToMap(viewController)
-		return false
+		mapViewController.router.dataStore?.didUpdateAllAnnotations = false
+
+		if viewController === mapViewController {
+			router.routeToMap(mapViewController)
+			return false
+		}
+		return true
 	}
 }

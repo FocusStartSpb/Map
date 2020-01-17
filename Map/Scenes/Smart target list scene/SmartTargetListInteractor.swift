@@ -8,7 +8,6 @@
 // MARK: - SmartTargetListBusinessLogic protocol
 protocol SmartTargetListBusinessLogic
 {
-	func loadSmartTargets(_ request: SmartTargetList.LoadSmartTargets.Request)
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request)
 	func updateSmartTargets(_ request: SmartTargetList.UpdateSmartTargets.Request)
 	func updateSmartTarget(_ request: SmartTargetList.UpdateSmartTarget.Request)
@@ -19,10 +18,10 @@ protocol SmartTargetListBusinessLogic
 protocol SmartTargetListDataStore
 {
 	var smartTargetsCount: Int { get }
-	var oldSmartTargetCollection: ISmartTargetCollection? { get set }
-	var smartTargetCollection: ISmartTargetCollection? { get set }
+	var oldSmartTargetCollection: ISmartTargetCollection { get }
+	var smartTargetCollection: ISmartTargetCollection { get }
 	var editedSmartTarget: SmartTarget? { get set }
-	var didUpdateSmartTargets: Bool { get set }
+	var didUpdateAllSmartTargets: Bool { get set }
 }
 
 // MARK: - Class
@@ -33,38 +32,30 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 	private var worker: DataBaseWorker<T>
 
 	// MARK: ...Map data store
-	var oldSmartTargetCollection: ISmartTargetCollection?
-	var smartTargetCollection: ISmartTargetCollection?
-	var didUpdateSmartTargets = false
+	let oldSmartTargetCollection: ISmartTargetCollection
+	let smartTargetCollection: ISmartTargetCollection
+	var didUpdateAllSmartTargets = false
 	var editedSmartTarget: SmartTarget?
 
 	// MARK: ...Initialization
-	init(presenter: SmartTargetListPresentationLogic, worker: DataBaseWorker<T>) {
+	init(presenter: SmartTargetListPresentationLogic,
+		 worker: DataBaseWorker<T>,
+		 collection: ISmartTargetCollection,
+		 oldCollection: ISmartTargetCollection) {
 		self.presenter = presenter
 		self.worker = worker
+		self.smartTargetCollection = collection
+		self.oldSmartTargetCollection = oldCollection
 	}
 }
 
 // MARK: - Smart target list business logic
 extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 {
-	func loadSmartTargets(_ request: SmartTargetList.LoadSmartTargets.Request) {
-
-		worker.fetchSmartTargets { [weak self] result in
-			if case .success(let collection) = result {
-				self?.smartTargetCollection = collection as? ISmartTargetCollection
-				self?.oldSmartTargetCollection = self?.smartTargetCollection?.copy()
-			}
-			let result = result.map { $0 as? ISmartTargetCollection ?? SmartTargetCollection() }
-			let response = SmartTargetList.LoadSmartTargets.Response(result: result)
-			self?.presenter.presentLoadSmartTargets(response)
-		}
-	}
-
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request) {
 		request.smartTargetsIndexSet.forEach { index in
-			guard let uuid = self.smartTargetCollection?.smartTargets[Int(index)].uid else { return }
-			self.smartTargetCollection?.remove(atUID: uuid)
+			let uuid = self.smartTargetCollection.smartTargets[Int(index)].uid
+			self.smartTargetCollection.remove(atUID: uuid)
 		}
 		saveSmartTargetCollection()
 	}
@@ -80,26 +71,27 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 	}
 
 	func updateSmartTargets(_ request: SmartTargetList.UpdateSmartTargets.Request) {
-		guard
-			let oldCollection = oldSmartTargetCollection?.copy(),
-			let smartTargetCollection = smartTargetCollection else { return }
+		guard didUpdateAllSmartTargets == false else { return }
+		let oldCollection = oldSmartTargetCollection.copy()
 
-		let differences = smartTargetCollection.smartTargetsOfDifference(from: oldCollection)
+		let difference = smartTargetCollection.smartTargetsOfDifference(from: oldCollection)
 		let response = SmartTargetList.UpdateSmartTargets.Response(collection: oldCollection,
-																   addedSmartTargets: differences.added,
-																   removedSmartTargets: differences.removed,
-																   updatedSmartTargets: differences.updated)
+																   difference: difference)
+
+		oldSmartTargetCollection.replaceSmartTargets(with: smartTargetCollection.smartTargets)
 		presenter.presentUpdateSmartTargets(response)
-		if didUpdateSmartTargets == false {
-			oldSmartTargetCollection = smartTargetCollection.copy()
-			didUpdateSmartTargets = true
-		}
+		didUpdateAllSmartTargets = true
 	}
 
 	func updateSmartTarget(_ request: SmartTargetList.UpdateSmartTarget.Request) {
-		guard let editedSmartTarget = self.editedSmartTarget else { return }
-		guard let smartTargetIndex = self.smartTargetCollection?.index(at: editedSmartTarget) else { return }
-		let response = SmartTargetList.UpdateSmartTarget.Response(editedSmartTargetIndex: smartTargetIndex)
+		guard editedSmartTarget != nil,
+			let editedSmartTarget = self.editedSmartTarget,
+			let oldSmartTarget = self.smartTargetCollection[editedSmartTarget.uid] else { return }
+		let smartTargetIndex = smartTargetCollection.put(editedSmartTarget)
+		self.editedSmartTarget = nil
+		let response = SmartTargetList.UpdateSmartTarget.Response(editedSmartTarget: editedSmartTarget,
+																  oldSmartTarget: oldSmartTarget,
+																  editedSmartTargetIndex: smartTargetIndex)
 		self.saveSmartTargetCollection()
 		presenter.presentUpdateSmartTarget(response)
 	}
@@ -114,6 +106,6 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 extension SmartTargetListInteractor: SmartTargetListDataStore
 {
 	var smartTargetsCount: Int {
-		smartTargetCollection?.count ?? 0
+		smartTargetCollection.count
 	}
 }

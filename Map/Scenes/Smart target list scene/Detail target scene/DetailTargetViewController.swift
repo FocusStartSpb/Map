@@ -4,6 +4,7 @@
 //
 //  Created by Антон on 29.12.2019.
 //
+// swiftlint:disable file_length
 import MapKit
 
 final class DetailTargetViewController: UIViewController
@@ -30,9 +31,9 @@ final class DetailTargetViewController: UIViewController
 		static let addressLabelFont = UIFont.systemFont(ofSize: 25, weight: .regular)
 	}
 
-	private let presenter: IDetailTargetPresenter
+	var presenter: IDetailTargetPresenter
 	private let router: IDetailTargetRouter
-	private var smartTargetEditable = false {
+	private var smartTargetEditable: Bool {
 		didSet {
 			if smartTargetEditable {
 				self.navigationController?.setNavigationBarHidden(true, animated: true)
@@ -74,7 +75,13 @@ final class DetailTargetViewController: UIViewController
 		return false
 	}
 
-	private let mapView = MKMapView()
+	private(set) lazy var mapView: MKMapView = {
+		let mapView = MKMapView()
+		mapView.delegate = self
+		mapView.showsCompass = false
+		return mapView
+	}()
+
 	private let scrollView = UIScrollView()
 	private let titleDescriptionLabel = UILabel()
 	private let titleTextView = UITextView()
@@ -90,12 +97,42 @@ final class DetailTargetViewController: UIViewController
 	private var cancelButtonWidthAnchorEqualZero: NSLayoutConstraint?
 	private var cancelButtonWidthAnchorIfEditModeEnabled: NSLayoutConstraint?
 
+	let impactFeedbackGenerator: UIImpactFeedbackGenerator = {
+		if #available(iOS 13.0, *) {
+			return UIImpactFeedbackGenerator(style: .soft)
+		}
+		else {
+			return UIImpactFeedbackGenerator(style: .light)
+		}
+	}()
+
+	private lazy var showPinButtonView = ButtonView(type: .add, tapAction: actionShowPin)
+
+	private let activityIndicator: UIActivityIndicatorView = {
+		let style: UIActivityIndicatorView.Style
+		if #available(iOS 13.0, *) {
+			style = .medium
+		}
+		else {
+			style = .gray
+		}
+		let indicator = UIActivityIndicatorView(style: style)
+		return indicator
+	}()
+
+	var addressText: String? {
+		get { addressLabel.text }
+		set {
+			addressLabel.text = newValue
+			newValue == nil ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
+		}
+	}
+
 	init(presenter: IDetailTargetPresenter,
-		 router: IDetailTargetRouter,
-		 smartTargetEditable: Bool) {
+		 router: IDetailTargetRouter) {
 		self.presenter = presenter
 		self.router = router
-		self.smartTargetEditable = smartTargetEditable
+		self.smartTargetEditable = false
 		super.init(nibName: nil, bundle: nil)
 		self.hidesBottomBarWhenPushed = true
 	}
@@ -135,6 +172,11 @@ final class DetailTargetViewController: UIViewController
 		setupEditButton()
 		setupCancelButton()
 		checkUserInterfaceStyle()
+		setupShowPinButtonView()
+		setupActivityIndicator()
+		setupAnnotation()
+		setupOverlay()
+		setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: false)
 	}
 
 	@objc private func editButtonAction() {
@@ -143,15 +185,23 @@ final class DetailTargetViewController: UIViewController
 			guard let smartTargetVC = self.navigationController?.viewControllers.first as? SmartTargetListViewController
 				else { return }
 			self.router.popDetail(to: smartTargetVC,
-								  smartTarget: presenter
-									.saveChanges(title: self.titleTextView.text,
-												 coordinates: CLLocationCoordinate2D(latitude: -122.23,
-																					 longitude: 34.123)))
+								  smartTarget: presenter.saveChanges(title: self.titleTextView.text,
+																	 address: addressText))
 		}
 		self.smartTargetEditable = true
 	}
 
 	@objc private func cancelButtonAction() {
+		if let annotation = mapView
+			.annotations
+			.first(where: { $0 is SmartTargetAnnotation }) as? SmartTargetAnnotation {
+			self.mapView.removeAnnotation(annotation)
+			self.mapView.removeOverlays(self.mapView.overlays)
+			self.presenter.setupInitialData()
+			self.setupAnnotation()
+			self.setupOverlay()
+			self.setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: true)
+		}
 		self.smartTargetEditable = false
 	}
 
@@ -284,9 +334,12 @@ extension DetailTargetViewController
 			self.addressLabel.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
 		])
 		self.addressLabel.numberOfLines = 0
-		self.addressLabel.text = presenter.getAddressText()
 		self.addressLabel.font = FontForDetailScreen.addressLabelFont
 		self.addressLabel.textAlignment = .center
+		presenter.getAddressText {
+			self.addressLabel.text = $0
+			self.activityIndicator.stopAnimating()
+		}
 	}
 	// MARK: - mapView
 	private func mapViewEditable() {
@@ -357,5 +410,33 @@ extension DetailTargetViewController
 		])
 		self.cancelButton.setTitle(ButtonTitles.cancelButtonTitle, for: .normal)
 		self.cancelButton.addTarget(self, action: #selector(cancelButtonAction), for: .touchUpInside)
+	}
+
+	private func setupShowPinButtonView() {
+		self.showPinButtonView.translatesAutoresizingMaskIntoConstraints = false
+		self.scrollView.addSubview(showPinButtonView)
+		NSLayoutConstraint.activate([
+			self.showPinButtonView.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -8),
+			self.showPinButtonView.topAnchor.constraint(equalTo: mapView.topAnchor, constant: 8),
+			self.showPinButtonView.heightAnchor.constraint(equalToConstant: 40),
+			self.showPinButtonView.widthAnchor.constraint(equalToConstant: 40),
+		])
+	}
+
+	private func setupActivityIndicator() {
+		self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+		self.scrollView.addSubview(activityIndicator)
+		NSLayoutConstraint.activate([
+			self.activityIndicator.centerXAnchor.constraint(equalTo: addressLabel.centerXAnchor),
+			self.activityIndicator.centerYAnchor.constraint(equalTo: addressLabel.centerYAnchor),
+		])
+	}
+}
+
+// MARK: - Actions
+private extension DetailTargetViewController
+{
+	func actionShowPin() {
+		setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: true)
 	}
 }
