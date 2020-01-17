@@ -97,14 +97,7 @@ final class DetailTargetViewController: UIViewController
 	private var cancelButtonWidthAnchorEqualZero: NSLayoutConstraint?
 	private var cancelButtonWidthAnchorIfEditModeEnabled: NSLayoutConstraint?
 
-	let impactFeedbackGenerator: UIImpactFeedbackGenerator = {
-		if #available(iOS 13.0, *) {
-			return UIImpactFeedbackGenerator(style: .soft)
-		}
-		else {
-			return UIImpactFeedbackGenerator(style: .light)
-		}
-	}()
+	let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin)
 
 	private lazy var showPinButtonView = ButtonView(type: .add, tapAction: actionShowPin)
 
