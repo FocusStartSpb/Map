@@ -11,6 +11,18 @@ final class RangeSliderTableViewCell: UITableViewCell
 {
 	// MARK: . ..Private properties
 	private let label = UILabel()
+	private let lowerValuelabel: UILabel = {
+		let label = UILabel()
+		label.font = .systemFont(ofSize: 12)
+		label.textAlignment = .right
+		return label
+	}()
+	private let upperValuelabel: UILabel = {
+		let label = UILabel()
+		label.font = .systemFont(ofSize: 12)
+		label.textAlignment = .left
+		return label
+	}()
 	private lazy var rangeSlider: RangeSlider = {
 		let rangeSlider = RangeSlider()
 		rangeSlider.addTarget(self, action: #selector(actionChangeValue(_:)), for: .valueChanged)
@@ -35,11 +47,20 @@ final class RangeSliderTableViewCell: UITableViewCell
 		set {
 			rangeSlider.lowerValue = newValue.lower
 			rangeSlider.upperValue = newValue.upper
+			updateSliderLabels()
 		}
 	}
 	var title: String? {
 		get { label.text }
 		set { label.text = newValue }
+	}
+
+	var sliderFactor: Double = 1 {
+		didSet { updateSliderLabels() }
+	}
+
+	var sliderValueSymbol: String = "" {
+		didSet { updateSliderLabels() }
 	}
 
 	// MARK: ...Initialization
@@ -63,18 +84,40 @@ final class RangeSliderTableViewCell: UITableViewCell
 	private func setup() {
 		contentView.addSubview(label)
 		contentView.addSubview(rangeSlider)
+		contentView.addSubview(lowerValuelabel)
+		contentView.addSubview(upperValuelabel)
 	}
 
 	private func setFrames() {
 		label.sizeToFit()
-		label.frame = CGRect(x: 8,
+		lowerValuelabel.sizeToFit()
+		upperValuelabel.sizeToFit()
+		let rightOffsetOfLabel: CGFloat = (label.text?.isEmpty == false) ? 8 : 0
+		label.frame = CGRect(x: 16,
 							 y: (contentView.frame.height - label.frame.height) / 2,
 							 width: label.frame.width,
 							 height: label.frame.height)
-		rangeSlider.frame = CGRect(x: label.frame.maxX + 8,
+		lowerValuelabel.frame = CGRect(x: label.frame.maxX + rightOffsetOfLabel,
+									   y: (contentView.frame.height - lowerValuelabel.frame.height) / 2,
+									   width: 60,
+									   height: lowerValuelabel.frame.height)
+		rangeSlider.frame = CGRect(x: lowerValuelabel.frame.maxX + 8,
 								   y: (contentView.frame.height - 30) / 2,
-								   width: contentView.frame.width - label.frame.maxX - 2 * 8,
+								   width: contentView.frame.width - lowerValuelabel.frame.maxX - 16 - 2 * 8 - 60,
 								   height: 30)
+		upperValuelabel.frame = CGRect(x: rangeSlider.frame.maxX + 8,
+									   y: (contentView.frame.height - upperValuelabel.frame.height) / 2,
+									   width: 60,
+									   height: upperValuelabel.frame.height)
+	}
+
+	private func updateSliderLabels() {
+		lowerValuelabel.text =
+			"\(Int(values.lower * sliderFactor))" +
+			((sliderValueSymbol.isEmpty == false) ? " \(sliderValueSymbol)" : "")
+		upperValuelabel.text =
+			"\(Int(values.upper * sliderFactor))" +
+			((sliderValueSymbol.isEmpty == false) ? " \(sliderValueSymbol)" : "")
 	}
 }
 
@@ -82,6 +125,7 @@ final class RangeSliderTableViewCell: UITableViewCell
 @objc private extension RangeSliderTableViewCell
 {
 	func actionChangeValue(_ sender: RangeSlider) {
+		values = (sender.lowerValue, sender.upperValue)
 		actionChangeValue((sender.lowerValue, sender.upperValue))
 	}
 }

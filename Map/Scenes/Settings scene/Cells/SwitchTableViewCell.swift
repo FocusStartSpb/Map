@@ -11,6 +11,7 @@ final class SwitchTableViewCell: UITableViewCell
 {
 
 	// MARK: ...Private properties
+	private lazy var stack = UIStackView(arrangedSubviews: [label, `switch`])
 	private let label = UILabel()
 	private lazy var `switch`: UISwitch = {
 		let `switch` = UISwitch()
@@ -44,33 +45,22 @@ final class SwitchTableViewCell: UITableViewCell
 
 	// MARK: ...Private methods
 	private func setup() {
-		contentView.addSubview(label)
-		contentView.addSubview(`switch`)
-
+		contentView.addSubview(stack)
 		setConstraints()
 	}
 
 	private func setConstraints() {
-		label.translatesAutoresizingMaskIntoConstraints = false
-		`switch`.translatesAutoresizingMaskIntoConstraints = false
-
-		// Set constraint for label
-		label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
-									   constant: 8).isActive = true
-		label.topAnchor.constraint(equalTo: contentView.topAnchor,
+		stack.translatesAutoresizingMaskIntoConstraints = false
+		stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
+									   constant: 16).isActive = true
+		stack.topAnchor.constraint(equalTo: contentView.topAnchor,
 								   constant: 8).isActive = true
-		label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
+		stack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
 									  constant: -8).isActive = true
-
-		// Set constraint for switch
-		`switch`.leadingAnchor.constraint(equalTo: label.trailingAnchor,
-										  constant: 8).isActive = true
-		`switch`.topAnchor.constraint(equalTo: contentView.topAnchor,
-									  constant: 8).isActive = true
-		`switch`.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
-										   constant: -8).isActive = true
-		`switch`.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
-										 constant: -8).isActive = true
+		stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
+										constant: -16).isActive = true
+		stack.alignment = .center
+		stack.distribution = .fillProportionally
 	}
 }
 

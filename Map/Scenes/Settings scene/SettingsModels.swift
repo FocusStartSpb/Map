@@ -30,6 +30,8 @@ enum Settings
 		struct ViewModel
 		{
 			let title: String
+			let headerTitle: String
+			let footerTitle: String
 			let typeItems: UserPreferences.Key
 			let items: [String]
 			let selectedItem: Int
@@ -53,6 +55,8 @@ enum Settings
 		struct ViewModel
 		{
 			let title: String
+			let headerTitle: String
+			let footerTitle: String
 			let typeItems: UserPreferences.Key
 			let isOn: Bool
 		}
@@ -77,6 +81,8 @@ enum Settings
 		struct ViewModel
 		{
 			let title: String
+			let headerTitle: String
+			let footerTitle: String
 			let typeItems: UserPreferences.Key
 			let range: Double
 			let rangeValues: (min: Double, max: Double)
@@ -96,11 +102,13 @@ enum Settings
 		struct Response
 		{
 			let isChanged: Bool
+			let typeItems: UserPreferences.Key
 		}
 
 		struct ViewModel
 		{
 			let isChanged: Bool
+			let typeItems: UserPreferences.Key
 		}
 	}
 
@@ -116,11 +124,13 @@ enum Settings
 		struct Response
 		{
 			let isChanged: Bool
+			let typeItems: UserPreferences.Key
 		}
 
 		struct ViewModel
 		{
 			let isChanged: Bool
+			let typeItems: UserPreferences.Key
 		}
 	}
 
@@ -136,11 +146,30 @@ enum Settings
 		struct Response
 		{
 			let isChanged: Bool
+			let typeItems: UserPreferences.Key
 		}
 
 		struct ViewModel
 		{
 			let isChanged: Bool
+			let typeItems: UserPreferences.Key
+		}
+	}
+
+	// MARK: ...GetMeasurementSystem
+	enum GetMeasurementSystem
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let measurementSystem: UserPreferences.MeasurementSystem
+		}
+
+		struct ViewModel
+		{
+			let measurementSymbol: String
+			let measurementFactor: Double
 		}
 	}
 }

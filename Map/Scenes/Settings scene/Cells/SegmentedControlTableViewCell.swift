@@ -11,6 +11,7 @@ final class SegmentedControlTableViewCell: UITableViewCell
 {
 
 	// MARK: ...Private properties
+	private lazy var stack = UIStackView(arrangedSubviews: [label, segmentedControl])
 	private let label = UILabel()
 	private lazy var segmentedControl: UISegmentedControl = {
 		let segmentedControl = UISegmentedControl()
@@ -44,33 +45,22 @@ final class SegmentedControlTableViewCell: UITableViewCell
 
 	// MARK: ...Private methods
 	private func setup() {
-		contentView.addSubview(label)
-		contentView.addSubview(segmentedControl)
-
+		contentView.addSubview(stack)
 		setConstraints()
 	}
 
 	private func setConstraints() {
-		label.translatesAutoresizingMaskIntoConstraints = false
-		segmentedControl.translatesAutoresizingMaskIntoConstraints = false
-
-		// Set constraint for label
-		label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
-									   constant: 8).isActive = true
-		label.topAnchor.constraint(equalTo: contentView.topAnchor,
+		stack.translatesAutoresizingMaskIntoConstraints = false
+		stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
+									   constant: 16).isActive = true
+		stack.topAnchor.constraint(equalTo: contentView.topAnchor,
 								   constant: 8).isActive = true
-		label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
+		stack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
 									  constant: -8).isActive = true
-
-		// Set constraint for segmentedControl
-		segmentedControl.leadingAnchor.constraint(equalTo: label.trailingAnchor,
-												  constant: 8).isActive = true
-		segmentedControl.topAnchor.constraint(equalTo: contentView.topAnchor,
-											  constant: 8).isActive = true
-		segmentedControl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
-												   constant: -8).isActive = true
-		segmentedControl.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
-												 constant: -8).isActive = true
+		stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
+										constant: -16).isActive = true
+		stack.alignment = .center
+		stack.distribution = .fillProportionally
 	}
 
 	// MARK: ...Internal methods
