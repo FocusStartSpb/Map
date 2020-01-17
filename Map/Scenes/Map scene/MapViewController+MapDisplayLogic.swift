@@ -30,7 +30,7 @@ protocol MapDisplayLogic: AnyObject
 	// Settings
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel)
 	func displayGetRangeRadius(_ viewModel: Map.GetRangeRadius.ViewModel)
-	func displayGetMeasuringSystem(_ viewModel: Map.GetMeasuringSystem.ViewModel)
+	func displayGetMeasurementSystem(_ viewModel: Map.GetMeasurementSystem.ViewModel)
 	func displayGetRemovePinAlertSettings(_ viewModel: Map.GetRemovePinAlertSettings.ViewModel)
 }
 
@@ -95,9 +95,9 @@ extension MapViewController: MapDisplayLogic
 		}
 	}
 
-	func displayGetMeasuringSystem(_ viewModel: Map.GetMeasuringSystem.ViewModel) {
-		smartTargetMenu?.sliderFactor = Float(viewModel.measuringFactor)
-		smartTargetMenu?.sliderValueMeasuringSymbol = viewModel.measuringSymbol
+	func displayGetMeasurementSystem(_ viewModel: Map.GetMeasurementSystem.ViewModel) {
+		smartTargetMenu?.sliderFactor = Float(viewModel.measurementFactor)
+		smartTargetMenu?.sliderValuemeasurementSymbol = viewModel.measurementSymbol
 	}
 
 	func displayGetRemovePinAlertSettings(_ viewModel: Map.GetRemovePinAlertSettings.ViewModel) {

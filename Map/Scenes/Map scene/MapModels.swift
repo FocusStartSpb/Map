@@ -205,20 +205,20 @@ enum Map
 		}
 	}
 
-	// MARK: ...GetMeasuringSystem
-	enum GetMeasuringSystem
+	// MARK: ...GetMeasurementSystem
+	enum GetMeasurementSystem
 	{
 		struct Request { }
 
 		struct Response
 		{
-			let measuringSystem: UserPreferences.MeasuringSystem
+			let measurementSystem: UserPreferences.MeasurementSystem
 		}
 
 		struct ViewModel
 		{
-			let measuringSymbol: String
-			let measuringFactor: Double
+			let measurementSymbol: String
+			let measurementFactor: Double
 		}
 	}
 

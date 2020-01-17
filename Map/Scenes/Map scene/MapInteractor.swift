@@ -32,7 +32,7 @@ protocol MapBusinessLogic
 	// Settings
 	func getCurrentRadius(_ request: Map.GetCurrentRadius.Request)
 	func getRangeRadius(_ request: Map.GetRangeRadius.Request)
-	func getMeasuringSystem(_ request: Map.GetMeasuringSystem.Request)
+	func measurementSystem(_ request: Map.GetMeasurementSystem.Request)
 	func getRemovePinAlertSettings(_ request: Map.GetRemovePinAlertSettings.Request)
 }
 
@@ -51,11 +51,11 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 	where T.Element: ISmartTargetCollection
 {
 	// MARK: ...Private properties
-	private var presenter: MapPresentationLogic
-	private var dataBaseWorker: DataBaseWorker<T>
-	private var geocoderWorker: GeocoderWorker<G>
-	private var settingsWorker: SettingsWorker
-	private var notificationWorker: NotificationWorker
+	private let presenter: MapPresentationLogic
+	private let dataBaseWorker: DataBaseWorker<T>
+	private let geocoderWorker: GeocoderWorker<G>
+	private let settingsWorker: SettingsWorker
+	private let notificationWorker: NotificationWorker
 	private lazy var locationManager: CLLocationManager = {
 		let locationManager = CLLocationManager()
 		locationManager.delegate = self
@@ -288,10 +288,10 @@ extension MapInteractor: MapBusinessLogic
 		presenter.presentGetRangeRadius(response)
 	}
 
-	func getMeasuringSystem(_ request: Map.GetMeasuringSystem.Request) {
-		let measuringSystem = settingsWorker.measuringSystem ?? .kilometer
-		let response = Map.GetMeasuringSystem.Response(measuringSystem: measuringSystem)
-		presenter.presentGetMeasuringSystem(response)
+	func measurementSystem(_ request: Map.GetMeasurementSystem.Request) {
+		let measurementSystem = settingsWorker.measurementSystem ?? .metric
+		let response = Map.GetMeasurementSystem.Response(measurementSystem: measurementSystem)
+		presenter.presentGetMeasurementSystem(response)
 	}
 
 	func getRemovePinAlertSettings(_ request: Map.GetRemovePinAlertSettings.Request) {
