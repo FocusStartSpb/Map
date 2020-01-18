@@ -54,6 +54,7 @@ final class SmartTargetListViewController: UIViewController
 	// MARK: ...View lifecycle
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		interactor.didUpdateAllSmartTargets = true
 		updateNavigationBar()
 		checkUserInterfaceStyle()
 		setupTargetsTableView()
