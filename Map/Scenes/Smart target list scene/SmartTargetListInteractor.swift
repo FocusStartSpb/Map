@@ -29,7 +29,8 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 {
 	// MARK: ...Private properties
 	private var presenter: SmartTargetListPresentationLogic
-	private var worker: DataBaseWorker<T>
+	private let dataBaseWorker: DataBaseWorker<T>
+	private let settingsWorker: SettingsWorker
 
 	// MARK: ...Map data store
 	let oldSmartTargetCollection: ISmartTargetCollection
@@ -39,11 +40,13 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 
 	// MARK: ...Initialization
 	init(presenter: SmartTargetListPresentationLogic,
-		 worker: DataBaseWorker<T>,
+		 dataBaseWorker: DataBaseWorker<T>,
+		 settingsWorker: SettingsWorker,
 		 collection: ISmartTargetCollection,
 		 oldCollection: ISmartTargetCollection) {
 		self.presenter = presenter
-		self.worker = worker
+		self.dataBaseWorker = dataBaseWorker
+		self.settingsWorker = settingsWorker
 		self.smartTargetCollection = collection
 		self.oldSmartTargetCollection = oldCollection
 	}
