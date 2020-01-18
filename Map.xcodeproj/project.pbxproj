@@ -8,10 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		029A19DE23CB7CAD00A4535B /* Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029A19DD23CB7CAD00A4535B /* Alerts.swift */; };
+		3A431E0D23D1BB6100608127 /* SmartTargetAttendanceLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A431E0C23D1BB6100608127 /* SmartTargetAttendanceLabels.swift */; };
 		3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */; };
 		3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B023C364A300700935 /* DetailTargetRouter.swift */; };
 		3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B223C364B900700935 /* DetailTargetViewController.swift */; };
 		3A7C5B1023C8CA3700FB732A /* ButtonForDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7C5B0F23C8CA3600FB732A /* ButtonForDetailScreen.swift */; };
+		3AAD388023D20AF200873B0B /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAD387F23D20AF200873B0B /* UILabel.swift */; };
+		3AAD388223D2397C00873B0B /* Date+Attendance+Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAD388123D2397C00873B0B /* Date+Attendance+Address.swift */; };
+		3AAD388423D24ED300873B0B /* Slider+EditableAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAD388323D24ED300873B0B /* Slider+EditableAddressView.swift */; };
+		3AAD388623D2F51000873B0B /* ButtonsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAD388523D2F51000873B0B /* ButtonsBar.swift */; };
 		3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */; };
 		3ABCDC9323B7B71B0050F4B2 /* SmartTargetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */; };
 		3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */; };
@@ -81,10 +86,15 @@
 
 /* Begin PBXFileReference section */
 		029A19DD23CB7CAD00A4535B /* Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alerts.swift; sourceTree = "<group>"; };
+		3A431E0C23D1BB6100608127 /* SmartTargetAttendanceLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetAttendanceLabels.swift; sourceTree = "<group>"; };
 		3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetPresenter.swift; sourceTree = "<group>"; };
 		3A4337B023C364A300700935 /* DetailTargetRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetRouter.swift; sourceTree = "<group>"; };
 		3A4337B223C364B900700935 /* DetailTargetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetViewController.swift; sourceTree = "<group>"; };
 		3A7C5B0F23C8CA3600FB732A /* ButtonForDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonForDetailScreen.swift; sourceTree = "<group>"; };
+		3AAD387F23D20AF200873B0B /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
+		3AAD388123D2397C00873B0B /* Date+Attendance+Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Attendance+Address.swift"; sourceTree = "<group>"; };
+		3AAD388323D24ED300873B0B /* Slider+EditableAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Slider+EditableAddressView.swift"; sourceTree = "<group>"; };
+		3AAD388523D2F51000873B0B /* ButtonsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsBar.swift; sourceTree = "<group>"; };
 		3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartTargetTableViewCell.swift; sourceTree = "<group>"; };
 		3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderModel.swift; sourceTree = "<group>"; };
@@ -197,6 +207,10 @@
 			isa = PBXGroup;
 			children = (
 				3A7C5B0F23C8CA3600FB732A /* ButtonForDetailScreen.swift */,
+				3AAD388523D2F51000873B0B /* ButtonsBar.swift */,
+				3A431E0C23D1BB6100608127 /* SmartTargetAttendanceLabels.swift */,
+				3AAD388323D24ED300873B0B /* Slider+EditableAddressView.swift */,
+				3AAD388123D2397C00873B0B /* Date+Attendance+Address.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -403,6 +417,7 @@
 				58A9984723AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift */,
 				582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */,
 				585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */,
+				3AAD387F23D20AF200873B0B /* UILabel.swift */,
 				5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */,
 				58551DD523BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift */,
 				58EEE41A23C4404300CE9229 /* UIViewController+Extension.swift */,
@@ -517,20 +532,24 @@
 				5815996823B52DD900232CE2 /* NotificationCenter+Extension.swift in Sources */,
 				58A9984A23AC35E000CAACE8 /* SmartTargetCollection.swift in Sources */,
 				584EE5E723A834D60013087A /* SmartTargetListInteractor.swift in Sources */,
+				3A431E0D23D1BB6100608127 /* SmartTargetAttendanceLabels.swift in Sources */,
 				585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */,
 				5837D01823A8388700A6F125 /* SceneBuilder.swift in Sources */,
 				5891A8EC23B3BF5200FB1D1C /* GeocoderWorker.swift in Sources */,
 				3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */,
+				3AAD388623D2F51000873B0B /* ButtonsBar.swift in Sources */,
 				029A19DE23CB7CAD00A4535B /* Alerts.swift in Sources */,
 				3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */,
 				585AC99B23D0E1AC008D357A /* MapViewController+NotificationCenter.swift in Sources */,
 				585AC99F23D0E36D008D357A /* MapViewController+UITabBarControllerDelegate.swift in Sources */,
+				3AAD388423D24ED300873B0B /* Slider+EditableAddressView.swift in Sources */,
 				58454C3923C25B7A008BB813 /* NotificationService.swift in Sources */,
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,
 				585AC99D23D0E20A008D357A /* MapViewController+MapDisplayLogic.swift in Sources */,
 				3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */,
 				3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */,
 				3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */,
+				3AAD388023D20AF200873B0B /* UILabel.swift in Sources */,
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
 				585AC9A123D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift in Sources */,
 				58EEE41B23C4404300CE9229 /* UIViewController+Extension.swift in Sources */,
@@ -552,6 +571,7 @@
 				585F64B123B9989900B66EAA /* SettingsInteractor.swift in Sources */,
 				585F64B023B9989900B66EAA /* SettingsViewController.swift in Sources */,
 				585F64A323B988A700B66EAA /* SettingWrapper.swift in Sources */,
+				3AAD388223D2397C00873B0B /* Date+Attendance+Address.swift in Sources */,
 				580A076623AFEB1200192969 /* SmartTargetMenu.swift in Sources */,
 				585F64A523B9947000B66EAA /* UserPreferences.swift in Sources */,
 				584EE5CD23A833D70013087A /* MapInteractor.swift in Sources */,
