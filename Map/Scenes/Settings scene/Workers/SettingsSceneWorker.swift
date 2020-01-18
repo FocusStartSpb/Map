@@ -7,8 +7,8 @@
 
 final class SettingsSceneWorker: SettingsWorker
 {
-	func getMeasuringSystemItems() -> [String] {
-		UserPreferences.MeasuringSystem.allCases.map { $0.rawValue }
+	func getMeasurementSystemItems() -> [String] {
+		UserPreferences.MeasurementSystem.allCases.map { $0.rawValue }
 	}
 
 	func getSortingItems() -> [String] {

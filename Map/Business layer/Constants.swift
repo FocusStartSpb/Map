@@ -10,8 +10,17 @@ import CoreGraphics
 
 enum Constants
 {
-
 	static let maxLenghtOfTitle = 30
+
+	enum MeasurementSystem
+	{
+		// swiftlint:disable:next nesting
+		enum Symbol
+		{
+			static let imperial = "фт"
+			static let metric = "м"
+		}
+	}
 
 	enum Radius
 	{

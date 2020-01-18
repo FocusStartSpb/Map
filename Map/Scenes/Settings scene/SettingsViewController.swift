@@ -16,28 +16,49 @@ protocol SettingsDisplayLogic: AnyObject
 	func displayChangeValueSegmentedControl(_ viewModel: Settings.ChangeValueSegmentedControl.ViewModel)
 	func displayChangeValueSwitch(_ viewModel: Settings.ChangeValueSwitch.ViewModel)
 	func displayChangeValueSlider(_ viewModel: Settings.ChangeValueRangeSlider.ViewModel)
+	func displayGetMeasurementSystem(_ viewModel: Settings.GetMeasurementSystem.ViewModel)
 }
 
 // MARK: - Class
 final class SettingsViewController: UIViewController
 {
+	enum CellType: Int
+	{
+		case measurementSystem, forceRemovePin, rangeRadius, none
+	}
+
 	// MARK: ...Private properties
-	private var interactor: SettingsBusinessLogic?
+	private let interactor: SettingsBusinessLogic
 
 	// MARK: ...Cells
-	private lazy var measuringSystemCell =
-		SegmentedControlTableViewCell(actionChangeValue: actionChangeMeasuringSystem)
-	private lazy var sortingCell =
-		SegmentedControlTableViewCell(actionChangeValue: actionChangeSorting)
+	private var cells: [UITableViewCell] {
+		[measurementSystemCell, forceRemovePinCell, rangeRadiusCell]
+	}
+
+	private var headerTitles: [CellType: String] = [
+		.measurementSystem: "",
+		.forceRemovePin: "",
+		.rangeRadius: "",
+		.none: "",
+	]
+
+	private var footerTitles: [CellType: String] = [
+		.measurementSystem: "",
+		.forceRemovePin: "",
+		.rangeRadius: "",
+		.none: "",
+	]
+
+	private lazy var measurementSystemCell =
+		SegmentedControlTableViewCell(actionChangeValue: actionChangeMeasurementSystem)
 	private lazy var forceRemovePinCell =
 		SwitchTableViewCell(actionToggle: actionToggleForceRemovePin)
 	private lazy var rangeRadiusCell =
 		RangeSliderTableViewCell(actionChangeValue: actionChangeRangeRadius)
 
 	private lazy var tableView: UITableView = {
-		let tableView = UITableView()
+		let tableView = UITableView(frame: .zero, style: .grouped)
 		tableView.dataSource = self
-		tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 1))
 		return tableView
 	}()
 
@@ -60,14 +81,15 @@ final class SettingsViewController: UIViewController
 
 	// MARK: ...Setup
 	private func setup() {
-		title = "Settings"
+		title = tabBarItem.title
 
 		view.addSubview(tableView)
 
-		interactor?.getSegmentedControlItems(.init(typeItems: .measuringSystem))
-		interactor?.getSegmentedControlItems(.init(typeItems: .sorting))
-		interactor?.getSwitchState(.init(typeItems: .forceRemovePin))
-		interactor?.getRangeSliderValues(.init(typeItems: .minRangeOfRadius))
+		interactor.getSegmentedControlItems(.init(typeItems: .measurementSystem))
+		interactor.getSegmentedControlItems(.init(typeItems: .sorting))
+		interactor.getSwitchState(.init(typeItems: .forceRemovePin))
+		interactor.getRangeSliderValues(.init(typeItems: .minRangeOfRadius))
+		interactor.getMeasurementSystem(.init())
 
 		setupConstraints()
 	}
@@ -86,14 +108,12 @@ extension SettingsViewController: SettingsDisplayLogic
 {
 	func displaySegmentedControlItems(_ viewModel: Settings.SegmentedControl.ViewModel) {
 		switch viewModel.typeItems {
-		case .measuringSystem:
-			measuringSystemCell.title = viewModel.title
-			measuringSystemCell.setItems(viewModel.items)
-			measuringSystemCell.selectedSegmentIndex = viewModel.selectedItem
-		case .sorting:
-			sortingCell.title = viewModel.title
-			sortingCell.setItems(viewModel.items)
-			sortingCell.selectedSegmentIndex = viewModel.selectedItem
+		case .measurementSystem:
+			headerTitles[.measurementSystem] = viewModel.headerTitle
+			footerTitles[.measurementSystem] = viewModel.footerTitle
+			measurementSystemCell.title = viewModel.title
+			measurementSystemCell.setItems(viewModel.items)
+			measurementSystemCell.selectedSegmentIndex = viewModel.selectedItem
 		default: break
 		}
 	}
@@ -101,6 +121,8 @@ extension SettingsViewController: SettingsDisplayLogic
 	func displaySwitchState(_ viewModel: Settings.Switch.ViewModel) {
 		switch viewModel.typeItems {
 		case .forceRemovePin:
+			headerTitles[.forceRemovePin] = viewModel.headerTitle
+			footerTitles[.forceRemovePin] = viewModel.footerTitle
 			forceRemovePinCell.title = viewModel.title
 			forceRemovePinCell.isOn = viewModel.isOn
 		default: break
@@ -110,6 +132,8 @@ extension SettingsViewController: SettingsDisplayLogic
 	func displayRangeSliderValues(_ viewModel: Settings.RangeSlider.ViewModel) {
 		switch viewModel.typeItems {
 		case .minRangeOfRadius:
+			headerTitles[.rangeRadius] = viewModel.headerTitle
+			footerTitles[.rangeRadius] = viewModel.footerTitle
 			rangeRadiusCell.title = viewModel.title
 			rangeRadiusCell.minRange = viewModel.range
 			rangeRadiusCell.rangeValues = viewModel.rangeValues
@@ -118,51 +142,58 @@ extension SettingsViewController: SettingsDisplayLogic
 		}
 	}
 
-	func displayChangeValueSegmentedControl(_ viewModel: Settings.ChangeValueSegmentedControl.ViewModel) { }
+	func displayChangeValueSegmentedControl(_ viewModel: Settings.ChangeValueSegmentedControl.ViewModel) {
+		switch viewModel.typeItems {
+		case .measurementSystem: interactor.getMeasurementSystem(.init())
+		default: break
+		}
+	}
 
 	func displayChangeValueSwitch(_ viewModel: Settings.ChangeValueSwitch.ViewModel) { }
 
 	func displayChangeValueSlider(_ viewModel: Settings.ChangeValueRangeSlider.ViewModel) { }
+
+	func displayGetMeasurementSystem(_ viewModel: Settings.GetMeasurementSystem.ViewModel) {
+		rangeRadiusCell.sliderFactor = viewModel.measurementFactor
+		rangeRadiusCell.sliderValueSymbol = viewModel.measurementSymbol
+	}
 }
 
 // MARK: - Table view data source
 extension SettingsViewController: UITableViewDataSource
 {
-	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		4
-	}
+	func numberOfSections(in tableView: UITableView) -> Int { 3 }
+
+	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 1 }
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		switch indexPath.row {
-		case 0: return measuringSystemCell
-		case 1: return sortingCell
-		case 2: return forceRemovePinCell
-		case 3: return rangeRadiusCell
-		default: return UITableViewCell()
-		}
+		cells[indexPath.section]
+	}
+
+	func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+		headerTitles[CellType(rawValue: section) ?? .none]
+	}
+
+	func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+		footerTitles[CellType(rawValue: section) ?? .none]
 	}
 }
 
 // MARK: - Actions
 private extension SettingsViewController
 {
-	func actionChangeMeasuringSystem(_ value: String) {
-		let request = Settings.ChangeValueSegmentedControl.Request(value: value, typeItems: .measuringSystem)
-		interactor?.changeValueSegmentedControl(request)
-	}
-
-	func actionChangeSorting(_ value: String) {
-		let request = Settings.ChangeValueSegmentedControl.Request(value: value, typeItems: .sorting)
-		interactor?.changeValueSegmentedControl(request)
+	func actionChangeMeasurementSystem(_ value: String) {
+		let request = Settings.ChangeValueSegmentedControl.Request(value: value, typeItems: .measurementSystem)
+		interactor.changeValueSegmentedControl(request)
 	}
 
 	func actionToggleForceRemovePin(_ value: Bool) {
 		let request = Settings.ChangeValueSwitch.Request(value: value, typeItems: .forceRemovePin)
-		interactor?.changeValueSwitch(request)
+		interactor.changeValueSwitch(request)
 	}
 
 	func actionChangeRangeRadius(_ value: (lower: Double, upper: Double)) {
 		let request = Settings.ChangeValueRangeSlider.Request(values: value, typeItems: .lowerValueOfRadius)
-		interactor?.changeValueSlider(request)
+		interactor.changeValueSlider(request)
 	}
 }

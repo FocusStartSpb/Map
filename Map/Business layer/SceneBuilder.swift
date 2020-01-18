@@ -45,7 +45,7 @@ final class SceneBuilder
 		router.viewController = viewController
 		router.dataStore = interactor
 
-		viewController.tabBarItem = UITabBarItem(title: "Map", image: #imageLiteral(resourceName: "icons8-map-marker"), selectedImage: #imageLiteral(resourceName: "icons8-map-marker-fill"))
+		viewController.tabBarItem = UITabBarItem(title: "Карта", image: #imageLiteral(resourceName: "icons8-map-marker"), selectedImage: #imageLiteral(resourceName: "icons8-map-marker-fill"))
 
 		return viewController
 	}
@@ -70,7 +70,7 @@ final class SceneBuilder
 		presenter.viewController = viewController
 		router.viewController = viewController
 		router.dataStore = interactor
-		viewController.tabBarItem = UITabBarItem(title: "List", image: #imageLiteral(resourceName: "icons8-table-of-content"), selectedImage: #imageLiteral(resourceName: "icons8-table-of-content-fill"))
+		viewController.tabBarItem = UITabBarItem(title: "Список", image: #imageLiteral(resourceName: "icons8-table-of-content"), selectedImage: #imageLiteral(resourceName: "icons8-table-of-content-fill"))
 
 		return viewController
 	}
@@ -85,7 +85,7 @@ final class SceneBuilder
 		_ = UINavigationController(rootViewController: viewController)
 
 		presenter.viewController = viewController
-		viewController.tabBarItem = UITabBarItem(title: "Settings", image: #imageLiteral(resourceName: "icons8-settings"), selectedImage: #imageLiteral(resourceName: "icons8-settings-fill"))
+		viewController.tabBarItem = UITabBarItem(title: "Настройки", image: #imageLiteral(resourceName: "icons8-settings"), selectedImage: #imageLiteral(resourceName: "icons8-settings-fill"))
 
 		return viewController
 	}

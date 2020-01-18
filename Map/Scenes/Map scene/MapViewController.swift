@@ -112,8 +112,9 @@ final class MapViewController: UIViewController
 		// Send Requests
 		let updateSmartTargetsRequest = Map.UpdateAnnotations.Request(annotations: annotations)
 		interactor.updateAnnotations(updateSmartTargetsRequest)
-		interactor.getMeasuringSystem(.init())
+		interactor.measurementSystem(.init())
 		interactor.getRemovePinAlertSettings(.init())
+		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
 		let updateStatusRequest = Map.UpdateStatus.Request()
 		interactor.configureLocationService(request: updateStatusRequest)
 		removePinWithoutAlertRestricted = true
@@ -186,6 +187,7 @@ final class MapViewController: UIViewController
 	func addCurrentPointer(at coordinate: CLLocationCoordinate2D) {
 		guard let target = interactor.temptSmartTarget else { return }
 		let annotation = target.annotation
+		annotation.coordinate = coordinate
 		mapView.addAnnotation(annotation)
 		currentPointer = annotation
 	}
@@ -208,7 +210,7 @@ final class MapViewController: UIViewController
 
 		interactor.getRangeRadius(.init())
 		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
-		interactor.getMeasuringSystem(.init())
+		interactor.measurementSystem(.init())
 
 		view.addSubview(menu)
 		setupSmartTargetMenuConstraints()
