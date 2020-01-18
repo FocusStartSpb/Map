@@ -28,15 +28,25 @@ extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 {
 	func presentSaveSmartTargets(_ response: SmartTargetList.DeleteSmartTargets.Response) {
 		let didSave: Bool
+		let showAlertForceRemovePin: Bool
 		switch response.result {
 		case .success:
 			didSave = true
-		case .failure(let error):
+			showAlertForceRemovePin = false
+		case .failure:
 			didSave = false
-			print(error)
+			showAlertForceRemovePin = false
+		case .none:
+			didSave = false
+			showAlertForceRemovePin = true
 		}
-		let viewModel = SmartTargetList.DeleteSmartTargets.ViewModel(didDelete: didSave)
-		viewController?.displayDeleteSmartTargets(viewModel)
+		let viewModel =
+			SmartTargetList.DeleteSmartTargets.ViewModel(showAlertForceRemovePin: showAlertForceRemovePin,
+														 didDelete: didSave,
+														 removedIndexSet: response.removedIndexSet)
+		DispatchQueue.main.async { [weak self] in
+			self?.viewController?.displayDeleteSmartTargets(viewModel)
+		}
 	}
 
 	func presentUpdateSmartTargets(_ response: SmartTargetList.UpdateSmartTargets.Response) {
@@ -70,7 +80,9 @@ extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 		defer {
 			let viewModel = SmartTargetList.UpdateSmartTarget.ViewModel(needUpdate: needUpdate,
 																		updatedIndexSet: updateTargetIndexSet)
-			viewController?.updateEditedSmartTarget(viewModel)
+			DispatchQueue.main.async { [weak self] in
+				self?.viewController?.updateEditedSmartTarget(viewModel)
+			}
 		}
 
 		guard needUpdate else { return }

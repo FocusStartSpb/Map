@@ -5,6 +5,8 @@
 //  Created by Arkadiy Grigoryanc on 17.12.2019.
 //
 
+import Foundation
+
 // MARK: - SmartTargetListBusinessLogic protocol
 protocol SmartTargetListBusinessLogic
 {
@@ -22,13 +24,14 @@ protocol SmartTargetListDataStore
 	var smartTargetCollection: ISmartTargetCollection { get }
 	var editedSmartTarget: SmartTarget? { get set }
 	var didUpdateAllSmartTargets: Bool { get set }
+	var removedIndexSet: IndexSet? { get set }
 }
 
 // MARK: - Class
 final class SmartTargetListInteractor<T: ISmartTargetRepository>
 {
 	// MARK: ...Private properties
-	private var presenter: SmartTargetListPresentationLogic
+	private let presenter: SmartTargetListPresentationLogic
 	private let dataBaseWorker: DataBaseWorker<T>
 	private let settingsWorker: SettingsWorker
 
@@ -37,6 +40,7 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 	let smartTargetCollection: ISmartTargetCollection
 	var didUpdateAllSmartTargets = false
 	var editedSmartTarget: SmartTarget?
+	var removedIndexSet: IndexSet?
 
 	// MARK: ...Initialization
 	init(presenter: SmartTargetListPresentationLogic,
@@ -56,20 +60,38 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 {
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request) {
-		request.smartTargetsIndexSet.forEach { index in
-			let uuid = self.smartTargetCollection.smartTargets[Int(index)].uid
-			self.smartTargetCollection.remove(atUID: uuid)
+		if removedIndexSet != request.removedIndexSet,
+			settingsWorker.forceRemovePin ?? true {
+			let response =
+				SmartTargetList.DeleteSmartTargets.Response(showAlertForceRemovePin: true,
+															result: nil,
+															removedIndexSet: nil)
+			presenter.presentSaveSmartTargets(response)
+			removedIndexSet = request.removedIndexSet
+			request.completionHandler(false)
 		}
-		saveSmartTargetCollection()
+		else {
+			request.smartTargetsIndexSet.forEach { index in
+				let uuid = self.smartTargetCollection.smartTargets[Int(index)].uid
+				self.smartTargetCollection.remove(atUID: uuid)
+			}
+			saveSmartTargetCollection { [weak self] result in
+				let response =
+					SmartTargetList.DeleteSmartTargets.Response(showAlertForceRemovePin: false,
+																result: result,
+																removedIndexSet: request.removedIndexSet)
+				self?.presenter.presentSaveSmartTargets(response)
+				request.completionHandler(true)
+			}
+		}
 	}
 
-	private func saveSmartTargetCollection() {
+	private func saveSmartTargetCollection(completion: @escaping (SmartTargetsResult) -> Void) {
 		guard let collection = smartTargetCollection as? T.Element else { return }
 
-		worker.saveSmartTargets(collection) { [weak self] result in
+		dataBaseWorker.saveSmartTargets(collection) { result in
 			let result = result.map { $0 as? ISmartTargetCollection ?? SmartTargetCollection() }
-			let response = SmartTargetList.DeleteSmartTargets.Response(result: result)
-			self?.presenter.presentSaveSmartTargets(response)
+			completion(result)
 		}
 	}
 
@@ -92,11 +114,12 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 			let oldSmartTarget = self.smartTargetCollection[editedSmartTarget.uid] else { return }
 		let smartTargetIndex = smartTargetCollection.put(editedSmartTarget)
 		self.editedSmartTarget = nil
-		let response = SmartTargetList.UpdateSmartTarget.Response(editedSmartTarget: editedSmartTarget,
-																  oldSmartTarget: oldSmartTarget,
-																  editedSmartTargetIndex: smartTargetIndex)
-		self.saveSmartTargetCollection()
-		presenter.presentUpdateSmartTarget(response)
+		self.saveSmartTargetCollection { [weak self] _ in
+			let response = SmartTargetList.UpdateSmartTarget.Response(editedSmartTarget: editedSmartTarget,
+																	  oldSmartTarget: oldSmartTarget,
+																	  editedSmartTargetIndex: smartTargetIndex)
+			self?.presenter.presentUpdateSmartTarget(response)
+		}
 	}
 
 	func showEmptyView(_ request: SmartTargetList.ShowEmptyView.Request) {

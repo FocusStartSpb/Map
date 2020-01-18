@@ -63,6 +63,7 @@ final class SmartTargetListViewController: UIViewController
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		tabBarController?.delegate = self
+		interactor.removedIndexSet = nil
 	}
 
 	override func viewDidAppear(_ animated: Bool) {
@@ -116,6 +117,12 @@ final class SmartTargetListViewController: UIViewController
 extension SmartTargetListViewController: SmartTargetListDisplayLogic
 {
 	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel) {
+		if viewModel.didDelete, let indexSet = viewModel.removedIndexSet {
+			targetsTableView.deleteSections(indexSet, with: .fade)
+		}
+		else if viewModel.showAlertForceRemovePin {
+			Alerts.showDeletePinAlert(on: self) { }
+		}
 	}
 
 	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel) {
@@ -193,17 +200,10 @@ extension SmartTargetListViewController: UITableViewDelegate
 
 	func tableView(_ tableView: UITableView,
 				   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-		return UISwipeActionsConfiguration(actions: [
-			UIContextualAction(style:
-								.destructive,
-							   title: "Delete",
-							   handler: { (_, _, completion: @escaping (Bool) -> Void) in
-								let indexSet = IndexSet(arrayLiteral: indexPath.section)
-								self.interactor.deleteSmartTargets(SmartTargetList.DeleteSmartTargets.Request(smartTargetsIndexSet: indexSet))
-								tableView.deleteSections(indexSet, with: .fade)
-								completion(true)
-		}),
-		])
+		let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
+			self?.actionRemove(indexSet: [indexPath.section], completionHandler: completion)
+		}
+		return UISwipeActionsConfiguration(actions: [action])
 	}
 }
 
@@ -223,5 +223,16 @@ extension SmartTargetListViewController: UITabBarControllerDelegate
 			return false
 		}
 		return true
+	}
+}
+
+private extension SmartTargetListViewController
+{
+	func actionRemove(indexSet: IndexSet, completionHandler: @escaping (Bool) -> Void) {
+		let request =
+			SmartTargetList.DeleteSmartTargets.Request(smartTargetsIndexSet: indexSet,
+													   removedIndexSet: indexSet,
+													   completionHandler: completionHandler)
+		interactor.deleteSmartTargets(request)
 	}
 }

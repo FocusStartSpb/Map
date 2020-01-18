@@ -18,16 +18,22 @@ enum SmartTargetList
 		struct Request
 		{
 			let smartTargetsIndexSet: IndexSet
+			let removedIndexSet: IndexSet
+			let completionHandler: (Bool) -> Void
 		}
 
 		struct Response
 		{
-			let result: SmartTargetsResult
+			let showAlertForceRemovePin: Bool
+			let result: SmartTargetsResult?
+			let removedIndexSet: IndexSet?
 		}
 
 		struct ViewModel
 		{
+			let showAlertForceRemovePin: Bool
 			let didDelete: Bool
+			let removedIndexSet: IndexSet?
 		}
 	}
 
