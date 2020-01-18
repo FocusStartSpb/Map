@@ -47,6 +47,13 @@ final class DetailTargetViewController: UIViewController
 					self.editButton.setTitle(ButtonTitles.editButtonTitleEditableMode, for: .normal)
 					self.titleTextViewEditable()
 					self.mapViewEditable()
+					self.uneditableDetails.hide()
+					self.uneditableDetailsHeightAnchor?.isActive = false
+					self.uneditableDetailHeightAnchorEqualZero?.isActive = true
+					self.sliderAndEditableAddressZeroHeightAnchor?.isActive = false
+					self.sliderAndEditableAddressBottomAnchor?.isActive = true
+					self.sliderAndEditableAddress.show()
+					self.scrollView.layoutIfNeeded()
 				})
 			}
 			else {
@@ -64,6 +71,13 @@ final class DetailTargetViewController: UIViewController
 					self.titleTextViewNotEditable()
 					self.cancelButton.layoutIfNeeded()
 					self.editButton.layoutIfNeeded()
+					self.uneditableDetailHeightAnchorEqualZero?.isActive = false
+					self.uneditableDetailsHeightAnchor?.isActive = true
+					self.uneditableDetails.show()
+					self.sliderAndEditableAddress.hide()
+					self.sliderAndEditableAddressBottomAnchor?.isActive = false
+					self.sliderAndEditableAddressZeroHeightAnchor?.isActive = true
+					self.scrollView.layoutIfNeeded()
 				})
 			}
 		}
@@ -83,7 +97,6 @@ final class DetailTargetViewController: UIViewController
 	}()
 
 	private let scrollView = UIScrollView()
-	private let titleDescriptionLabel = UILabel()
 	private let titleTextView = UITextView()
 	private let dateOfCreationDescriptionLabel = UILabel()
 	private let dateOfCreationLabel = UILabel()
@@ -96,6 +109,14 @@ final class DetailTargetViewController: UIViewController
 	private let cancelButton = ButtonForDetailScreen(backgroundColor: .systemRed, frame: .zero)
 	private var cancelButtonWidthAnchorEqualZero: NSLayoutConstraint?
 	private var cancelButtonWidthAnchorIfEditModeEnabled: NSLayoutConstraint?
+	private let smartTargetAttendanceLabels = SmartTargetAttendanceLabels()
+	private let uneditableDetails = UneditableTargetsDetails()
+	private var uneditableDetailHeightAnchorEqualZero: NSLayoutConstraint?
+	private var uneditableDetailsHeightAnchor: NSLayoutConstraint?
+	private let sliderAndEditableAddress = SliderAndEditableAddressView()
+	private var sliderAndEditableAddressBottomAnchor: NSLayoutConstraint?
+	private var sliderAndEditableAddressZeroHeightAnchor: NSLayoutConstraint?
+	private let buttonsBar = ButtonsBar()
 
 	let impactFeedbackGenerator: UIImpactFeedbackGenerator = {
 		if #available(iOS 13.0, *) {
@@ -123,8 +144,10 @@ final class DetailTargetViewController: UIViewController
 	var addressText: String? {
 		get { addressLabel.text }
 		set {
+			sliderAndEditableAddress.setAddress(text: newValue)
 			addressLabel.text = newValue
 			newValue == nil ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
+			self.sliderAndEditableAddress.setAddress(text: newValue)
 		}
 	}
 
@@ -159,29 +182,30 @@ final class DetailTargetViewController: UIViewController
 		setupUI()
 		self.view.addGestureRecognizer(UITapGestureRecognizer(target: self,
 															  action: #selector(hideKeyboard)))
+		self.presenter.getAddressText(completion: { [weak self] in
+			self?.addressText = $0
+		})
 	}
 
 	// MARK: - Setup UI
 	private func setupUI() {
 		setupScrollView()
-		setupTitleDescriptionLabel()
 		setupTitleTextView()
-		setupDateOfCreationLabel()
-		setupAddresLabel()
+		setupUneditableDetails()
 		setupMapView()
-		setupEditButton()
-		setupCancelButton()
+		setupSliderAndEditableAddress()
 		checkUserInterfaceStyle()
 		setupShowPinButtonView()
-		setupActivityIndicator()
+		setupButtonsBar()
+//		setupActivityIndicator()
 		setupAnnotation()
 		setupOverlay()
 		setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: false)
 	}
 
-	@objc private func editButtonAction() {
-		UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+	private func editButtonAction() {
 		if self.editButton.currentTitle == ButtonTitles.editButtonTitleEditableMode {
+			UIImpactFeedbackGenerator(style: .medium).impactOccurred()
 			guard let smartTargetVC = self.navigationController?.viewControllers.first as? SmartTargetListViewController
 				else { return }
 			self.router.popDetail(to: smartTargetVC,
@@ -191,7 +215,7 @@ final class DetailTargetViewController: UIViewController
 		self.smartTargetEditable = true
 	}
 
-	@objc private func cancelButtonAction() {
+	private func cancelButtonAction() {
 		if let annotation = mapView
 			.annotations
 			.first(where: { $0 is SmartTargetAnnotation }) as? SmartTargetAnnotation {
@@ -259,20 +283,6 @@ extension DetailTargetViewController
 		])
 		self.scrollView.contentMode = .center
 	}
-	// MARK: - titleDescriptionLabel
-	private func setupTitleDescriptionLabel() {
-		self.titleDescriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-		self.scrollView.addSubview(titleDescriptionLabel)
-		NSLayoutConstraint.activate([
-			self.titleDescriptionLabel.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor),
-			self.titleDescriptionLabel.topAnchor.constraint(equalTo: self.scrollView.topAnchor,
-															constant: 10),
-			self.titleDescriptionLabel.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
-			self.titleDescriptionLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 20),
-		])
-		self.titleDescriptionLabel.font = UIFont.systemFont(ofSize: 20)
-		self.titleDescriptionLabel.textAlignment = .center
-	}
 	// MARK: - titleTextView
 	private func titleTextViewEditable() {
 		self.titleTextView.isUserInteractionEnabled = true
@@ -295,10 +305,10 @@ extension DetailTargetViewController
 		self.scrollView.addSubview(titleTextView)
 		titleTextView.translatesAutoresizingMaskIntoConstraints = false
 		NSLayoutConstraint.activate([
-			self.titleTextView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor),
-			self.titleTextView.topAnchor.constraint(equalTo: self.titleDescriptionLabel.bottomAnchor),
+			self.titleTextView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16),
+			self.titleTextView.topAnchor.constraint(equalTo: self.scrollView.topAnchor),
 			self.titleTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 20),
-			self.titleTextView.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
+			self.titleTextView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -16),
 		])
 		self.titleTextView.text = presenter.getTitleText()
 		self.titleTextView.isScrollEnabled = false
@@ -306,48 +316,12 @@ extension DetailTargetViewController
 		self.titleTextView.layer.cornerRadius = 10
 		titleTextViewNotEditable()
 	}
-	// MARK: - dateOfCreationLabel
-	private func setupDateOfCreationLabel() {
-		self.scrollView.addSubview(dateOfCreationLabel)
-		self.dateOfCreationLabel.translatesAutoresizingMaskIntoConstraints = false
-		NSLayoutConstraint.activate([
-			self.dateOfCreationLabel.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor),
-			self.dateOfCreationLabel.topAnchor.constraint(equalTo: self.titleTextView.bottomAnchor,
-														  constant: 20),
-			self.dateOfCreationLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 20),
-			self.dateOfCreationLabel.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
-		])
-		self.dateOfCreationLabel.text = presenter.getDateOfCreation()
-		self.dateOfCreationLabel.numberOfLines = 2
-		self.dateOfCreationLabel.font = FontForDetailScreen.timeOfCreationFont
-		self.dateOfCreationLabel.textAlignment = .center
-	}
-	// MARK: - addressLabel
-	private func setupAddresLabel() {
-		self.scrollView.addSubview(addressLabel)
-		self.addressLabel.translatesAutoresizingMaskIntoConstraints = false
-		NSLayoutConstraint.activate([
-			self.addressLabel.topAnchor.constraint(equalTo: self.dateOfCreationLabel.bottomAnchor,
-												   constant: 20),
-			self.addressLabel.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor),
-			self.addressLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 20),
-			self.addressLabel.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
-		])
-		self.addressLabel.numberOfLines = 0
-		self.addressLabel.font = FontForDetailScreen.addressLabelFont
-		self.addressLabel.textAlignment = .center
-		presenter.getAddressText {
-			self.addressLabel.text = $0
-			self.activityIndicator.stopAnimating()
-		}
-	}
-	// MARK: - mapView
+	// MARK: - mapViewEditableOrNotEditable
 	private func mapViewEditable() {
 		UIView.animate(withDuration: 0.2, animations: {
 			self.mapView.layer.cornerRadius = 30
 		})
 		self.mapView.isUserInteractionEnabled = true
-		//do something
 	}
 
 	private func mapViewNotEditable() {
@@ -355,13 +329,31 @@ extension DetailTargetViewController
 			self.mapView.layer.cornerRadius = 0
 		})
 		self.mapView.isUserInteractionEnabled = false
-		//do something
 	}
-
+	// MARK: - uneditableDetails
+	private func setupUneditableDetails() {
+		self.uneditableDetails.translatesAutoresizingMaskIntoConstraints = false
+		self.uneditableDetailHeightAnchorEqualZero = self.uneditableDetails.heightAnchor.constraint(equalToConstant: 0)
+		self.uneditableDetailsHeightAnchor = self.uneditableDetails.heightAnchor.constraint(greaterThanOrEqualToConstant: 100)
+		self.uneditableDetailsHeightAnchor?.isActive = true
+		self.scrollView.addSubview(self.uneditableDetails)
+		NSLayoutConstraint.activate([
+			self.uneditableDetails.topAnchor.constraint(equalTo: self.titleTextView.bottomAnchor),
+			self.uneditableDetails.leadingAnchor.constraint(equalTo: self.view.leadingAnchor,
+															constant: 16),
+			self.uneditableDetails.trailingAnchor.constraint(equalTo: self.view.trailingAnchor,
+															 constant: -16),
+		])
+		self.uneditableDetails.setDateOfCreationText(text: presenter.getDateOfCreation())
+		self.uneditableDetails.setInfoOfAttendance(numberOfVisits: self.presenter.totalNumberOfVisits,
+												   totalStay: self.presenter.totalStay,
+												   dateOfLastVisit: self.presenter.dateOfLastVisit)
+	}
+	// MARK: - setupMapView
 	private func setupMapView() {
 		self.scrollView.addSubview(mapView)
 		self.mapView.translatesAutoresizingMaskIntoConstraints = false
-		let topAnchor = self.mapView.topAnchor.constraint(equalTo: self.addressLabel.bottomAnchor,
+		let topAnchor = self.mapView.topAnchor.constraint(equalTo: self.uneditableDetails.bottomAnchor,
 														  constant: 20)
 		topAnchor.priority = .required
 		NSLayoutConstraint.activate([
@@ -372,46 +364,38 @@ extension DetailTargetViewController
 		])
 		self.mapViewNotEditable()
 	}
-	// MARK: ...EditButton
-	private func setupEditButton() {
-		self.editButton.translatesAutoresizingMaskIntoConstraints = false
-		self.scrollView.addSubview(editButton)
-		self.editButtonLeadingAnchorToCancelButton = self.editButton
-			.leadingAnchor.constraint(equalTo: self.cancelButton.trailingAnchor, constant: 15)
-		self.editButtonLeadingAnchorToScrollView = self.editButton
-			.leadingAnchor.constraint(equalTo: self.mapView.leadingAnchor)
-		self.editButtonLeadingAnchorToScrollView?.isActive = true
+	// MARK: - setupSliderAndEditableAddress
+	private func setupSliderAndEditableAddress() {
+		self.scrollView.addSubview(sliderAndEditableAddress)
+		self.sliderAndEditableAddress.translatesAutoresizingMaskIntoConstraints = false
+		self.sliderAndEditableAddressZeroHeightAnchor =
+			self.sliderAndEditableAddress.heightAnchor.constraint(equalToConstant: 0)
+		self.sliderAndEditableAddressBottomAnchor =
+			self.sliderAndEditableAddress.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor, constant: -80)
+		self.sliderAndEditableAddressZeroHeightAnchor?.isActive = true
 		NSLayoutConstraint.activate([
-			self.editButton.topAnchor.constraint(equalTo: self.mapView.bottomAnchor, constant: 10),
-			self.editButton.heightAnchor.constraint(equalToConstant: 50),
-			//			self.editButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 130),
-			self.editButton.trailingAnchor.constraint(equalTo: self.mapView.trailingAnchor),
-			self.editButton.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor,
-													constant: -15),
+			self.sliderAndEditableAddress.leadingAnchor.constraint(equalTo: self.view.leadingAnchor,
+																   constant: 16),
+			self.sliderAndEditableAddress.trailingAnchor.constraint(equalTo: self.view.trailingAnchor,
+																	constant: -16),
+			self.sliderAndEditableAddress.topAnchor.constraint(equalTo: self.mapView.bottomAnchor,
+															   constant: 16),
 		])
-		self.editButton.setTitle(ButtonTitles.editButtonTitleDefault, for: .normal)
-		self.editButton.addTarget(self, action: #selector(editButtonAction), for: .touchUpInside)
 	}
-	// MARK: ...CancelButton
-	private func setupCancelButton() {
-		self.cancelButton.translatesAutoresizingMaskIntoConstraints = false
-		self.scrollView.addSubview(cancelButton)
-		self.cancelButtonWidthAnchorEqualZero = self.cancelButton.widthAnchor.constraint(equalToConstant: 0)
-		self.cancelButtonWidthAnchorEqualZero?.isActive = true
-		self.cancelButtonWidthAnchorIfEditModeEnabled = self.cancelButton
-			.widthAnchor.constraint(equalTo: self.editButton.widthAnchor, multiplier: 2 / 3)
+	// MARK: - setupButtonsBar
+	private func setupButtonsBar() {
+		self.view.addSubview(buttonsBar)
+		self.buttonsBar.translatesAutoresizingMaskIntoConstraints = false
 		NSLayoutConstraint.activate([
-			self.cancelButton.topAnchor.constraint(equalTo: self.mapView.bottomAnchor, constant: 10),
-			self.cancelButton.heightAnchor.constraint(equalToConstant: 50),
-			self.cancelButton.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor,
-													   constant: 15),
-			self.cancelButton.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor,
-													  constant: -15),
+			self.buttonsBar.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+			self.buttonsBar.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+			self.buttonsBar.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+			self.buttonsBar.heightAnchor.constraint(equalToConstant: 80),
 		])
-		self.cancelButton.setTitle(ButtonTitles.cancelButtonTitle, for: .normal)
-		self.cancelButton.addTarget(self, action: #selector(cancelButtonAction), for: .touchUpInside)
+		self.buttonsBar.addActionFromCancelButton { self.cancelButtonAction() }
+		self.buttonsBar.addActionFromEditButton { self.editButtonAction() }
 	}
-
+	// MARK: - setupShowPinButtonView
 	private func setupShowPinButtonView() {
 		self.showPinButtonView.translatesAutoresizingMaskIntoConstraints = false
 		self.scrollView.addSubview(showPinButtonView)
@@ -422,7 +406,7 @@ extension DetailTargetViewController
 			self.showPinButtonView.widthAnchor.constraint(equalToConstant: 40),
 		])
 	}
-
+	// MARK: - setupActivityIndicator
 	private func setupActivityIndicator() {
 		self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 		self.scrollView.addSubview(activityIndicator)
