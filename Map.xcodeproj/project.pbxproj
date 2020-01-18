@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		029A19DE23CB7CAD00A4535B /* Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029A19DD23CB7CAD00A4535B /* Alerts.swift */; };
+		3A431E0B23D07DC800608127 /* EmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A431E0A23D07DC800608127 /* EmptyView.swift */; };
 		3A4337AD23C3646B00700935 /* DetailTargetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */; };
 		3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B023C364A300700935 /* DetailTargetRouter.swift */; };
 		3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B223C364B900700935 /* DetailTargetViewController.swift */; };
@@ -81,6 +82,7 @@
 
 /* Begin PBXFileReference section */
 		029A19DD23CB7CAD00A4535B /* Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alerts.swift; sourceTree = "<group>"; };
+		3A431E0A23D07DC800608127 /* EmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyView.swift; sourceTree = "<group>"; };
 		3A4337AC23C3646B00700935 /* DetailTargetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetPresenter.swift; sourceTree = "<group>"; };
 		3A4337B023C364A300700935 /* DetailTargetRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetRouter.swift; sourceTree = "<group>"; };
 		3A4337B223C364B900700935 /* DetailTargetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetViewController.swift; sourceTree = "<group>"; };
@@ -284,6 +286,7 @@
 				584EE5DC23A834D60013087A /* SmartTargetListPresenter.swift */,
 				584EE5DE23A834D60013087A /* SmartTargetListRouter.swift */,
 				584EE5DF23A834D60013087A /* SmartTargetListModels.swift */,
+				3A431E0A23D07DC800608127 /* EmptyView.swift */,
 				3AC8713223C3914000B06657 /* Detail target scene */,
 				3ABCDC9123B7B71B0050F4B2 /* Cell */,
 			);
@@ -534,6 +537,7 @@
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
 				585AC9A123D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift in Sources */,
 				58EEE41B23C4404300CE9229 /* UIViewController+Extension.swift in Sources */,
+				3A431E0B23D07DC800608127 /* EmptyView.swift in Sources */,
 				3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */,
 				582ED16D23AE8458001AD44E /* Decodable+Initialization.swift in Sources */,
 				58454F2F23BE875C00EE0D71 /* Identity.swift in Sources */,

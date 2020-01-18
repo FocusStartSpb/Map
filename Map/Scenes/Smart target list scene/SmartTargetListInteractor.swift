@@ -11,6 +11,7 @@ protocol SmartTargetListBusinessLogic
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request)
 	func updateSmartTargets(_ request: SmartTargetList.UpdateSmartTargets.Request)
 	func updateSmartTarget(_ request: SmartTargetList.UpdateSmartTarget.Request)
+	func showEmptyView(_ request: SmartTargetList.ShowEmptyView.Request)
 }
 
 // MARK: - SmartTargetListDataStore protocol
@@ -93,6 +94,11 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 																  editedSmartTargetIndex: smartTargetIndex)
 		self.saveSmartTargetCollection()
 		presenter.presentUpdateSmartTarget(response)
+	}
+
+	func showEmptyView(_ request: SmartTargetList.ShowEmptyView.Request) {
+		let response = SmartTargetList.ShowEmptyView.Response(showEmptyView: (self.smartTargetsCount == 0))
+		presenter.presentEmptyView(response)
 	}
 }
 
