@@ -13,6 +13,7 @@ protocol SmartTargetListPresentationLogic
 	func presentSaveSmartTargets(_ response: SmartTargetList.DeleteSmartTargets.Response)
 	func presentUpdateSmartTargets(_ response: SmartTargetList.UpdateSmartTargets.Response)
 	func presentUpdateSmartTarget(_ response: SmartTargetList.UpdateSmartTarget.Response)
+	func presentEmptyView(_ response: SmartTargetList.ShowEmptyView.Response)
 }
 
 // MARK: - Class
@@ -74,5 +75,10 @@ extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 
 		guard needUpdate else { return }
 		updateTargetIndexSet = IndexSet(integer: response.editedSmartTargetIndex)
+	}
+
+	func presentEmptyView(_ response: SmartTargetList.ShowEmptyView.Response) {
+		let viewModel = SmartTargetList.ShowEmptyView.ViewModel(showEmptyView: response.showEmptyView)
+		viewController?.showEmptyView(viewModel)
 	}
 }
