@@ -9,8 +9,8 @@ import UIKit
 
 protocol IButtonBar
 {
-	func addActionFromCancelButton(action: @escaping TapAction)
-	func addActionFromEditButton(action: @escaping TapAction)
+	func addActionForCancelButton(action: @escaping TapAction)
+	func addActionForEditButton(action: @escaping TapAction)
 }
 
 final class ButtonsBar: UIView
@@ -74,7 +74,7 @@ final class ButtonsBar: UIView
 			self.editOrSaveButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16)
 		self.editOrSaveButtonLeadingToCancelButton =
 			self.editOrSaveButton.leadingAnchor.constraint(equalTo: self.cancelButton.trailingAnchor,
-		constant: 15)
+		constant: 16)
 		self.editOrSaveButtonLeadingToView?.isActive = true
 		NSLayoutConstraint.activate([
 			self.cancelButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
@@ -121,11 +121,11 @@ final class ButtonsBar: UIView
 
 extension ButtonsBar: IButtonBar
 {
-	func addActionFromCancelButton(action: @escaping TapAction) {
+	func addActionForCancelButton(action: @escaping TapAction) {
 		self.cancelButtonTap = action
 	}
 
-	func addActionFromEditButton(action: @escaping TapAction) {
+	func addActionForEditButton(action: @escaping TapAction) {
 		self.editOrSaveButtonTap = action
 	}
 }

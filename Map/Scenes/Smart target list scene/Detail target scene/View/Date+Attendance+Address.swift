@@ -9,7 +9,7 @@ import UIKit
 
 protocol IUnedatableTargetsDetails
 {
-	func setDateOfCreationText(text: String)
+	func setDateOfCreationText(_ text: String)
 	func setAddress(text: String?)
 	func setInfoOfAttendance(numberOfVisits: String, totalStay: String, dateOfLastVisit: String)
 	func hide()
@@ -71,7 +71,7 @@ final class UneditableTargetsDetails: UIView
 
 extension UneditableTargetsDetails: IUnedatableTargetsDetails
 {
-	func setDateOfCreationText(text: String) {
+	func setDateOfCreationText(_ text: String) {
 		self.dateOfCreationLabel.text = text
 	}
 
@@ -96,6 +96,7 @@ extension UneditableTargetsDetails: IUnedatableTargetsDetails
 	}
 
 	func hideAttendanceView() {
+		self.heightAnchorAttendanceView?.isActive = false
 		self.heighAttendanceViewEqualZero?.isActive = true
 		self.attendanceView.hide()
 	}

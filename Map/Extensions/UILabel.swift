@@ -9,10 +9,10 @@ import UIKit
 
 extension UILabel
 {
-	func setTextAnimation(string: String) {
+	func setTextAnimation(_ text: String) {
 		var newText = ""
 		UIView.transition(with: self, duration: 1, options: .transitionCrossDissolve, animations: {
-			string.forEach{
+			text.forEach {
 				newText += "\($0)"
 				self.text = newText
 			}

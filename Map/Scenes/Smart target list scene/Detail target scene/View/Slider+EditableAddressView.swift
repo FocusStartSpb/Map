@@ -11,10 +11,10 @@ protocol ISliderAndEditableAddressView
 {
 	func hide()
 	func show()
-	func setAddress(text: String?)
 	func addActionForSlider(action: @escaping SliderAndEditableAddressView.SliderAction)
 
 	var sliderValue: Float { get set }
+	var address: String { get set }
 }
 
 final class SliderAndEditableAddressView: UIView
@@ -29,11 +29,14 @@ final class SliderAndEditableAddressView: UIView
 		slider.addTarget(self, action: #selector(actionSliderValueChanged), for: .valueChanged)
 		return slider
 	}()
+
+	private let backgroundColorBelow13Ios = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
+	private let backgroundColorHigher13Ios = UIColor.systemGray
+
 	private var sliderValueLabelWidth: NSLayoutConstraint?
 	private var sliderValueLabelWidthEqualZero: NSLayoutConstraint?
 	private let sliderValueLabel: UILabel = {
 		let label = UILabel()
-		label.minimumScaleFactor = 0.01
 		label.adjustsFontSizeToFitWidth = true
 		label.contentMode = .center
 		label.textAlignment = .left
@@ -62,14 +65,6 @@ final class SliderAndEditableAddressView: UIView
 		}
 	}
 
-	var sliderValue: Float {
-		get { radiusSlider.value }
-		set {
-			radiusSlider.value = newValue
-			updateSliderLabel()
-		}
-	}
-
 	convenience init(title: String,
 					 sliderValuesRange: (min: Double, max: Double),
 					 sliderFactor: Double,
@@ -93,16 +88,7 @@ final class SliderAndEditableAddressView: UIView
 		fatalError("init(coder:) has not been implemented")
 	}
 
-	private func setupUI() {
-		if #available(iOS 13.0, *) {
-			self.backgroundColor = .systemGray
-		}
-		else {
-			self.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
-		}
-		self.addSubview(sliderValueLabel)
-		self.addSubview(radiusSlider)
-		self.addSubview(editableAddressLabel)
+	private func setupConstraints() {
 		self.radiusSlider.translatesAutoresizingMaskIntoConstraints = false
 		self.editableAddressLabel.translatesAutoresizingMaskIntoConstraints = false
 		self.sliderValueLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -114,17 +100,12 @@ final class SliderAndEditableAddressView: UIView
 			self.sliderValueLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
 			self.sliderValueLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
 			//slider
-			self.radiusSlider.leadingAnchor.constraint(equalTo: self.leadingAnchor,
-													   constant: 16),
-			self.radiusSlider.topAnchor.constraint(equalTo: self.topAnchor,
-												   constant: 16),
+			self.radiusSlider.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+			self.radiusSlider.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
 			//editableAddressLabel
-			self.editableAddressLabel.topAnchor.constraint(equalTo: self.radiusSlider.bottomAnchor,
-														   constant: 8),
-			self.editableAddressLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor,
-															   constant: 16),
-			self.editableAddressLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor,
-																constant: -16),
+			self.editableAddressLabel.topAnchor.constraint(equalTo: self.radiusSlider.bottomAnchor, constant: 8),
+			self.editableAddressLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+			self.editableAddressLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
 		])
 		self.addressLabelHeightAnchorEqualZero = self.editableAddressLabel.heightAnchor.constraint(equalToConstant: 0)
 		self.addressLabelHeightAnchor =
@@ -134,9 +115,24 @@ final class SliderAndEditableAddressView: UIView
 		self.sliderWidthAnchor?.isActive = true
 		self.sliderTrailingAnchor =
 			self.radiusSlider.trailingAnchor.constraint(equalTo: self.sliderValueLabel.leadingAnchor,
-		constant: -8)
+														constant: -8)
 		self.addressLabelBottomAnchor =
 			self.editableAddressLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -16)
+	}
+
+	private func setupUI() {
+		if #available(iOS 13.0, *) {
+			self.backgroundColor = self.backgroundColorHigher13Ios
+		}
+		else {
+			self.backgroundColor = self.backgroundColorBelow13Ios
+		}
+		self.layer.cornerRadius = 12
+		self.alpha = 0.85
+		self.addSubview(sliderValueLabel)
+		self.addSubview(radiusSlider)
+		self.addSubview(editableAddressLabel)
+		setupConstraints()
 		self.radiusSlider.alpha = 0
 		self.editableAddressLabel.numberOfLines = 0
 		self.editableAddressLabel.textAlignment = .center
@@ -156,11 +152,27 @@ final class SliderAndEditableAddressView: UIView
 
 extension SliderAndEditableAddressView: ISliderAndEditableAddressView
 {
+	var address: String {
+		get { self.editableAddressLabel.text ?? "" }
+		set {
+			self.editableAddressLabel.setTextAnimation(newValue)
+		}
+	}
+
+	var sliderValue: Float {
+		get { radiusSlider.value }
+		set {
+			radiusSlider.value = newValue
+			updateSliderLabel()
+		}
+	}
+
 	func hide() {
 		self.addressLabelHeightAnchor?.isActive = false
 		self.addressLabelHeightAnchorEqualZero?.isActive = true
-		self.sliderTrailingAnchor?.isActive = false
 		self.addressLabelBottomAnchor?.isActive = false
+		self.editableAddressLabel.layoutIfNeeded()
+		self.sliderTrailingAnchor?.isActive = false
 		self.sliderWidthAnchor?.isActive = true
 		self.sliderValueLabelWidth?.isActive = false
 		self.sliderValueLabelWidthEqualZero?.isActive = true
@@ -171,21 +183,12 @@ extension SliderAndEditableAddressView: ISliderAndEditableAddressView
 		self.addressLabelHeightAnchorEqualZero?.isActive = false
 		self.addressLabelBottomAnchor?.isActive = true
 		self.addressLabelHeightAnchor?.isActive = true
+		self.editableAddressLabel.layoutIfNeeded()
 		self.sliderWidthAnchor?.isActive = false
 		self.sliderValueLabelWidthEqualZero?.isActive = false
 		self.sliderValueLabelWidth?.isActive = true
 		self.sliderTrailingAnchor?.isActive = true
 		self.radiusSlider.alpha = 1
-	}
-
-	func setAddress(text: String?) {
-		guard let text = text else { return }
-		self.editableAddressLabel.setTextAnimation(string: text)
-	}
-
-	func getAddress() -> String {
-		guard let text = self.editableAddressLabel.text else { return "" }
-		return text
 	}
 
 	func addActionForSlider(action: @escaping SliderAndEditableAddressView.SliderAction) {
