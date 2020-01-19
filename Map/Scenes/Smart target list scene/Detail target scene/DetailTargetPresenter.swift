@@ -11,6 +11,9 @@ protocol IDetailTargetPresenter
 {
 	var editRadius: CLLocationDegrees { get set }
 	var editCoordinate: CLLocationCoordinate2D { get set }
+	var totalNumberOfVisits: String { get }
+	var totalStay: String { get }
+	var dateOfLastVisit: String { get }
 
 	func setupInitialData()
 
@@ -50,6 +53,20 @@ final class DetailTargetPresenter<G: IDecoderGeocoder>
 // MARK: - IDetailTargetInteractor
 extension DetailTargetPresenter: IDetailTargetPresenter
 {
+	var totalNumberOfVisits: String {
+		return "\(self.smartTarget.numberOfVisits)"
+	}
+
+	var totalStay: String {
+		return "\(self.smartTarget.timeInside)"
+	}
+
+	var dateOfLastVisit: String {
+		guard let exitDate = smartTarget.exitDate else { return "" }
+		let formatter = DateFormatter.full
+		let dateString = formatter.string(from: exitDate)
+		return dateString
+	}
 
 	func setupInitialData() {
 		editRadius = smartTarget.radius ?? editRadius
