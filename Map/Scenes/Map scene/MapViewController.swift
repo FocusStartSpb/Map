@@ -44,9 +44,9 @@ final class MapViewController: UIViewController
 	// Tempt overlay
 	private(set) var temptCircle: MKCircle?
 
-	private lazy var saveAction = MenuAction(title: "Save", style: .default, handler: actionSave)
-	private lazy var removeAction = MenuAction(title: "Remove", style: .destructive, handler: actionRemove)
-	private(set) lazy var cancelAction = MenuAction(title: "Cancel", style: .cancel, handler: actionChooseActionForPin)
+	private lazy var saveAction = MenuAction(title: "Сохранить", style: .default, handler: actionSave)
+	private lazy var removeAction = MenuAction(title: "Удалить", style: .destructive, handler: actionRemove)
+	private(set) lazy var cancelAction = MenuAction(title: "Отмена", style: .cancel, handler: actionChooseActionForPin)
 
 	// Editing properties
 	var mode: Mode = .none
