@@ -48,26 +48,29 @@ enum Constants
 		static let mapButton: CGFloat = 20
 	}
 
-	enum Generator
+	enum CircularMapOverlay
 	{
-		static let impactFeedbackGenerator: UIImpactFeedbackGenerator = {
+		static let fillColorForUserInside = UIColor.systemBlue.withAlphaComponent(0.5)
+		static let fillColorForUserOutside: UIColor = {
 			if #available(iOS 13.0, *) {
-				return UIImpactFeedbackGenerator(style: .soft)
+				return UIColor.systemBackground.withAlphaComponent(0.5)
 			}
 			else {
-				return UIImpactFeedbackGenerator(style: .light)
+				return UIColor.white.withAlphaComponent(0.5)
 			}
 		}()
+		static let strokeColor: UIColor = .systemBlue
+		static let lineWidth: CGFloat = 1
 	}
 
-	enum DetailScreenColors
+	enum ImpactFeedbackGeneratorStyle
 	{
-		static let colorForSliderAndEditableAddresView: UIColor = {
+		static let dropPin: UIImpactFeedbackGenerator.FeedbackStyle = {
 			if #available(iOS 13.0, *) {
-				return .systemGray
+				return .soft
 			}
 			else {
-				return #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
+				return .light
 			}
 		}()
 	}

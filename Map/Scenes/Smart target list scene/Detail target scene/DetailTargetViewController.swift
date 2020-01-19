@@ -60,8 +60,6 @@ final class DetailTargetViewController: UIViewController
 
 	private let scrollView = UIScrollView()
 	private let titleTextView = UITextView()
-	private let dateOfCreationDescriptionLabel = UILabel()
-	private let dateOfCreationLabel = UILabel()
 	private let smartTargetAttendanceLabels = SmartTargetAttendanceLabels()
 	private let uneditableDetails = UneditableTargetsDetails()
 	private var uneditableDetailHeightAnchorEqualZero: NSLayoutConstraint?
@@ -73,6 +71,17 @@ final class DetailTargetViewController: UIViewController
 	private var mapViewHeightAnchor: NSLayoutConstraint?
 	private var mapViewHeightAnchorEditMode: NSLayoutConstraint?
 	private var smartTargetEditable = false
+	private let addresDescriptionLabel = UILabel()
+	private let addressLabel = UILabel()
+	private let editButton = ButtonForDetailScreen(backgroundColor: .systemBlue, frame: .zero)
+	private var editButtonWidthAnchor: NSLayoutConstraint?
+	private var editButtonLeadingAnchorToScrollView: NSLayoutConstraint?
+	private var editButtonLeadingAnchorToCancelButton: NSLayoutConstraint?
+	private let cancelButton = ButtonForDetailScreen(backgroundColor: .systemRed, frame: .zero)
+	private var cancelButtonWidthAnchorEqualZero: NSLayoutConstraint?
+	private var cancelButtonWidthAnchorIfEditModeEnabled: NSLayoutConstraint?
+
+	let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin)
 	private lazy var showPinButtonView = ButtonView(type: .add, tapAction: actionShowPin)
 
 	private let activityIndicator: UIActivityIndicatorView = {
@@ -153,7 +162,7 @@ final class DetailTargetViewController: UIViewController
 
 	private func editButtonAction() {
 		if self.smartTargetEditable == true {
-			Constants.Generator.impactFeedbackGenerator.impactOccurred()
+			UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin).impactOccurred()
 			guard let smartTargetVC = self.navigationController?.viewControllers.first as? SmartTargetListViewController
 				else { return }
 			self.router.popDetail(to: smartTargetVC,

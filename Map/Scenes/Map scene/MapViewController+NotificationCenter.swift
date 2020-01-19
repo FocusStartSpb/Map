@@ -45,6 +45,8 @@ extension MapViewController
 @objc private extension MapViewController
 {
 	func keyboardWillAppear(notification: NSNotification?) {
+		guard keyboardIsVisible == false else { return }
+		keyboardIsVisible = true
 		willTranslateKeyboard = true
 		guard let keyboardFrame = notification?.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
 			return
@@ -56,6 +58,8 @@ extension MapViewController
 	}
 
 	func keyboardWillDisappear(notification: NSNotification?) {
+		guard keyboardIsVisible else { return }
+		keyboardIsVisible = false
 		willTranslateKeyboard = true
 		let tabBarHeight = tabBarIsVisible ? 0 : tabBarController?.tabBar.frame.height ?? 0
 		animateMapViewFrame(withBottomOffset: 0, layoutIfNeeded: false)

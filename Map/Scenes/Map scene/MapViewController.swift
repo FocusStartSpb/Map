@@ -20,14 +20,7 @@ final class MapViewController: UIViewController
 	var router: MapRoutingLogic & MapDataPassing
 
 	// UI elements
-	let impactFeedbackGenerator: UIImpactFeedbackGenerator = {
-		if #available(iOS 13.0, *) {
-			return UIImpactFeedbackGenerator(style: .soft)
-		}
-		else {
-			return UIImpactFeedbackGenerator(style: .light)
-		}
-	}()
+	let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin)
 
 	private(set) lazy var mapView: MKMapView = {
 		let mapView = MKMapView()
@@ -70,6 +63,7 @@ final class MapViewController: UIViewController
 
 	var willTranslateKeyboard = false
 	var isObservableToKeyboard = false
+	var keyboardIsVisible = false
 
 	// Calculated properties
 	var annotations: [SmartTargetAnnotation] {

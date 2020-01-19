@@ -21,18 +21,10 @@ extension DetailTargetViewController
 		mapView.addOverlay(overlay)
 	}
 
-	func setSmartTargetRegion(coordinate: CLLocationCoordinate2D,
-							  camera: MKMapCamera? = nil,
-							  animated: Bool) {
-		if let camera = camera {
-			camera.centerCoordinate = coordinate
-			mapView.setCamera(camera, animated: animated)
-		}
-		else {
-			let radius = presenter.editRadius * 4
-			let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: radius, longitudinalMeters: radius)
-			mapView.setRegion(region, animated: animated)
-		}
+	func setSmartTargetRegion(coordinate: CLLocationCoordinate2D, animated: Bool) {
+		let radius = presenter.editRadius * 4
+		let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: radius, longitudinalMeters: radius)
+		mapView.setRegion(region, animated: animated)
 	}
 }
 
@@ -82,14 +74,14 @@ extension DetailTargetViewController: MKMapViewDelegate
 			 (.dragging, .canceling), // 2 - 3
 			 (.starting, .canceling), // 1 - 3
 			 (.starting, .ending): // 1 - 4
-			Constants.Generator.impactFeedbackGenerator.prepare()
+			UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin).prepare()
 			presenter.editCoordinate = view.annotation?.coordinate ?? presenter.editCoordinate
 		case (.canceling, .none): // 3 - 0
-			Constants.Generator.impactFeedbackGenerator.impactOccurred()
+			UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin).impactOccurred()
 			setupOverlay()
 		case (.ending, .none): // 4 - 0
-			Constants.Generator.impactFeedbackGenerator.impactOccurred()
-			setSmartTargetRegion(coordinate: presenter.editCoordinate, camera: mapView.camera, animated: true)
+			impactFeedbackGenerator.impactOccurred()
+			mapView.setCenter(presenter.editCoordinate, animated: true)
 			presenter.getAddressText { self.addressText = $0 }
 			setupOverlay()
 		default: break

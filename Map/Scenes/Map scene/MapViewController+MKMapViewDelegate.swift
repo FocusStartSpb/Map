@@ -19,6 +19,17 @@ extension MapViewController
 		let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: radius * 4, longitudinalMeters: radius * 4)
 		mapView.setRegion(region, animated: animated)
 	}
+
+	func colorCircle(_ circle: MKOverlay, renderer: MKCircleRenderer? = nil) {
+		let region = CLCircularRegion(center: circle.coordinate, radius: circleRadius, identifier: "")
+		let renderer = renderer ?? mapView.renderer(for: circle) as? MKCircleRenderer
+		if mapView.showsUserLocation, region.contains(mapView.userLocation.coordinate) {
+			renderer?.fillColor = Constants.CircularMapOverlay.fillColorForUserInside
+		}
+		else {
+			renderer?.fillColor = Constants.CircularMapOverlay.fillColorForUserOutside
+		}
+	}
 }
 
 // MARK: - Animations
@@ -180,14 +191,9 @@ extension MapViewController: MKMapViewDelegate
 
 	func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
 		let renderer = MKCircleRenderer(overlay: overlay)
-		if #available(iOS 13.0, *) {
-			renderer.fillColor = UIColor.systemBackground.withAlphaComponent(0.5)
-		}
-		else {
-			renderer.fillColor = UIColor.black.withAlphaComponent(0.5)
-		}
-		renderer.strokeColor = .systemBlue
-		renderer.lineWidth = 1
+		colorCircle(overlay, renderer: renderer)
+		renderer.strokeColor = Constants.CircularMapOverlay.strokeColor
+		renderer.lineWidth = Constants.CircularMapOverlay.lineWidth
 		return renderer
 	}
 
@@ -236,5 +242,10 @@ extension MapViewController: MKMapViewDelegate
 		if isEditSmartTarget == false, view.annotation !== currentPointer {
 			removeTemptCircle()
 		}
+	}
+
+	func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
+		guard let circle = temptCircle else { return }
+		colorCircle(circle)
 	}
 }
