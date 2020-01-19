@@ -52,6 +52,9 @@ extension MapViewController: MapDisplayLogic
 		}
 		mapView.showsUserLocation = viewModel.isShownUserPosition
 		currentLocationButton.isHidden = (viewModel.isShownUserPosition == false)
+		if let circle = temptCircle {
+			colorCircle(circle)
+		}
 	}
 
 	func displayAddress(_ viewModel: Map.Address.ViewModel) {

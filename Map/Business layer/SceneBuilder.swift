@@ -57,9 +57,11 @@ final class SceneBuilder
 		-> SmartTargetListViewController where T.Element: ISmartTargetCollection {
 
 		let presenter = SmartTargetListPresenter()
-		let worker = DataBaseWorker(repository: repository)
+		let dataBaseWorker = DataBaseWorker(repository: repository)
+		let settingsWorker = SettingsWorker()
 		let interactor = SmartTargetListInteractor(presenter: presenter,
-												   worker: worker,
+												   dataBaseWorker: dataBaseWorker,
+												   settingsWorker: settingsWorker,
 												   collection: collection,
 												   oldCollection: temptCollection)
 		let router = SmartTargetListRouter(factory: self)
