@@ -113,7 +113,17 @@ final class DetailTargetViewController: UIViewController
 	private let uneditableDetails = UneditableTargetsDetails()
 	private var uneditableDetailHeightAnchorEqualZero: NSLayoutConstraint?
 	private var uneditableDetailsHeightAnchor: NSLayoutConstraint?
-	private let sliderAndEditableAddress = SliderAndEditableAddressView()
+	private lazy var sliderAndEditableAddress: SliderAndEditableAddressView = {
+		let measurementSystem = presenter.getMeasurementSystem()
+		let sliderValuesRange = presenter.getSliderValuesRange()
+		let view = SliderAndEditableAddressView(title: "",
+												sliderValuesRange: sliderValuesRange,
+												sliderFactor: measurementSystem.factor,
+												sliderValueMeasurementSymbol: measurementSystem.symbol,
+												sliderValue: presenter.getRadius())
+		view.addActionForSlider(action: actionSliderDidChange)
+		return view
+	}()
 	private var sliderAndEditableAddressBottomAnchor: NSLayoutConstraint?
 	private var sliderAndEditableAddressZeroHeightAnchor: NSLayoutConstraint?
 	private let buttonsBar = ButtonsBar()
@@ -148,6 +158,13 @@ final class DetailTargetViewController: UIViewController
 			addressLabel.text = newValue
 			newValue == nil ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
 			self.sliderAndEditableAddress.setAddress(text: newValue)
+		}
+	}
+
+	var radius: Double {
+		get { Double(sliderAndEditableAddress.sliderValue) }
+		set {
+			sliderAndEditableAddress.sliderValue = Float(newValue)
 		}
 	}
 
@@ -213,6 +230,7 @@ final class DetailTargetViewController: UIViewController
 																	 address: addressText))
 		}
 		self.smartTargetEditable = true
+		self.sliderAndEditableAddress.sliderValue = Float(presenter.getRadius())
 	}
 
 	private func cancelButtonAction() {
@@ -222,6 +240,7 @@ final class DetailTargetViewController: UIViewController
 			self.mapView.removeAnnotation(annotation)
 			self.mapView.removeOverlays(self.mapView.overlays)
 			self.presenter.setupInitialData()
+			self.presenter.editRadius = presenter.getRadius()
 			self.setupAnnotation()
 			self.setupOverlay()
 			self.setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: true)
@@ -422,5 +441,10 @@ private extension DetailTargetViewController
 {
 	func actionShowPin() {
 		setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: true)
+	}
+
+	func actionSliderDidChange(_ value: Float) {
+		presenter.editRadius = Double(value)
+		updateOverlay()
 	}
 }
