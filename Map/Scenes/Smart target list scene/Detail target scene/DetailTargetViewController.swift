@@ -210,6 +210,7 @@ final class DetailTargetViewController: UIViewController
 			self.view.backgroundColor = #colorLiteral(red: 0.9871620841, green: 0.9871620841, blue: 0.9871620841, alpha: 1)
 			self.navigationController?.navigationBar.barTintColor = .white
 		}
+		self.smartTargetEditable = false
 	}
 
 	@objc private func hideKeyboard() {
