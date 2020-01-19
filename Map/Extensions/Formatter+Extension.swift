@@ -13,14 +13,15 @@ extension Formatter
 		let formatter = DateFormatter()
 		formatter.dateStyle = .medium
 		formatter.timeStyle = .short
-		formatter.locale = Locale.current
+		formatter.locale = Locale(identifier: "ru_RU")
 		return formatter
 	}()
 
 	static let full: DateFormatter = {
 		let formatter = DateFormatter()
-		formatter.dateFormat = "MMMM dd, yyyy 'at' hh:mm:ss"
-		formatter.locale = Locale.current
+		formatter.dateStyle = .long
+		formatter.timeStyle = .medium
+		formatter.locale = Locale(identifier: "ru_RU")
 		return formatter
 	}()
 }
