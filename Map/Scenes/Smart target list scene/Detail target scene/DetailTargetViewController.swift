@@ -81,15 +81,6 @@ final class DetailTargetViewController: UIViewController
 	private var mapViewHeightAnchor: NSLayoutConstraint?
 	private var mapViewHeightAnchorEditMode: NSLayoutConstraint?
 	private var smartTargetEditable = false
-	private let addresDescriptionLabel = UILabel()
-	private let addressLabel = UILabel()
-	private let editButton = ButtonForDetailScreen(backgroundColor: .systemBlue, frame: .zero)
-	private var editButtonWidthAnchor: NSLayoutConstraint?
-	private var editButtonLeadingAnchorToScrollView: NSLayoutConstraint?
-	private var editButtonLeadingAnchorToCancelButton: NSLayoutConstraint?
-	private let cancelButton = ButtonForDetailScreen(backgroundColor: .systemRed, frame: .zero)
-	private var cancelButtonWidthAnchorEqualZero: NSLayoutConstraint?
-	private var cancelButtonWidthAnchorIfEditModeEnabled: NSLayoutConstraint?
 
 	let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin)
 	private lazy var showPinButtonView = ButtonView(type: .add, tapAction: actionShowPin)
