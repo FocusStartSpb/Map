@@ -94,17 +94,7 @@ final class DetailTargetViewController: UIViewController
 	let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin)
 	private lazy var showPinButtonView = ButtonView(type: .add, tapAction: actionShowPin)
 
-	private let activityIndicator: UIActivityIndicatorView = {
-		let style: UIActivityIndicatorView.Style
-		if #available(iOS 13.0, *) {
-			style = .medium
-		}
-		else {
-			style = .gray
-		}
-		let indicator = UIActivityIndicatorView(style: style)
-		return indicator
-	}()
+	private let activityIndicator = UIActivityIndicatorView(style: Constants.activityIndicatorStyle)
 
 	var addressText: String? {
 		get { self.sliderAndEditableAddress.address }

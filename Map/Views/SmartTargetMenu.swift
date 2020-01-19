@@ -80,17 +80,7 @@ final class SmartTargetMenu: UIView
 		return button
 	}()
 
-	private let activityIndicator: UIActivityIndicatorView = {
-		let style: UIActivityIndicatorView.Style
-		if #available(iOS 13.0, *) {
-			style = .medium
-		}
-		else {
-			style = .gray
-		}
-		let indicator = UIActivityIndicatorView(style: style)
-		return indicator
-	}()
+	private let activityIndicator = UIActivityIndicatorView(style: Constants.activityIndicatorStyle)
 
 	// MARK: ...Properties
 	var leftMenuAction: MenuAction {

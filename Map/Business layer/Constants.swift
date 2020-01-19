@@ -74,4 +74,13 @@ enum Constants
 			}
 		}()
 	}
+
+	static let activityIndicatorStyle: UIActivityIndicatorView.Style = {
+		if #available(iOS 13.0, *) {
+			return .medium
+		}
+		else {
+			return .gray
+		}
+	}()
 }
