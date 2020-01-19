@@ -80,17 +80,7 @@ final class SmartTargetMenu: UIView
 		return button
 	}()
 
-	private let activityIndicator: UIActivityIndicatorView = {
-		let style: UIActivityIndicatorView.Style
-		if #available(iOS 13.0, *) {
-			style = .medium
-		}
-		else {
-			style = .gray
-		}
-		let indicator = UIActivityIndicatorView(style: style)
-		return indicator
-	}()
+	private let activityIndicator = UIActivityIndicatorView(style: Constants.activityIndicatorStyle)
 
 	// MARK: ...Properties
 	var leftMenuAction: MenuAction {
@@ -132,7 +122,7 @@ final class SmartTargetMenu: UIView
 	var sliderFactor: Float = 1 {
 		didSet { updateSliderLabel() }
 	}
-	var sliderValuemeasurementSymbol: String = "" {
+	var sliderValueMeasurementSymbol: String = "" {
 		didSet { updateSliderLabel() }
 	}
 
@@ -294,7 +284,7 @@ final class SmartTargetMenu: UIView
 	private func updateSliderLabel() {
 		sliderLabel.text =
 			"\(Int(sliderValue * sliderFactor))" +
-			((sliderValuemeasurementSymbol.isEmpty == false) ? " \(sliderValuemeasurementSymbol)" : "")
+			((sliderValueMeasurementSymbol.isEmpty == false) ? " \(sliderValueMeasurementSymbol)" : "")
 	}
 
 	// MARK: ...Methods

@@ -18,12 +18,17 @@ protocol IDetailTargetPresenter
 	func setupInitialData()
 
 	func getTitleText() -> String
+	func getRadius() -> Double
 	func getAddressText(completion: @escaping (String) -> Void)
 	func getDateOfCreation() -> String
 	func getAnnotation() -> SmartTargetAnnotation
+	func getDefaultCircleOverlay() -> MKCircle
 	func getCircleOverlay() -> MKCircle
 	func saveChanges(title: String?, address: String?) -> SmartTarget
 	func attachViewController(detailTargetViewController: DetailTargetViewController)
+
+	func getSliderValuesRange() -> (min: Double, max: Double)
+	func getMeasurementSystem() -> UserPreferences.MeasurementSystem
 }
 
 final class DetailTargetPresenter<G: IDecoderGeocoder>
@@ -35,6 +40,7 @@ final class DetailTargetPresenter<G: IDecoderGeocoder>
 
 	private weak var viewController: DetailTargetViewController?
 	private var geocoderWorker: GeocoderWorker<G>
+	private var settingsWorker: SettingsWorker
 
 	private let dispatchQueueGetAddress =
 	DispatchQueue(label: "com.detailTarget.getAddress",
@@ -42,9 +48,11 @@ final class DetailTargetPresenter<G: IDecoderGeocoder>
 				  attributes: .concurrent)
 
 	init(smartTarget: SmartTarget,
-		 geocoderWorker: GeocoderWorker<G>) {
+		 geocoderWorker: GeocoderWorker<G>,
+		 settingsWorker: SettingsWorker) {
 		self.smartTarget = smartTarget
 		self.geocoderWorker = geocoderWorker
+		self.settingsWorker = settingsWorker
 		self.editRadius = smartTarget.radius ?? 0
 		self.editCoordinate = smartTarget.coordinates
 	}
@@ -77,6 +85,10 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 		return self.smartTarget.title
 	}
 
+	func getRadius() -> Double {
+		return self.smartTarget.radius ?? 0
+	}
+
 	func getDateOfCreation() -> String {
 		return Formatter.full.string(from: smartTarget.dateOfCreated)
 	}
@@ -87,12 +99,12 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 			self.geocoderWorker.getGeocoderMetaData(by: self.editCoordinate.geocode) { result in
 				let result = result
 					.map { $0.response?.geoCollection?.featureMember?.first?.geo?.metaDataProperty?.geocoderMetaData?.text ?? "" }
-				var address: String = "Address: \n"
+				let address: String
 				if case .success(let string) = result {
-					address += string
+					address = string
 				}
 				else {
-					address += "\(self.editCoordinate)"
+					address = "\(self.editCoordinate)"
 				}
 
 				DispatchQueue.main.async {
@@ -104,6 +116,10 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 
 	func getAnnotation() -> SmartTargetAnnotation {
 		return smartTarget.annotation
+	}
+
+	func getDefaultCircleOverlay() -> MKCircle {
+		return MKCircle(center: smartTarget.coordinates, radius: smartTarget.radius ?? 0)
 	}
 
 	func getCircleOverlay() -> MKCircle {
@@ -122,5 +138,13 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 		modifiedTarget.radius = editRadius
 		modifiedTarget.address = address
 		return modifiedTarget
+	}
+
+	func getSliderValuesRange() -> (min: Double, max: Double) {
+		return (settingsWorker.lowerValueOfRadius ?? 0, settingsWorker.upperValueOfRadius ?? 1)
+	}
+
+	func getMeasurementSystem() -> UserPreferences.MeasurementSystem {
+		return settingsWorker.measurementSystem ?? .metric
 	}
 }
