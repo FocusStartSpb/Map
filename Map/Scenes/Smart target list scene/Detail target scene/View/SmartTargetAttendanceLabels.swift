@@ -43,25 +43,13 @@ final class SmartTargetAttendanceLabels: UIView
 	}()
 	private var chevronImageViewCenterYAnchor: NSLayoutConstraint?
 	private var chevronImageViewHeightAnchor: NSLayoutConstraint?
-	private var verticalStackIsShown = false {
+	private var verticalStackIsHidden = false {
 		didSet {
-			if verticalStackIsShown {
-				UIView.animate(withDuration: 0.3, animations: {
-					self.verticalStackHeightConstraintEqualZero?.isActive = false
-					self.verticalStackHeightConstraint?.isActive = true
-					self.showOrHideDetailsViewLabel.setTextAnimation(string: StaticTextForLabels.hideDetails)
-					self.superview?.superview?.layoutIfNeeded()
-					self.chevronImageView.transform = CGAffineTransform(rotationAngle: .pi)
-				})
+			if verticalStackIsHidden {
+				self.verticalStackShowWithAnimation()
 			}
 			else {
-				UIView.animate(withDuration: 0.3, animations: {
-					self.verticalStackHeightConstraint?.isActive = false
-					self.verticalStackHeightConstraintEqualZero?.isActive = true
-					self.showOrHideDetailsViewLabel.setTextAnimation(string: StaticTextForLabels.showDetails)
-					self.superview?.superview?.layoutIfNeeded()
-					self.chevronImageView.transform = CGAffineTransform(rotationAngle: 0)
-				})
+				verticalStackHideWithAnimation()
 			}
 		}
 	}
@@ -72,9 +60,14 @@ final class SmartTargetAttendanceLabels: UIView
 		self.setupVerticalStack()
 	}
 
+	@available (*, unavailable)
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+
 	private func labelsSettings(label: UILabel) {
 		label.textAlignment = .center
-		label.font = UIFont.systemFont(ofSize: 20, weight: .light)
+		label.font = .systemFont(ofSize: 20, weight: .light)
 		label.adjustsFontSizeToFitWidth = true
 		label.minimumScaleFactor = 0.01
 	}
@@ -102,7 +95,6 @@ final class SmartTargetAttendanceLabels: UIView
 			self.chevronImageView.leadingAnchor.constraint(equalTo: self.showOrHideDetailsViewLabel.trailingAnchor,
 														   constant: 15),
 			self.chevronImageView.trailingAnchor.constraint(equalTo: self.showOrHideDetailsView.trailingAnchor),
-//			self.chevronImageView.centerYAnchor.constraint(equalTo: self.showOrHideDetailsView.centerYAnchor),
 			self.chevronImageView.widthAnchor.constraint(equalToConstant: 30),
 		])
 		self.showOrHideDetailsView.addGestureRecognizer(UITapGestureRecognizer(target: self,
@@ -134,18 +126,28 @@ final class SmartTargetAttendanceLabels: UIView
 		self.dateOfLastVisitLabel.text = StaticTextForLabels.dateOfLastVisitText
 	}
 
-	@available (*, unavailable)
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
+	private func verticalStackShowWithAnimation() {
+		UIView.animate(withDuration: 0.3, animations: {
+			self.verticalStackHeightConstraintEqualZero?.isActive = false
+			self.verticalStackHeightConstraint?.isActive = true
+			self.showOrHideDetailsViewLabel.setTextAnimation(StaticTextForLabels.hideDetails)
+			self.superview?.superview?.layoutIfNeeded()
+			self.chevronImageView.transform = CGAffineTransform(rotationAngle: .pi)
+		})
+	}
+
+	private func verticalStackHideWithAnimation() {
+		UIView.animate(withDuration: 0.3, animations: {
+			self.verticalStackHeightConstraint?.isActive = false
+			self.verticalStackHeightConstraintEqualZero?.isActive = true
+			self.showOrHideDetailsViewLabel.setTextAnimation(StaticTextForLabels.showDetails)
+			self.superview?.superview?.layoutIfNeeded()
+			self.chevronImageView.transform = CGAffineTransform(rotationAngle: 0)
+		})
 	}
 
 	@objc private func showOrHideStackView() {
-		if self.verticalStackIsShown == false {
-			verticalStackIsShown = true
-		}
-		else {
-			verticalStackIsShown = false
-		}
+		self.verticalStackIsHidden.toggle()
 	}
 }
 
@@ -158,7 +160,7 @@ extension SmartTargetAttendanceLabels: ISmartTargetAttendanceLabels
 	}
 
 	func hide() {
-		self.verticalStackIsShown = false
+		self.verticalStackIsHidden = false
 		self.chevronImageViewCenterYAnchor?.isActive = false
 		self.chevronImageViewHeightAnchor?.isActive = true
 	}

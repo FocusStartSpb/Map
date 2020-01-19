@@ -6,7 +6,7 @@
 //
 
 import CoreLocation
-import CoreGraphics
+import UIKit
 
 enum Constants
 {
@@ -46,5 +46,29 @@ enum Constants
 	enum Offset
 	{
 		static let mapButton: CGFloat = 20
+	}
+
+	enum Generator
+	{
+		static let impactFeedbackGenerator: UIImpactFeedbackGenerator = {
+			if #available(iOS 13.0, *) {
+				return UIImpactFeedbackGenerator(style: .soft)
+			}
+			else {
+				return UIImpactFeedbackGenerator(style: .light)
+			}
+		}()
+	}
+
+	enum DetailScreenColors
+	{
+		static let colorForSliderAndEditableAddresView: UIColor = {
+			if #available(iOS 13.0, *) {
+				return .systemGray
+			}
+			else {
+				return #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
+			}
+		}()
 	}
 }

@@ -82,13 +82,13 @@ extension DetailTargetViewController: MKMapViewDelegate
 			 (.dragging, .canceling), // 2 - 3
 			 (.starting, .canceling), // 1 - 3
 			 (.starting, .ending): // 1 - 4
-			impactFeedbackGenerator.prepare()
+			Constants.Generator.impactFeedbackGenerator.prepare()
 			presenter.editCoordinate = view.annotation?.coordinate ?? presenter.editCoordinate
 		case (.canceling, .none): // 3 - 0
-			impactFeedbackGenerator.impactOccurred()
+			Constants.Generator.impactFeedbackGenerator.impactOccurred()
 			setupOverlay()
 		case (.ending, .none): // 4 - 0
-			impactFeedbackGenerator.impactOccurred()
+			Constants.Generator.impactFeedbackGenerator.impactOccurred()
 			setSmartTargetRegion(coordinate: presenter.editCoordinate, camera: mapView.camera, animated: true)
 			presenter.getAddressText { self.addressText = $0 }
 			setupOverlay()
