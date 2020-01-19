@@ -162,7 +162,7 @@ final class DetailTargetViewController: UIViewController
 
 	private func editButtonAction() {
 		if self.smartTargetEditable == true {
-			UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin).impactOccurred()
+			self.impactFeedbackGenerator.impactOccurred()
 			guard let smartTargetVC = self.navigationController?.viewControllers.first as? SmartTargetListViewController
 				else { return }
 			self.router.popDetail(to: smartTargetVC,

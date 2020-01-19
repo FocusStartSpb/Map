@@ -74,10 +74,10 @@ extension DetailTargetViewController: MKMapViewDelegate
 			 (.dragging, .canceling), // 2 - 3
 			 (.starting, .canceling), // 1 - 3
 			 (.starting, .ending): // 1 - 4
-			UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin).prepare()
+			impactFeedbackGenerator.prepare()
 			presenter.editCoordinate = view.annotation?.coordinate ?? presenter.editCoordinate
 		case (.canceling, .none): // 3 - 0
-			UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin).impactOccurred()
+			impactFeedbackGenerator.impactOccurred()
 			setupOverlay()
 		case (.ending, .none): // 4 - 0
 			impactFeedbackGenerator.impactOccurred()
