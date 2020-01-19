@@ -1,5 +1,5 @@
 //
-//  UILabel.swift
+//  UILabel+TextAnimation.swift
 //  Map
 //
 //  Created by Anton on 17.01.2020.
