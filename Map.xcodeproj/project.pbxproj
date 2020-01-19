@@ -54,7 +54,6 @@
 		585AC9A123D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC9A023D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift */; };
 		585AC9A323D0E420008D357A /* MapViewController+MKMapViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC9A223D0E420008D357A /* MapViewController+MKMapViewDelegate.swift */; };
 		585BBB8823B219170001F749 /* ButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8723B219170001F749 /* ButtonView.swift */; };
-		585BBB8A23B27DD40001F749 /* UIColor+Adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */; };
 		585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */; };
 		585F64A123B9881800B66EAA /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585F64A023B9881800B66EAA /* FilesManager.swift */; };
 		585F64A323B988A700B66EAA /* SettingWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585F64A223B988A700B66EAA /* SettingWrapper.swift */; };
@@ -134,7 +133,6 @@
 		585AC9A023D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapViewController+NotificationServiceDelegate.swift"; sourceTree = "<group>"; };
 		585AC9A223D0E420008D357A /* MapViewController+MKMapViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapViewController+MKMapViewDelegate.swift"; sourceTree = "<group>"; };
 		585BBB8723B219170001F749 /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
-		585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Adjust.swift"; sourceTree = "<group>"; };
 		585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetAnnotation.swift; sourceTree = "<group>"; };
 		585F64A023B9881800B66EAA /* FilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManager.swift; sourceTree = "<group>"; };
 		585F64A223B988A700B66EAA /* SettingWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingWrapper.swift; sourceTree = "<group>"; };
@@ -408,7 +406,6 @@
 				58454F3123BE87C400EE0D71 /* Array+Difference.swift */,
 				58A9984723AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift */,
 				582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */,
-				585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */,
 				3AAD387F23D20AF200873B0B /* UILabel.swift */,
 				5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */,
 				58551DD523BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift */,
@@ -575,7 +572,6 @@
 				585AC99923D0DB49008D357A /* Constants.swift in Sources */,
 				58A9984423AC19A500CAACE8 /* DataBaseService.swift in Sources */,
 				5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */,
-				585BBB8A23B27DD40001F749 /* UIColor+Adjust.swift in Sources */,
 				586F660C23BBF065007D4657 /* MenuAction.swift in Sources */,
 				58A9984823AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift in Sources */,
 				585F64AD23B9989900B66EAA /* SettingsWorker.swift in Sources */,
