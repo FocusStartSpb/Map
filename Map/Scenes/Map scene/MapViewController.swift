@@ -17,7 +17,7 @@ final class MapViewController: UIViewController
 
 	// MARK: ...Private properties
 	var interactor: MapBusinessLogic & MapDataStore
-	var router: MapRoutingLogic & MapDataPassing
+	var router: MapDataPassing
 
 	// UI elements
 	let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin)
@@ -79,7 +79,7 @@ final class MapViewController: UIViewController
 	private var translationOfHideSmartTargetMenuOffset: CGFloat?
 
 	// MARK: ...Initialization
-	init(interactor: MapBusinessLogic & MapDataStore, router: MapRoutingLogic & MapDataPassing) {
+	init(interactor: MapBusinessLogic & MapDataStore, router: MapDataPassing) {
 		self.interactor = interactor
 		self.router = router
 		super.init(nibName: nil, bundle: nil)

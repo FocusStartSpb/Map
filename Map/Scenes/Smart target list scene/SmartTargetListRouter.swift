@@ -9,7 +9,6 @@
 protocol SmartTargetListRoutingLogic
 {
 	func routeToDetail(indexPathAtRow: Int)
-	func routeToMap(_ mapViewController: MapViewController)
 }
 
 // MARK: - SmartTargetListDataPassing protocol
@@ -47,29 +46,11 @@ extension SmartTargetListRouter: SmartTargetListRoutingLogic
 		navigateToDetail(source: viewController, destination: detailViewController)
 	}
 
-	func routeToMap(_ mapViewController: MapViewController) {
-		guard
-			let viewController = viewController,
-			let sourceDataStore = dataStore,
-			var destinationDataStore = mapViewController.router.dataStore else { return }
-
-		passDataToMap(source: sourceDataStore, destination: &destinationDataStore)
-
-		navigateToMap(source: viewController, destination: mapViewController)
-	}
-
 	// MARK: ...Navigation
-	private func navigateToMap(source: SmartTargetListViewController, destination: MapViewController) {
-		source.tabBarController?.selectedViewController = destination
-	}
-
 	private func navigateToDetail(source: SmartTargetListViewController,
 								  destination: DetailTargetViewController) {
 		source.navigationController?.pushViewController(destination, animated: true)
 	}
-
-	// MARK: ...Passing data
-	private func passDataToMap(source: SmartTargetListDataStore, destination: inout MapDataStore) { }
 }
 
 // MARK: - Smart target list data passing

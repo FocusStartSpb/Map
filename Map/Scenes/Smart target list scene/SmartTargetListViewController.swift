@@ -217,11 +217,6 @@ extension SmartTargetListViewController: UITabBarControllerDelegate
 				return false
 		}
 		mapViewController.router.dataStore?.didUpdateAllAnnotations = false
-
-		if viewController === mapViewController {
-			router.routeToMap(mapViewController)
-			return false
-		}
 		return true
 	}
 }
