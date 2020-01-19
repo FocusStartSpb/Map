@@ -70,6 +70,7 @@ final class MapViewController: UIViewController
 
 	var willTranslateKeyboard = false
 	var isObservableToKeyboard = false
+	var keyboardIsVisible = false
 
 	// Calculated properties
 	var annotations: [SmartTargetAnnotation] {
