@@ -6,7 +6,7 @@
 //
 
 import CoreLocation
-import CoreGraphics
+import UIKit
 
 enum Constants
 {
@@ -46,5 +46,32 @@ enum Constants
 	enum Offset
 	{
 		static let mapButton: CGFloat = 20
+	}
+
+	enum CircularMapOverlay
+	{
+		static let fillColorForUserInside = UIColor.systemBlue.withAlphaComponent(0.5)
+		static let fillColorForUserOutside: UIColor = {
+			if #available(iOS 13.0, *) {
+				return UIColor.systemBackground.withAlphaComponent(0.5)
+			}
+			else {
+				return UIColor.white.withAlphaComponent(0.5)
+			}
+		}()
+		static let strokeColor: UIColor = .systemBlue
+		static let lineWidth: CGFloat = 1
+	}
+
+	enum ImpactFeedbackGeneratorStyle
+	{
+		static let dropPin: UIImpactFeedbackGenerator.FeedbackStyle = {
+			if #available(iOS 13.0, *) {
+				return .soft
+			}
+			else {
+				return .light
+			}
+		}()
 	}
 }

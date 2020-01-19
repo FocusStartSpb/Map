@@ -59,6 +59,7 @@ final class SettingsViewController: UIViewController
 	private lazy var tableView: UITableView = {
 		let tableView = UITableView(frame: .zero, style: .grouped)
 		tableView.dataSource = self
+		tableView.isScrollEnabled = false
 		return tableView
 	}()
 

@@ -60,6 +60,12 @@ final class RangeSlider: UIControl
 
 	private var thumbWidth: CGFloat { bounds.height }
 
+	private var selectionFeedbackGenerator: UISelectionFeedbackGenerator?
+
+	private var isLowerThumbCollision = true
+	private var isUpperThumbCollision = true
+	private var isLowerWithUpperThumbCollision = true
+
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 
@@ -115,11 +121,42 @@ final class RangeSlider: UIControl
 		Double(bounds.width - thumbWidth) * (value - minimumValue) / (maximumValue - minimumValue) + Double(thumbWidth / 2)
 	}
 
+	private func checkCollision() {
+		if lowerValue == minimumValue && isLowerThumbCollision == false {
+			selectionFeedbackGenerator?.selectionChanged()
+			isLowerThumbCollision = true
+		}
+		else if lowerValue != minimumValue {
+			isLowerThumbCollision = false
+		}
+
+		if upperValue == maximumValue && isUpperThumbCollision == false {
+			selectionFeedbackGenerator?.selectionChanged()
+			isUpperThumbCollision = true
+		}
+		else if upperValue != maximumValue {
+			isUpperThumbCollision = false
+		}
+
+		if upperValue - lowerValue <= minRange, isLowerWithUpperThumbCollision == false {
+			selectionFeedbackGenerator?.selectionChanged()
+			isLowerWithUpperThumbCollision = true
+		}
+		else if upperValue - lowerValue > minRange {
+			isLowerWithUpperThumbCollision = false
+		}
+
+		selectionFeedbackGenerator?.prepare()
+	}
+
 	private func boundValue(_ value: Double, toLowerValue lowerValue: Double, upperValue: Double) -> Double {
 		min(max(value, lowerValue), upperValue)
 	}
 
 	override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+		selectionFeedbackGenerator = UISelectionFeedbackGenerator()
+		selectionFeedbackGenerator?.prepare()
+
 		previousLocation = touch.location(in: self)
 
 		// Hit test the thumb layers
@@ -161,6 +198,8 @@ final class RangeSlider: UIControl
 			}
 		}
 
+		checkCollision()
+
 		sendActions(for: .valueChanged)
 
 		return true
@@ -169,5 +208,7 @@ final class RangeSlider: UIControl
 	override func endTracking(_ touch: UITouch?, with event: UIEvent?) {
 		lowerThumbLayer.highlighted = false
 		upperThumbLayer.highlighted = false
+
+		selectionFeedbackGenerator = nil
 	}
 }
