@@ -13,7 +13,6 @@
 		3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B023C364A300700935 /* DetailTargetRouter.swift */; };
 		3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B223C364B900700935 /* DetailTargetViewController.swift */; };
 		3A7C5B1023C8CA3700FB732A /* ButtonForDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7C5B0F23C8CA3600FB732A /* ButtonForDetailScreen.swift */; };
-		3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */; };
 		3ABCDC9323B7B71B0050F4B2 /* SmartTargetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */; };
 		3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */; };
 		3AC77B0023AAA5B400CA1EC5 /* GeocoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */; };
@@ -87,7 +86,6 @@
 		3A4337B023C364A300700935 /* DetailTargetRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetRouter.swift; sourceTree = "<group>"; };
 		3A4337B223C364B900700935 /* DetailTargetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetViewController.swift; sourceTree = "<group>"; };
 		3A7C5B0F23C8CA3600FB732A /* ButtonForDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonForDetailScreen.swift; sourceTree = "<group>"; };
-		3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartTargetTableViewCell.swift; sourceTree = "<group>"; };
 		3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderModel.swift; sourceTree = "<group>"; };
 		3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderService.swift; sourceTree = "<group>"; };
@@ -167,14 +165,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3ABCDC8E23B7B6AD0050F4B2 /* TabBarController */ = {
-			isa = PBXGroup;
-			children = (
-				3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */,
-			);
-			path = TabBarController;
-			sourceTree = "<group>";
-		};
 		3ABCDC9123B7B71B0050F4B2 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -273,7 +263,6 @@
 				585F64B223B99C9D00B66EAA /* Settings scene */,
 				584EE5CE23A833DD0013087A /* Map scene */,
 				584EE5E823A834E00013087A /* Smart target list scene */,
-				3ABCDC8E23B7B6AD0050F4B2 /* TabBarController */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -532,7 +521,6 @@
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,
 				585AC99D23D0E20A008D357A /* MapViewController+MapDisplayLogic.swift in Sources */,
 				3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */,
-				3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */,
 				3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */,
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
 				585AC9A123D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift in Sources */,
