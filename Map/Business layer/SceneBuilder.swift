@@ -116,8 +116,10 @@ final class SceneBuilder
 		let geocoderService = GeocoderService()
 		let geocoderWorker = GeocoderWorker(service: geocoderService,
 											decoder: decoderService)
+		let settingsWorker = SettingsWorker()
 		let presenter = DetailTargetPresenter(smartTarget: smartTarget,
-											  geocoderWorker: geocoderWorker)
+											  geocoderWorker: geocoderWorker,
+											  settingsWorker: settingsWorker)
 		let viewController = DetailTargetViewController(presenter: presenter,
 														router: router)
 		presenter.attachViewController(detailTargetViewController: viewController)

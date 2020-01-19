@@ -35,6 +35,7 @@ final class DetailTargetPresenter<G: IDecoderGeocoder>
 
 	private weak var viewController: DetailTargetViewController?
 	private var geocoderWorker: GeocoderWorker<G>
+	private var settingsWorker: SettingsWorker
 
 	private let dispatchQueueGetAddress =
 	DispatchQueue(label: "com.detailTarget.getAddress",
@@ -42,9 +43,11 @@ final class DetailTargetPresenter<G: IDecoderGeocoder>
 				  attributes: .concurrent)
 
 	init(smartTarget: SmartTarget,
-		 geocoderWorker: GeocoderWorker<G>) {
+		 geocoderWorker: GeocoderWorker<G>,
+		 settingsWorker: SettingsWorker) {
 		self.smartTarget = smartTarget
 		self.geocoderWorker = geocoderWorker
+		self.settingsWorker = settingsWorker
 		self.editRadius = smartTarget.radius ?? 0
 		self.editCoordinate = smartTarget.coordinates
 	}
