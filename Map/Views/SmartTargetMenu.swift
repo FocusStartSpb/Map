@@ -132,7 +132,7 @@ final class SmartTargetMenu: UIView
 	var sliderFactor: Float = 1 {
 		didSet { updateSliderLabel() }
 	}
-	var sliderValuemeasurementSymbol: String = "" {
+	var sliderValueMeasurementSymbol: String = "" {
 		didSet { updateSliderLabel() }
 	}
 
@@ -294,7 +294,7 @@ final class SmartTargetMenu: UIView
 	private func updateSliderLabel() {
 		sliderLabel.text =
 			"\(Int(sliderValue * sliderFactor))" +
-			((sliderValuemeasurementSymbol.isEmpty == false) ? " \(sliderValuemeasurementSymbol)" : "")
+			((sliderValueMeasurementSymbol.isEmpty == false) ? " \(sliderValueMeasurementSymbol)" : "")
 	}
 
 	// MARK: ...Methods
