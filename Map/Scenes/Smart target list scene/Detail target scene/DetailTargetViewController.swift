@@ -64,37 +64,28 @@ final class DetailTargetViewController: UIViewController
 	private let uneditableDetails = UneditableTargetsDetails()
 	private var uneditableDetailHeightAnchorEqualZero: NSLayoutConstraint?
 	private var uneditableDetailsHeightAnchor: NSLayoutConstraint?
-	private let sliderAndEditableAddress = SliderAndEditableAddressView()
+	private lazy var sliderAndEditableAddress: SliderAndEditableAddressView = {
+		let measurementSystem = presenter.getMeasurementSystem()
+		let sliderValuesRange = presenter.getSliderValuesRange()
+		let view = SliderAndEditableAddressView(title: "",
+												sliderValuesRange: sliderValuesRange,
+												sliderFactor: measurementSystem.factor,
+												sliderValueMeasurementSymbol: measurementSystem.symbol,
+												sliderValue: presenter.getRadius())
+		view.addActionForSlider(action: actionSliderDidChange)
+		return view
+	}()
 	private var sliderAndEditableAddressHeightAnchor: NSLayoutConstraint?
 	private var sliderAndEditableAddressZeroHeightAnchor: NSLayoutConstraint?
 	private let buttonsBar = ButtonsBar()
 	private var mapViewHeightAnchor: NSLayoutConstraint?
 	private var mapViewHeightAnchorEditMode: NSLayoutConstraint?
 	private var smartTargetEditable = false
-	private let addresDescriptionLabel = UILabel()
-	private let addressLabel = UILabel()
-	private let editButton = ButtonForDetailScreen(backgroundColor: .systemBlue, frame: .zero)
-	private var editButtonWidthAnchor: NSLayoutConstraint?
-	private var editButtonLeadingAnchorToScrollView: NSLayoutConstraint?
-	private var editButtonLeadingAnchorToCancelButton: NSLayoutConstraint?
-	private let cancelButton = ButtonForDetailScreen(backgroundColor: .systemRed, frame: .zero)
-	private var cancelButtonWidthAnchorEqualZero: NSLayoutConstraint?
-	private var cancelButtonWidthAnchorIfEditModeEnabled: NSLayoutConstraint?
 
 	let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: Constants.ImpactFeedbackGeneratorStyle.dropPin)
 	private lazy var showPinButtonView = ButtonView(type: .add, tapAction: actionShowPin)
 
-	private let activityIndicator: UIActivityIndicatorView = {
-		let style: UIActivityIndicatorView.Style
-		if #available(iOS 13.0, *) {
-			style = .medium
-		}
-		else {
-			style = .gray
-		}
-		let indicator = UIActivityIndicatorView(style: style)
-		return indicator
-	}()
+	private let activityIndicator = UIActivityIndicatorView(style: Constants.activityIndicatorStyle)
 
 	var addressText: String? {
 		get { self.sliderAndEditableAddress.address }
@@ -102,6 +93,13 @@ final class DetailTargetViewController: UIViewController
 			self.uneditableDetails.setAddress(text: newValue)
 			newValue == nil ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
 			self.sliderAndEditableAddress.address = newValue ?? ""
+		}
+	}
+
+	var radius: Double {
+		get { Double(sliderAndEditableAddress.sliderValue) }
+		set {
+			sliderAndEditableAddress.sliderValue = Float(newValue)
 		}
 	}
 
@@ -178,6 +176,7 @@ final class DetailTargetViewController: UIViewController
 			self.scrollView.layoutIfNeeded()
 		})
 		self.smartTargetEditable = true
+		self.sliderAndEditableAddress.sliderValue = Float(presenter.getRadius())
 	}
 
 	private func cancelButtonAction() {
@@ -187,6 +186,7 @@ final class DetailTargetViewController: UIViewController
 			self.mapView.removeAnnotation(annotation)
 			self.mapView.removeOverlays(self.mapView.overlays)
 			self.presenter.setupInitialData()
+			self.presenter.editRadius = presenter.getRadius()
 			self.setupAnnotation()
 			self.setupOverlay()
 			self.setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: true)
@@ -383,5 +383,10 @@ private extension DetailTargetViewController
 {
 	func actionShowPin() {
 		setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: true)
+	}
+
+	func actionSliderDidChange(_ value: Float) {
+		presenter.editRadius = Double(value)
+		updateOverlay()
 	}
 }

@@ -100,7 +100,7 @@ extension MapViewController: MapDisplayLogic
 
 	func displayGetMeasurementSystem(_ viewModel: Map.GetMeasurementSystem.ViewModel) {
 		smartTargetMenu?.sliderFactor = Float(viewModel.measurementFactor)
-		smartTargetMenu?.sliderValuemeasurementSymbol = viewModel.measurementSymbol
+		smartTargetMenu?.sliderValueMeasurementSymbol = viewModel.measurementSymbol
 	}
 
 	func displayGetRemovePinAlertSettings(_ viewModel: Map.GetRemovePinAlertSettings.ViewModel) {

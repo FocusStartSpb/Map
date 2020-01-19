@@ -6,35 +6,77 @@
 //
 
 import UIKit
+
 protocol ISliderAndEditableAddressView
 {
 	func hide()
 	func show()
+	func addActionForSlider(action: @escaping SliderAndEditableAddressView.SliderAction)
 
+	var sliderValue: Float { get set }
 	var address: String { get set }
 }
 
 final class SliderAndEditableAddressView: UIView
 {
+	typealias SliderAction = (_ value: Float) -> Void
+
+	private var sliderValueDidChange: SliderAction?
+
+	private lazy var radiusSlider: UISlider = {
+		let slider = UISlider()
+		slider.minimumValueImage = #imageLiteral(resourceName: "radius-of-circle")
+		slider.addTarget(self, action: #selector(actionSliderValueChanged), for: .valueChanged)
+		return slider
+	}()
+
 	private let backgroundColorBelow13Ios = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
 	private let backgroundColorHigher13Ios = UIColor.systemGray
-	private let radiusSlider = UISlider()
+
 	private var sliderValueLabelWidth: NSLayoutConstraint?
 	private var sliderValueLabelWidthEqualZero: NSLayoutConstraint?
 	private let sliderValueLabel: UILabel = {
 		let label = UILabel()
-		label.text = "16166 m" //заглушка
 		label.adjustsFontSizeToFitWidth = true
 		label.contentMode = .center
 		label.textAlignment = .left
 		return label
 	}()
+
 	private let editableAddressLabel = UILabel()
 	private var addressLabelHeightAnchorEqualZero: NSLayoutConstraint?
 	private var addressLabelHeightAnchor: NSLayoutConstraint?
 	private var addressLabelBottomAnchor: NSLayoutConstraint?
 	private var sliderWidthAnchor: NSLayoutConstraint?
 	private var sliderTrailingAnchor: NSLayoutConstraint?
+
+	private var sliderFactor: Float = 1 {
+		didSet { updateSliderLabel() }
+	}
+	private var sliderValueMeasurementSymbol: String = "" {
+		didSet { updateSliderLabel() }
+	}
+
+	private var sliderValuesRange: (min: Double, max: Double) {
+		get { (Double(radiusSlider.minimumValue), Double(radiusSlider.maximumValue)) }
+		set {
+			radiusSlider.minimumValue = Float(newValue.min)
+			radiusSlider.maximumValue = Float(newValue.max)
+		}
+	}
+
+	convenience init(title: String,
+					 sliderValuesRange: (min: Double, max: Double),
+					 sliderFactor: Double,
+					 sliderValueMeasurementSymbol: String,
+					 sliderValue: Double) {
+		self.init(frame: .zero)
+		self.editableAddressLabel.text = title
+		self.sliderValuesRange = sliderValuesRange
+		self.sliderFactor = Float(sliderFactor)
+		self.sliderValueMeasurementSymbol = sliderValueMeasurementSymbol
+		self.sliderValue = Float(sliderValue)
+	}
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -58,17 +100,12 @@ final class SliderAndEditableAddressView: UIView
 			self.sliderValueLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
 			self.sliderValueLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
 			//slider
-			self.radiusSlider.leadingAnchor.constraint(equalTo: self.leadingAnchor,
-													   constant: 16),
-			self.radiusSlider.topAnchor.constraint(equalTo: self.topAnchor,
-												   constant: 16),
+			self.radiusSlider.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+			self.radiusSlider.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
 			//editableAddressLabel
-			self.editableAddressLabel.topAnchor.constraint(equalTo: self.radiusSlider.bottomAnchor,
-														   constant: 8),
-			self.editableAddressLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor,
-															   constant: 16),
-			self.editableAddressLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor,
-																constant: -16),
+			self.editableAddressLabel.topAnchor.constraint(equalTo: self.radiusSlider.bottomAnchor, constant: 8),
+			self.editableAddressLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+			self.editableAddressLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
 		])
 		self.addressLabelHeightAnchorEqualZero = self.editableAddressLabel.heightAnchor.constraint(equalToConstant: 0)
 		self.addressLabelHeightAnchor =
@@ -100,10 +137,36 @@ final class SliderAndEditableAddressView: UIView
 		self.editableAddressLabel.numberOfLines = 0
 		self.editableAddressLabel.textAlignment = .center
 	}
+
+	@objc private func actionSliderValueChanged(_ sender: UISlider) {
+		sliderValue = sender.value
+		sliderValueDidChange?(sliderValue)
+	}
+
+	private func updateSliderLabel() {
+		sliderValueLabel.text =
+			"\(Int(sliderValue * sliderFactor))" +
+			((sliderValueMeasurementSymbol.isEmpty == false) ? " \(sliderValueMeasurementSymbol)" : "")
+	}
 }
 
 extension SliderAndEditableAddressView: ISliderAndEditableAddressView
 {
+	var address: String {
+		get { self.editableAddressLabel.text ?? "" }
+		set {
+			self.editableAddressLabel.setTextAnimation(newValue)
+		}
+	}
+
+	var sliderValue: Float {
+		get { radiusSlider.value }
+		set {
+			radiusSlider.value = newValue
+			updateSliderLabel()
+		}
+	}
+
 	func hide() {
 		self.addressLabelHeightAnchor?.isActive = false
 		self.addressLabelHeightAnchorEqualZero?.isActive = true
@@ -128,10 +191,7 @@ extension SliderAndEditableAddressView: ISliderAndEditableAddressView
 		self.radiusSlider.alpha = 1
 	}
 
-	var address: String {
-		get { self.editableAddressLabel.text ?? "" }
-		set {
-			self.editableAddressLabel.setTextAnimation(newValue)
-		}
+	func addActionForSlider(action: @escaping SliderAndEditableAddressView.SliderAction) {
+		sliderValueDidChange = action
 	}
 }

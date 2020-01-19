@@ -17,7 +17,14 @@ extension DetailTargetViewController
 	}
 
 	func setupOverlay() {
+		let overlay = presenter.getDefaultCircleOverlay()
+		mapView.removeOverlays(mapView.overlays)
+		mapView.addOverlay(overlay)
+	}
+
+	func updateOverlay() {
 		let overlay = presenter.getCircleOverlay()
+		mapView.removeOverlays(mapView.overlays)
 		mapView.addOverlay(overlay)
 	}
 
@@ -78,12 +85,12 @@ extension DetailTargetViewController: MKMapViewDelegate
 			presenter.editCoordinate = view.annotation?.coordinate ?? presenter.editCoordinate
 		case (.canceling, .none): // 3 - 0
 			impactFeedbackGenerator.impactOccurred()
-			setupOverlay()
+			updateOverlay()
 		case (.ending, .none): // 4 - 0
 			impactFeedbackGenerator.impactOccurred()
 			mapView.setCenter(presenter.editCoordinate, animated: true)
 			presenter.getAddressText { self.addressText = $0 }
-			setupOverlay()
+			updateOverlay()
 		default: break
 		}
 	}
