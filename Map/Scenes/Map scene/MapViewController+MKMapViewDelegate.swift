@@ -150,7 +150,8 @@ extension MapViewController: MKMapViewDelegate
 		}
 		removePinWithoutAlertRestricted = true
 		animatePinViewHidden(false)
-		interactor.getAddress(Map.Address.Request(coordinate: temptPointer.coordinate))
+		let request = Map.Address.Request(coordinate: temptPointer.coordinate)
+		interactor.getAddress(request)
 	}
 
 	func mapView(_ mapView: MKMapView,
@@ -179,7 +180,8 @@ extension MapViewController: MKMapViewDelegate
 			guard let temptPointer = currentPointer else { return }
 			mapView.setCenter(temptPointer.coordinate, animated: true)
 			animateSmartTargetMenu(hide: false)
-			interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
+			let request = Map.Address.Request(coordinate: mapView.centerCoordinate)
+			interactor.getAddress(request)
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
 			if temptLastPointer != nil {
 				smartTargetMenu?.leftMenuAction = cancelAction

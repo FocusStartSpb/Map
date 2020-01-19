@@ -104,13 +104,12 @@ final class MapViewController: UIViewController
 		setupNotifications()
 
 		// Send Requests
-		let updateSmartTargetsRequest = Map.UpdateAnnotations.Request(annotations: annotations)
-		interactor.updateAnnotations(updateSmartTargetsRequest)
+		interactor.updateAnnotations(.init(annotations: annotations))
 		interactor.measurementSystem(.init())
 		interactor.getRemovePinAlertSettings(.init())
 		interactor.getCurrentRadius(.init(currentRadius: circleRadius))
-		let updateStatusRequest = Map.UpdateStatus.Request()
-		interactor.configureLocationService(request: updateStatusRequest)
+		interactor.configureLocationService(.init())
+
 		removePinWithoutAlertRestricted = true
 	}
 
@@ -296,7 +295,8 @@ private extension MapViewController
 		addCurrentPointer(at: mapView.centerCoordinate)
 		showSmartTargetMenu()
 		if regionIsChanging == false {
-			interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
+			let request = Map.Address.Request(coordinate: mapView.centerCoordinate)
+			interactor.getAddress(request)
 			impactFeedbackGenerator.prepare()
 		}
 	}

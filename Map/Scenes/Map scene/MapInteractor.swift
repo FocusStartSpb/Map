@@ -12,7 +12,7 @@ protocol MapBusinessLogic
 {
 	func getAnnotations(_ request: Map.FetchAnnotations.Request)
 	func getSmartTarget(_ request: Map.GetSmartTarget.Request)
-	func configureLocationService(request: Map.UpdateStatus.Request)
+	func configureLocationService(_ request: Map.UpdateStatus.Request)
 	func getAddress(_ request: Map.Address.Request)
 
 	// Adding, updating, removing smart targets
@@ -194,7 +194,7 @@ extension MapInteractor: MapBusinessLogic
 			presenter.presentAnnotations(response)
 	}
 
-	func configureLocationService(request: Map.UpdateStatus.Request) {
+	func configureLocationService(_ request: Map.UpdateStatus.Request) {
 		switch CLLocationManager.authorizationStatus() {
 		case .notDetermined:
 			locationManager.requestAlwaysAuthorization()
