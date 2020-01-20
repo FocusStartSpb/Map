@@ -43,7 +43,7 @@ extension MapViewController: MapDisplayLogic
 	}
 
 	func displaySmartTarget(_ viewModel: Map.GetSmartTarget.ViewModel) {
-		interactor.temptSmartTarget = viewModel.smartTarget
+		router.dataStore?.temptSmartTarget = viewModel.smartTarget
 	}
 
 	func showLocationUpdates(viewModel: Map.UpdateStatus.ViewModel) {
@@ -90,7 +90,7 @@ extension MapViewController: MapDisplayLogic
 		smartTargetMenu?.sliderValuesRange = (viewModel.userValues.lower, viewModel.userValues.upper)
 		if
 			let menu = smartTargetMenu,
-			let smartTarget = interactor.temptSmartTarget,
+			let smartTarget = router.dataStore?.temptSmartTarget,
 			temptLastPointer != nil {
 			menu.sliderValuesRange = (min(menu.sliderValuesRange.min, circleRadius),
 									  max(menu.sliderValuesRange.max, circleRadius))

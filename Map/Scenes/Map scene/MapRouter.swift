@@ -13,7 +13,6 @@ protocol MapDataPassing
 
 final class MapRouter
 {
-	weak var viewController: MapViewController?
 	var dataStore: MapDataStore?
 }
 

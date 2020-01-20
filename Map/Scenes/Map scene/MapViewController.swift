@@ -16,7 +16,7 @@ final class MapViewController: UIViewController
 	}
 
 	// MARK: ...Private properties
-	var interactor: MapBusinessLogic & MapDataStore
+	var interactor: MapBusinessLogic
 	var router: MapDataPassing
 
 	// UI elements
@@ -147,7 +147,7 @@ final class MapViewController: UIViewController
 		currentPointer = nil
 		smartTargetMenu = nil
 		temptLastPointer = nil
-		interactor.temptSmartTarget = nil
+		router.dataStore?.temptSmartTarget = nil
 		removeTemptCircle()
 		setTabBarVisible(true)
 
@@ -161,10 +161,10 @@ final class MapViewController: UIViewController
 	}
 
 	private func createSmartTargetMenu() -> SmartTargetMenu {
-		SmartTargetMenu(textField: interactor.temptSmartTarget?.title,
-						sliderValue: interactor.temptSmartTarget?.radius ?? circleRadius,
+		SmartTargetMenu(textField: router.dataStore?.temptSmartTarget?.title,
+						sliderValue: router.dataStore?.temptSmartTarget?.radius ?? circleRadius,
 						sliderValuesRange: (Constants.Radius.defaultLowerValue, Constants.Radius.defaultUpperValue),
-						title: interactor.temptSmartTarget?.address,
+						title: router.dataStore?.temptSmartTarget?.address,
 						leftAction: removeAction,
 						rightAction: saveAction,
 						sliderAction: actionChangeRadius,
@@ -178,7 +178,7 @@ final class MapViewController: UIViewController
 	}
 
 	func addCurrentPointer(at coordinate: CLLocationCoordinate2D) {
-		guard let target = interactor.temptSmartTarget else { return }
+		guard let target = router.dataStore?.temptSmartTarget else { return }
 		let annotation = target.annotation
 		annotation.coordinate = coordinate
 		mapView.addAnnotation(annotation)
@@ -291,7 +291,7 @@ private extension MapViewController
 			.forEach { mapView.deselectAnnotation($0, animated: true) }
 		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
 		isEditSmartTarget = true
-		interactor.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate)
+		router.dataStore?.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate)
 		addCurrentPointer(at: mapView.centerCoordinate)
 		showSmartTargetMenu()
 		if regionIsChanging == false {
@@ -310,7 +310,7 @@ private extension MapViewController
 
 		guard
 			let smartTargetMenu = smartTargetMenu,
-			var temptSmartTarget = interactor.temptSmartTarget,
+			var temptSmartTarget = router.dataStore?.temptSmartTarget,
 			let temptPointer = currentPointer else { return }
 
 		guard checkTitleText else {

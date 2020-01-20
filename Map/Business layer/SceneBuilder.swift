@@ -40,7 +40,6 @@ final class SceneBuilder
 		let viewController = MapViewController(interactor: interactor, router: router)
 
 		presenter.viewController = viewController
-		router.viewController = viewController
 		router.dataStore = interactor
 
 		viewController.tabBarItem = UITabBarItem(title: "Карта", image: #imageLiteral(resourceName: "icons8-map-marker"), selectedImage: #imageLiteral(resourceName: "icons8-map-marker-fill"))
