@@ -32,7 +32,7 @@ final class SmartTargetListViewController: UIViewController
 
 	private enum StaticConstants
 	{
-		static let navigationItemTitle = "List of smart object"
+		static let navigationItemTitle = "Список локаций"
 		static let reuseIdentifier = "Cell"
 		static let selectedCellBackgroundColorInDarkMode = #colorLiteral(red: 0.3045190282, green: 0.3114352223, blue: 0.3184640712, alpha: 1)
 		static let selectedCellBackgroundColorInLightMode = #colorLiteral(red: 0.7502671557, green: 0.7502671557, blue: 0.7502671557, alpha: 1)
