@@ -490,12 +490,19 @@ private extension MapViewController
 		smartTargetMenu?
 			.leadingAnchor
 			.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor,
-			constant: Constants.Offset.mapButton).isActive = true
+						constant: Constants.Offset.mapButton)
+			.isActive = true
 
 		smartTargetMenu?
 			.trailingAnchor
 			.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
 						constant: -Constants.Offset.mapButton)
+			.isActive = true
+
+		smartTargetMenu?
+			.topAnchor
+			.constraint(greaterThanOrEqualTo: mapView.centerYAnchor,
+						constant: Constants.Offset.mapButton)
 			.isActive = true
 	}
 }
