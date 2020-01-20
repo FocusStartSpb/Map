@@ -9,12 +9,10 @@ import UIKit
 
 enum Alerts
 {
-	typealias Action = () -> Void
-
 	private static func showBasicAlert(on vc: UIViewController,
 									   with title: String,
 									   message: String,
-									   handler: @escaping Action) {
+									   handler: @escaping TapAction) {
 		let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
 		alert.addAction(UIAlertAction(title: "ОК", style: .default) { _ in
 			handler()
@@ -24,9 +22,9 @@ enum Alerts
 
 	private static func showSheetAlert(on vc: UIViewController,
 									   with title: String,
-									   removeHandler: @escaping Action,
-									   cancelChangesHandler: @escaping Action,
-									   cancelHandler: @escaping Action) {
+									   removeHandler: @escaping TapAction,
+									   cancelChangesHandler: @escaping TapAction,
+									   cancelHandler: @escaping TapAction) {
 		let alert = UIAlertController(title: nil, message: title, preferredStyle: .actionSheet)
 		let removeAction = UIAlertAction(title: "Удалить", style: .destructive) { _ in
 			removeHandler()
@@ -43,14 +41,14 @@ enum Alerts
 		vc.present(alert, animated: true)
 	}
 
-	static func showDeletePinAlert(on vc: UIViewController, handler: @escaping Action) {
+	static func showDeletePinAlert(on vc: UIViewController, handler: @escaping TapAction) {
 		showBasicAlert(on: vc, with: "Внимание", message: "Повторное действие удалит сохраненную локацию", handler: handler)
 	}
 
 	static func showActionsForPinAlert(on vc: UIViewController,
-									   removeHandler: @escaping Action,
-									   cancelChangesHandler: @escaping Action,
-									   cancelHandler: @escaping Action) {
+									   removeHandler: @escaping TapAction,
+									   cancelChangesHandler: @escaping TapAction,
+									   cancelHandler: @escaping TapAction) {
 		showSheetAlert(on: vc,
 					   with: "Выберите действие",
 					   removeHandler: removeHandler,
