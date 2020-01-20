@@ -31,7 +31,8 @@ final class SliderAndEditableAddressView: UIView
 	}()
 
 	private let backgroundColorBelow13Ios = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
-	private let backgroundColorHigher13Ios = UIColor.systemGray
+	private let backgroundColorDarkMode = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+	private let backgroundColorLightMode = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
 
 	private var sliderValueLabelWidth: NSLayoutConstraint?
 	private var sliderValueLabelWidthEqualZero: NSLayoutConstraint?
@@ -88,6 +89,10 @@ final class SliderAndEditableAddressView: UIView
 		fatalError("init(coder:) has not been implemented")
 	}
 
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		self.updateBackgroundColor()
+	}
+
 	private func setupConstraints() {
 		self.radiusSlider.translatesAutoresizingMaskIntoConstraints = false
 		self.editableAddressLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -120,13 +125,17 @@ final class SliderAndEditableAddressView: UIView
 			self.editableAddressLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -16)
 	}
 
-	private func setupUI() {
+	private func updateBackgroundColor() {
 		if #available(iOS 13.0, *) {
-			self.backgroundColor = self.backgroundColorHigher13Ios
+			self.backgroundColor = userInterfaceStyleIsDark ? self.backgroundColorDarkMode : self.backgroundColorLightMode
 		}
 		else {
 			self.backgroundColor = self.backgroundColorBelow13Ios
 		}
+	}
+
+	private func setupUI() {
+		updateBackgroundColor()
 		self.layer.cornerRadius = 12
 		self.alpha = 0.85
 		self.addSubview(sliderValueLabel)
@@ -136,6 +145,7 @@ final class SliderAndEditableAddressView: UIView
 		self.radiusSlider.alpha = 0
 		self.editableAddressLabel.numberOfLines = 0
 		self.editableAddressLabel.textAlignment = .center
+		self.editableAddressLabel.font = Constants.Fonts.ForDetailScreen.addressLabel
 	}
 
 	@objc private func actionSliderValueChanged(_ sender: UISlider) {
