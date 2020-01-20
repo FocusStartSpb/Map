@@ -10,6 +10,7 @@ import Foundation
 // MARK: - SmartTargetListBusinessLogic protocol
 protocol SmartTargetListBusinessLogic
 {
+	func transferSmartTargets(_ request: SmartTargetList.GetSmartTargetsCollection.Request)
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request)
 	func updateSmartTargets(_ request: SmartTargetList.UpdateSmartTargets.Request)
 	func updateSmartTarget(_ request: SmartTargetList.UpdateSmartTarget.Request)
@@ -19,7 +20,6 @@ protocol SmartTargetListBusinessLogic
 // MARK: - SmartTargetListDataStore protocol
 protocol SmartTargetListDataStore
 {
-	var smartTargetsCount: Int { get }
 	var oldSmartTargetCollection: ISmartTargetCollection { get }
 	var smartTargetCollection: ISmartTargetCollection { get }
 	var editedSmartTarget: SmartTarget? { get set }
@@ -28,7 +28,7 @@ protocol SmartTargetListDataStore
 }
 
 // MARK: - Class
-final class SmartTargetListInteractor<T: ISmartTargetRepository>
+final class SmartTargetListInteractor<T: ISmartTargetRepository>: SmartTargetListDataStore
 {
 	// MARK: ...Private properties
 	private let presenter: SmartTargetListPresentationLogic
@@ -59,6 +59,11 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 // MARK: - Smart target list business logic
 extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 {
+	func transferSmartTargets(_ request: SmartTargetList.GetSmartTargetsCollection.Request) {
+		let response = SmartTargetList.GetSmartTargetsCollection.Response(collection: self.smartTargetCollection)
+		self.presenter.presentSmartTargetCollection(response)
+	}
+
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request) {
 		if removedIndexSet != request.removedIndexSet,
 			settingsWorker.forceRemovePin ?? true {
@@ -123,15 +128,7 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 	}
 
 	func showEmptyView(_ request: SmartTargetList.ShowEmptyView.Request) {
-		let response = SmartTargetList.ShowEmptyView.Response(showEmptyView: (self.smartTargetsCount == 0))
+		let response = SmartTargetList.ShowEmptyView.Response(showEmptyView: (self.smartTargetCollection.count == 0))
 		presenter.presentEmptyView(response)
-	}
-}
-
-// MARK: - Smart target list data store
-extension SmartTargetListInteractor: SmartTargetListDataStore
-{
-	var smartTargetsCount: Int {
-		smartTargetCollection.count
 	}
 }
