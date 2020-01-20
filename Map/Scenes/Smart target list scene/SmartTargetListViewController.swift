@@ -9,6 +9,7 @@ import UIKit
 // MARK: - SmartTargetListDisplayLogic protocol
 protocol SmartTargetListDisplayLogic: AnyObject
 {
+	func getSmartTargetCollection(_ viewModel: SmartTargetList.GetSmartTargetsCollection.ViewModel)
 	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel)
 	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel)
 	func updateEditedSmartTarget(_ viewModel: SmartTargetList.UpdateSmartTarget.ViewModel)
@@ -19,25 +20,14 @@ protocol SmartTargetListDisplayLogic: AnyObject
 final class SmartTargetListViewController: UIViewController
 {
 	// MARK: ...Private properties
+	private let navigationItemTitle = "List of smart object"
+	private let cellReuseIdentifier = "Cell"
 	private var interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore
-	var router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
 	private let targetsTableView = UITableView()
 	private let emptyView = EmptyView()
-	private var userInterfaceIsDark: Bool {
-		if #available(iOS 12.0, *) {
-			return self.traitCollection.userInterfaceStyle == .dark ? true : false
-		}
-		return false
-	}
-
-	private enum StaticConstants
-	{
-		static let navigationItemTitle = "List of smart object"
-		static let reuseIdentifier = "Cell"
-		static let selectedCellBackgroundColorInDarkMode = #colorLiteral(red: 0.3045190282, green: 0.3114352223, blue: 0.3184640712, alpha: 1)
-		static let selectedCellBackgroundColorInLightMode = #colorLiteral(red: 0.7502671557, green: 0.7502671557, blue: 0.7502671557, alpha: 1)
-	}
-
+	private var targetsCollection: ISmartTargetCollection?
+	// MARK: ...Internal properties
+	var router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
 	// MARK: ...Initialization
 	init(interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore,
 		 router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)) {
@@ -72,10 +62,14 @@ final class SmartTargetListViewController: UIViewController
 		interactor.updateSmartTargets(.init())
 	}
 
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		checkUserInterfaceStyle()
+	}
+
 	// MARK: ...Private methods
 	private func updateNavigationBar() {
 		self.navigationController?.navigationBar.prefersLargeTitles = true
-		self.navigationItem.title = StaticConstants.navigationItemTitle
+		self.navigationItem.title = self.navigationItemTitle
 	}
 
 	private func setupTargetsTableView() {
@@ -91,12 +85,12 @@ final class SmartTargetListViewController: UIViewController
 		self.targetsTableView.delegate = self
 		self.targetsTableView.separatorStyle = .none
 		self.targetsTableView.register(SmartTargetTableViewCell.self,
-									   forCellReuseIdentifier: StaticConstants.reuseIdentifier)
+									   forCellReuseIdentifier: self.cellReuseIdentifier)
 		self.targetsTableView.allowsSelectionDuringEditing = true
 	}
 
 	private func checkUserInterfaceStyle() {
-		if self.userInterfaceIsDark == true {
+		if self.view.userInterfaceStyleIsDark == true {
 			self.targetsTableView.backgroundColor = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
 			self.view.backgroundColor = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
 			self.navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
@@ -107,15 +101,15 @@ final class SmartTargetListViewController: UIViewController
 			self.navigationController?.navigationBar.barTintColor = .white
 		}
 	}
-
-	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-		checkUserInterfaceStyle()
-	}
 }
 
 // MARK: - Smart target list display logic
 extension SmartTargetListViewController: SmartTargetListDisplayLogic
 {
+	func getSmartTargetCollection(_ viewModel: SmartTargetList.GetSmartTargetsCollection.ViewModel) {
+		self.targetsCollection = viewModel.collection
+	}
+
 	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel) {
 		if viewModel.didDelete, let indexSet = viewModel.removedIndexSet {
 			targetsTableView.deleteSections(indexSet, with: .fade)
@@ -148,7 +142,8 @@ extension SmartTargetListViewController: UITableViewDataSource
 {
 	func numberOfSections(in tableView: UITableView) -> Int {
 		interactor.showEmptyView(.init())
-		return interactor.smartTargetsCount
+		interactor.transferSmartTargets(.init())
+		return self.targetsCollection?.count ?? 0
 	}
 
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -156,12 +151,12 @@ extension SmartTargetListViewController: UITableViewDataSource
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		guard let cell = tableView.dequeueReusableCell(withIdentifier: StaticConstants.reuseIdentifier)
+		guard let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier)
 			as? SmartTargetTableViewCell
 			else {
 			return UITableViewCell()
 		}
-		cell.fillLabels(with: interactor.smartTargetCollection.smartTargets[indexPath.section])
+		cell.fillLabels(with: self.targetsCollection?.smartTargets[indexPath.section])
 		return cell
 	}
 }
@@ -184,11 +179,11 @@ extension SmartTargetListViewController: UITableViewDelegate
 		guard let cell = tableView.cellForRow(at: indexPath) as? SmartTargetTableViewCell else { return }
 		let backgroundColorDefault = cell.containerView.backgroundColor
 		var selectedBackgroundColor: UIColor {
-			if userInterfaceIsDark {
-				return StaticConstants.selectedCellBackgroundColorInDarkMode
+			if self.view.userInterfaceStyleIsDark {
+				return Constants.Colors.selectedCellBackgroundColorInDarkMode
 			}
 			else {
-				return StaticConstants.selectedCellBackgroundColorInLightMode
+				return Constants.Colors.selectedCellBackgroundColorInLightMode
 			}
 		}
 		UIView.animate(withDuration: 0.2, animations: { cell.containerView.backgroundColor = selectedBackgroundColor })
