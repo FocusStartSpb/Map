@@ -446,7 +446,9 @@ private extension MapViewController
 	func setupMapConstraints() {
 		mapView.translatesAutoresizingMaskIntoConstraints = false
 		mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-		mapViewBottomLayoutConstraint = mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+		mapViewBottomLayoutConstraint =
+			mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor,
+											constant: -mapView.safeAreaInsets.bottom)
 		mapViewBottomLayoutConstraint?.isActive = true
 		mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
 		mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
