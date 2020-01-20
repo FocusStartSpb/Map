@@ -77,7 +77,7 @@ extension MapViewController
 
 	func appMovedFromBackground() {
 		let updateStatusRequest = Map.UpdateStatus.Request()
-		interactor.configureLocationService(request: updateStatusRequest)
+		interactor.configureLocationService(updateStatusRequest)
 
 		if isObservableToKeyboard == false {
 			notificationCenter.addObserver(self, notifications: keyboardNotifications)

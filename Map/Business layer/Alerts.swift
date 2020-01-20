@@ -12,31 +12,28 @@ enum Alerts
 	private static func showBasicAlert(on vc: UIViewController,
 									   with title: String,
 									   message: String,
-									   handler: @escaping () -> Void) {
+									   handler: @escaping TapAction) {
 		let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-		alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+		alert.addAction(UIAlertAction(title: "ОК", style: .default) { _ in
 			handler()
 		})
 		vc.present(alert, animated: true)
 	}
 
 	private static func showSheetAlert(on vc: UIViewController,
-										with title: String,
-										removeHandler: @escaping () -> Void,
-										cancelChangesHandler: @escaping () -> Void,
-										cancelHandler: @escaping () -> Void) {
-		let alert = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
-		let removeAction = UIAlertAction(title: "Remove",
-										 style: .destructive) { _ in
-											removeHandler()
+									   with title: String,
+									   removeHandler: @escaping TapAction,
+									   cancelChangesHandler: @escaping TapAction,
+									   cancelHandler: @escaping TapAction) {
+		let alert = UIAlertController(title: nil, message: title, preferredStyle: .actionSheet)
+		let removeAction = UIAlertAction(title: "Удалить", style: .destructive) { _ in
+			removeHandler()
 		}
-		let cancelChangesAction = UIAlertAction(title: "Cancel changes",
-												style: .default) { _ in
-													cancelChangesHandler()
+		let cancelChangesAction = UIAlertAction(title: "Отменить изменения", style: .default) { _ in
+			cancelChangesHandler()
 		}
-		let cancelAction = UIAlertAction(title: "Cancel",
-										 style: .cancel) { _ in
-											cancelHandler()
+		let cancelAction = UIAlertAction(title: "Отмена", style: .cancel) { _ in
+			cancelHandler()
 		}
 		alert.addAction(removeAction)
 		alert.addAction(cancelChangesAction)
@@ -44,14 +41,14 @@ enum Alerts
 		vc.present(alert, animated: true)
 	}
 
-	static func showDeletePinAlert(on vc: UIViewController, handler: @escaping () -> Void) {
+	static func showDeletePinAlert(on vc: UIViewController, handler: @escaping TapAction) {
 		showBasicAlert(on: vc, with: "Внимание", message: "Повторное действие удалит сохраненную локацию", handler: handler)
 	}
 
 	static func showActionsForPinAlert(on vc: UIViewController,
-									   removeHandler: @escaping () -> Void,
-									   cancelChangesHandler: @escaping () -> Void,
-									   cancelHandler: @escaping () -> Void) {
+									   removeHandler: @escaping TapAction,
+									   cancelChangesHandler: @escaping TapAction,
+									   cancelHandler: @escaping TapAction) {
 		showSheetAlert(on: vc,
 					   with: "Выберите действие",
 					   removeHandler: removeHandler,

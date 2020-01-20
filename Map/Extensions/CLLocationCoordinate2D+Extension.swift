@@ -14,6 +14,7 @@ extension CLLocationCoordinate2D: Codable
 		case latitude
 		case longitude
 	}
+
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 		self.init()
@@ -42,7 +43,7 @@ extension CLLocationCoordinate2D
 
 extension CLLocationCoordinate2D: Equatable
 {
-	public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
+	public static func == (lhs: Self, rhs: Self) -> Bool {
 		lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
 	}
 }

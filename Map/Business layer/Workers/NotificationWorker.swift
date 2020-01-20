@@ -53,19 +53,11 @@ final class NotificationWorker
 
 	private func configureBody(by smartTarget: SmartTarget) -> String {
 		let body: String
-		if let entryDate = smartTarget.entryDate {
-			body = """
-			Вы находитесь в радиусе \(smartTarget.radius ?? 100)м от \(smartTarget.address ?? "")
-			Время прибытия: \(Formatter.medium.string(from: entryDate))
-			Количество посещения данного места: \(smartTarget.numberOfVisits)
-			"""
+		if smartTarget.entryDate != nil {
+			body = "Вы прибыли в \(smartTarget.title)"
 		}
-		else if let exitDate = smartTarget.exitDate {
-			body = """
-			Вы находитесь в радиусе \(smartTarget.radius ?? 100)м от \(smartTarget.address ?? "")
-			Время убытия: \(Formatter.medium.string(from: exitDate))
-			Общее количество проведенного времени: \(Int(smartTarget.timeInside))с
-			"""
+		else if smartTarget.exitDate != nil {
+			body = "Вы покинули \(smartTarget.title)"
 		}
 		else {
 			body = ""

@@ -14,11 +14,14 @@ enum Constants
 
 	enum MeasurementSystem
 	{
-		// swiftlint:disable:next nesting
-		enum Symbol
-		{
-			static let imperial = "фт"
-			static let metric = "м"
+		case imperial
+		case metric
+
+		var symbol: String {
+			switch self {
+			case .imperial: return "фт"
+			case .metric: return "м"
+			}
 		}
 	}
 

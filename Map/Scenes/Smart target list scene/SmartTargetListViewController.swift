@@ -19,8 +19,8 @@ protocol SmartTargetListDisplayLogic: AnyObject
 final class SmartTargetListViewController: UIViewController
 {
 	// MARK: ...Private properties
-	private var interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore
-	var router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
+	private var interactor: SmartTargetListBusinessLogic
+	var router: SmartTargetListRoutingLogic & SmartTargetListDataPassing
 	private let targetsTableView = UITableView()
 	private let emptyView = EmptyView()
 	private var userInterfaceIsDark: Bool {
@@ -32,7 +32,7 @@ final class SmartTargetListViewController: UIViewController
 
 	private enum StaticConstants
 	{
-		static let navigationItemTitle = "List of smart object"
+		static let navigationItemTitle = "Список локаций"
 		static let reuseIdentifier = "Cell"
 		static let selectedCellBackgroundColorInDarkMode = #colorLiteral(red: 0.3045190282, green: 0.3114352223, blue: 0.3184640712, alpha: 1)
 		static let selectedCellBackgroundColorInLightMode = #colorLiteral(red: 0.7502671557, green: 0.7502671557, blue: 0.7502671557, alpha: 1)
@@ -54,7 +54,7 @@ final class SmartTargetListViewController: UIViewController
 	// MARK: ...View lifecycle
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		interactor.didUpdateAllSmartTargets = true
+		router.dataStore?.didUpdateAllSmartTargets = true
 		updateNavigationBar()
 		checkUserInterfaceStyle()
 		setupTargetsTableView()
@@ -63,7 +63,7 @@ final class SmartTargetListViewController: UIViewController
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		tabBarController?.delegate = self
-		interactor.removedIndexSet = nil
+		router.dataStore?.removedIndexSet = nil
 	}
 
 	override func viewDidAppear(_ animated: Bool) {
@@ -148,7 +148,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 {
 	func numberOfSections(in tableView: UITableView) -> Int {
 		interactor.showEmptyView(.init())
-		return interactor.smartTargetsCount
+		return router.dataStore?.smartTargetsCount ?? 0
 	}
 
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -161,7 +161,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 			else {
 			return UITableViewCell()
 		}
-		cell.fillLabels(with: interactor.smartTargetCollection.smartTargets[indexPath.section])
+		cell.fillLabels(with: router.dataStore?.smartTargetCollection.smartTargets[indexPath.section])
 		return cell
 	}
 }
@@ -217,11 +217,6 @@ extension SmartTargetListViewController: UITabBarControllerDelegate
 				return false
 		}
 		mapViewController.router.dataStore?.didUpdateAllAnnotations = false
-
-		if viewController === mapViewController {
-			router.routeToMap(mapViewController)
-			return false
-		}
 		return true
 	}
 }

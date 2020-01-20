@@ -59,7 +59,7 @@ extension MapViewController
 			isEditSmartTarget = true
 		}
 		addTemptCircle(at: annotation.coordinate,
-					   with: interactor.temptSmartTarget?.radius ?? circleRadius)
+					   with: router.dataStore?.temptSmartTarget?.radius ?? circleRadius)
 		temptLastPointer = currentPointer?.copy()
 		showSmartTargetMenu()
 	}
@@ -150,7 +150,8 @@ extension MapViewController: MKMapViewDelegate
 		}
 		removePinWithoutAlertRestricted = true
 		animatePinViewHidden(false)
-		interactor.getAddress(Map.Address.Request(coordinate: temptPointer.coordinate))
+		let request = Map.Address.Request(coordinate: temptPointer.coordinate)
+		interactor.getAddress(request)
 	}
 
 	func mapView(_ mapView: MKMapView,
@@ -179,7 +180,8 @@ extension MapViewController: MKMapViewDelegate
 			guard let temptPointer = currentPointer else { return }
 			mapView.setCenter(temptPointer.coordinate, animated: true)
 			animateSmartTargetMenu(hide: false)
-			interactor.getAddress(Map.Address.Request(coordinate: mapView.centerCoordinate))
+			let request = Map.Address.Request(coordinate: mapView.centerCoordinate)
+			interactor.getAddress(request)
 			addTemptCircle(at: temptPointer.coordinate, with: circleRadius)
 			if temptLastPointer != nil {
 				smartTargetMenu?.leftMenuAction = cancelAction
@@ -225,13 +227,13 @@ extension MapViewController: MKMapViewDelegate
 		if isEditSmartTarget == false, let annotation = (view.annotation as? SmartTargetAnnotation) {
 			let request = Map.GetSmartTarget.Request(uid: annotation.uid)
 			interactor.getSmartTarget(request)
-			if let radius = interactor.temptSmartTarget?.radius {
+			if let radius = router.dataStore?.temptSmartTarget?.radius {
 				// Update radius
 				circleRadius = radius
 				// Add overlay
 				addTemptCircle(at: annotation.coordinate, with: radius)
 			}
-			interactor.temptSmartTarget = nil
+			router.dataStore?.temptSmartTarget = nil
 		}
 		else if isEditSmartTarget && view.annotation !== currentPointer {
 			mapView.deselectAnnotation(view.annotation, animated: false)

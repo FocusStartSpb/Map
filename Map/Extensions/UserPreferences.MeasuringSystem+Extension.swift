@@ -9,8 +9,8 @@ extension UserPreferences.MeasurementSystem
 {
 	var symbol: String {
 		switch self {
-		case .imperial: return Constants.MeasurementSystem.Symbol.imperial
-		case .metric: return Constants.MeasurementSystem.Symbol.metric
+		case .imperial: return Constants.MeasurementSystem.imperial.symbol
+		case .metric: return Constants.MeasurementSystem.metric.symbol
 		}
 	}
 

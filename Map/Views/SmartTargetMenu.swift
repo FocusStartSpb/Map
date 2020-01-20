@@ -38,7 +38,7 @@ final class SmartTargetMenu: UIView
 
 	private lazy var textField: UITextField = {
 		let textField = UITextField()
-		textField.placeholder = "Type text..."
+		textField.placeholder = "Введите текст..."
 		textField.textAlignment = .center
 		textField.delegate = self
 		textField.returnKeyType = .done
