@@ -49,6 +49,8 @@ final class SmartTargetMenu: UIView
 	private lazy var titleLabel: UILabel = {
 		let label = UILabel()
 		label.numberOfLines = 0
+		label.adjustsFontSizeToFitWidth = true
+		label.minimumScaleFactor = 0.01
 		label.textAlignment = .center
 		return label
 	}()
@@ -220,38 +222,42 @@ final class SmartTargetMenu: UIView
 		blurredView.translatesAutoresizingMaskIntoConstraints = false
 		vibrancyView.translatesAutoresizingMaskIntoConstraints = false
 
-		// Set constraint for titleTextField
+		// Set constraint for textField
 		textField.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
 		textField.topAnchor.constraint(equalTo: topAnchor, constant: layoutMargins.top).isActive = true
+		textField.heightAnchor.constraint(equalToConstant: 20).isActive = true
 
-		// Set constraint for addressLabel
+		// Set constraint for titleLabel
 		titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
 		titleLabel.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: layoutMargins.top).isActive = true
 		titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
-		titleLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 16).isActive = true
+		titleLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 20).isActive = true
 
 		// Set constraint for activityIndicator
 		activityIndicator.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor).isActive = true
 		activityIndicator.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor).isActive = true
 
-		// Set constraint for radiusSlider
+		// Set constraint for slider
 		slider.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
 		slider.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16).isActive = true
-		slider.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 2 / 3).isActive = true
+		slider.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 3 / 5).isActive = true
+		slider.heightAnchor.constraint(equalToConstant: 20).isActive = true
 
-		// Set constraint for radiusLabel
-		sliderLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16).isActive = true
+		// Set constraint for sliderLabel
+		sliderLabel.centerYAnchor.constraint(equalTo: slider.centerYAnchor).isActive = true
 		sliderLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
-		sliderLabel.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1 / 3).isActive = true
+		sliderLabel.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 2 / 5).isActive = true
 
-		// Set constraint for saveButton
+		// Set constraint for leftButton
 		leftButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: layoutMargins.left).isActive = true
 		leftButton.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: 16).isActive = true
 		leftButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -layoutMargins.right).isActive = true
+		leftButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
 
-		// Set constraint for removeButton
+		// Set constraint for rightButton
 		rightButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -layoutMargins.right).isActive = true
 		rightButton.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: 16).isActive = true
+		rightButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
 
 		// Set constraint for blurredView
 		blurredView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
