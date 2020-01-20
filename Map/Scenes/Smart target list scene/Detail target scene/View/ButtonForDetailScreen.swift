@@ -38,6 +38,12 @@ final class ButtonForDetailScreen: UIButton
 		}
 	}
 
+	func reset(title: String) {
+		self.setTitle(title, for: .normal)
+		self.backgroundColor = currentBackground
+		self.isEnabled = true
+	}
+
 	private func setupUI() {
 		self.layer.shadowOffset = CGSize(width: self.bounds.width, height: self.bounds.height + 7)
 		self.layer.shadowRadius = 0.5
