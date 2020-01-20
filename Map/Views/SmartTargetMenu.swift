@@ -98,8 +98,8 @@ final class SmartTargetMenu: UIView
 	var title: String? {
 		get { titleLabel.text }
 		set {
-			titleLabel.text = newValue
-			checkAddress()
+			titleLabel.setTextAnimation(newValue)
+			self.checkAddress()
 		}
 	}
 
