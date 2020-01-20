@@ -208,11 +208,9 @@ extension DetailTargetViewController: UITextViewDelegate
 			textView.resignFirstResponder()
 			return false
 		}
-		if textView.text.count < 10 {
-			textView.text += text
-			return true
-		}
-		return false
+		let newText = (textView.text as NSString).replacingCharacters(in: range, with: text)
+		let numberOfChars = newText.count
+		return numberOfChars <= 30
 	}
 
 	func textViewDidBeginEditing(_ textView: UITextView) {
