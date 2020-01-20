@@ -34,6 +34,7 @@ protocol IDetailTargetPresenter
 final class DetailTargetPresenter<G: IDecoderGeocoder>
 {
 	private let smartTarget: SmartTarget
+	private let separator = ":"
 
 	var editRadius: CLLocationDistance
 	var editCoordinate: CLLocationCoordinate2D
@@ -62,11 +63,11 @@ final class DetailTargetPresenter<G: IDecoderGeocoder>
 extension DetailTargetPresenter: IDetailTargetPresenter
 {
 	var totalNumberOfVisits: String {
-		return "\(self.smartTarget.numberOfVisits)"
+		self.smartTarget.numberOfVisits.description
 	}
 
 	var totalStay: String {
-		return "\(self.smartTarget.timeInside)"
+		self.smartTarget.timeInside.stringFromTimeInterval()
 	}
 
 	var dateOfLastVisit: String {
@@ -82,15 +83,15 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 	}
 
 	func getTitleText() -> String {
-		return self.smartTarget.title
+		self.smartTarget.title
 	}
 
 	func getRadius() -> Double {
-		return self.smartTarget.radius ?? 0
+		self.smartTarget.radius ?? 0
 	}
 
 	func getDateOfCreation() -> String {
-		return Formatter.full.string(from: smartTarget.dateOfCreated)
+		Formatter.full.string(from: smartTarget.dateOfCreated)
 	}
 
 	func getAddressText(completion: @escaping (String) -> Void) {
@@ -115,15 +116,15 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 	}
 
 	func getAnnotation() -> SmartTargetAnnotation {
-		return smartTarget.annotation
+		smartTarget.annotation
 	}
 
 	func getDefaultCircleOverlay() -> MKCircle {
-		return MKCircle(center: smartTarget.coordinates, radius: smartTarget.radius ?? 0)
+		MKCircle(center: smartTarget.coordinates, radius: smartTarget.radius ?? 0)
 	}
 
 	func getCircleOverlay() -> MKCircle {
-		return MKCircle(center: editCoordinate, radius: editRadius)
+		MKCircle(center: editCoordinate, radius: editRadius)
 	}
 
 	func attachViewController(detailTargetViewController: DetailTargetViewController) {
@@ -141,10 +142,10 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 	}
 
 	func getSliderValuesRange() -> (min: Double, max: Double) {
-		return (settingsWorker.lowerValueOfRadius ?? 0, settingsWorker.upperValueOfRadius ?? 1)
+		(settingsWorker.lowerValueOfRadius ?? 0, settingsWorker.upperValueOfRadius ?? 1)
 	}
 
 	func getMeasurementSystem() -> UserPreferences.MeasurementSystem {
-		return settingsWorker.measurementSystem ?? .metric
+		settingsWorker.measurementSystem ?? .metric
 	}
 }
