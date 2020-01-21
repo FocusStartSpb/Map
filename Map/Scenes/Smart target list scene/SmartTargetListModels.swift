@@ -11,7 +11,6 @@ import Foundation
 enum SmartTargetList
 {
 	// MARK: Use cases
-
 	// MARK: ...SaveSmartTargets
 	enum DeleteSmartTargets
 	{

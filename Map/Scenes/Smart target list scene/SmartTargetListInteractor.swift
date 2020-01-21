@@ -19,7 +19,6 @@ protocol SmartTargetListBusinessLogic
 // MARK: - SmartTargetListDataStore protocol
 protocol SmartTargetListDataStore
 {
-	var smartTargetsCount: Int { get }
 	var collection: ISmartTargetCollection { get }
 	var editedSmartTarget: SmartTarget? { get set }
 	var didUpdateAllSmartTargets: Bool { get set }
@@ -121,7 +120,7 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 	}
 
 	func showEmptyView(_ request: SmartTargetList.ShowEmptyView.Request) {
-		let response = SmartTargetList.ShowEmptyView.Response(showEmptyView: (self.smartTargetsCount == 0))
+		let response = SmartTargetList.ShowEmptyView.Response(showEmptyView: (self.smartTargetCollection.count == 0))
 		presenter.presentEmptyView(response)
 	}
 }
@@ -131,9 +130,5 @@ extension SmartTargetListInteractor: SmartTargetListDataStore
 {
 	var collection: ISmartTargetCollection {
 		smartTargetCollection.copy() as ISmartTargetCollection
-	}
-
-	var smartTargetsCount: Int {
-		smartTargetCollection.count
 	}
 }
