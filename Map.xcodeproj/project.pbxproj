@@ -22,8 +22,8 @@
 		3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */; };
 		3AC77B0023AAA5B400CA1EC5 /* GeocoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */; };
 		3AC77B0223AAA5BE00CA1EC5 /* ServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */; };
-		3ADC0C2C23D635E300DAD8D3 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADC0C2B23D635E300DAD8D3 /* UIView.swift */; };
-		3ADC0C2E23D6559400DAD8D3 /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADC0C2D23D6559400DAD8D3 /* TimeInterval.swift */; };
+		3ADC0C2C23D635E300DAD8D3 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADC0C2B23D635E300DAD8D3 /* UIView+Extension.swift */; };
+		3ADC0C2E23D6559400DAD8D3 /* TimeInterval+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADC0C2D23D6559400DAD8D3 /* TimeInterval+Extension.swift */; };
 		580A076623AFEB1200192969 /* SmartTargetMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 580A076523AFEB1200192969 /* SmartTargetMenu.swift */; };
 		5815996823B52DD900232CE2 /* NotificationCenter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */; };
 		582ED16D23AE8458001AD44E /* Decodable+Initialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */; };
@@ -101,8 +101,8 @@
 		3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderModel.swift; sourceTree = "<group>"; };
 		3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderService.swift; sourceTree = "<group>"; };
 		3AC77B0123AAA5BE00CA1EC5 /* ServiceError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceError.swift; sourceTree = "<group>"; };
-		3ADC0C2B23D635E300DAD8D3 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
-		3ADC0C2D23D6559400DAD8D3 /* TimeInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
+		3ADC0C2B23D635E300DAD8D3 /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
+		3ADC0C2D23D6559400DAD8D3 /* TimeInterval+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Extension.swift"; sourceTree = "<group>"; };
 		580A076523AFEB1200192969 /* SmartTargetMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetMenu.swift; sourceTree = "<group>"; };
 		5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationCenter+Extension.swift"; sourceTree = "<group>"; };
 		582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decodable+Initialization.swift"; sourceTree = "<group>"; };
@@ -415,7 +415,7 @@
 			isa = PBXGroup;
 			children = (
 				58A9984523AC1D1700CAACE8 /* Sequence+UniqueElements.swift */,
-				3ADC0C2D23D6559400DAD8D3 /* TimeInterval.swift */,
+				3ADC0C2D23D6559400DAD8D3 /* TimeInterval+Extension.swift */,
 				58454F3123BE87C400EE0D71 /* Array+Difference.swift */,
 				58A9984723AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift */,
 				582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */,
@@ -423,7 +423,7 @@
 				5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */,
 				58551DD523BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift */,
 				58EEE41A23C4404300CE9229 /* UIViewController+Extension.swift */,
-				3ADC0C2B23D635E300DAD8D3 /* UIView.swift */,
+				3ADC0C2B23D635E300DAD8D3 /* UIView+Extension.swift */,
 				58A4B28823C6E27700D0D985 /* Formatter+Extension.swift */,
 			);
 			path = Extensions;
@@ -521,7 +521,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				584EE5E523A834D60013087A /* SmartTargetListModels.swift in Sources */,
-				3ADC0C2E23D6559400DAD8D3 /* TimeInterval.swift in Sources */,
+				3ADC0C2E23D6559400DAD8D3 /* TimeInterval+Extension.swift in Sources */,
 				58551DD623BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift in Sources */,
 				585F64DF23BA92CD00B66EAA /* RangeSliderTrackLayer.swift in Sources */,
 				584EE5AF23A7F8490013087A /* AppDelegate.swift in Sources */,
@@ -589,7 +589,7 @@
 				5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */,
 				586F660C23BBF065007D4657 /* MenuAction.swift in Sources */,
 				58A9984823AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift in Sources */,
-				3ADC0C2C23D635E300DAD8D3 /* UIView.swift in Sources */,
+				3ADC0C2C23D635E300DAD8D3 /* UIView+Extension.swift in Sources */,
 				585F64AD23B9989900B66EAA /* SettingsWorker.swift in Sources */,
 				585AC99723D09D8A008D357A /* DetailTargetViewController+MKMapViewDelegate.swift in Sources */,
 				585F64AC23B9989900B66EAA /* SettingsPresenter.swift in Sources */,
