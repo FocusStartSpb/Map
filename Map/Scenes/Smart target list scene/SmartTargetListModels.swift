@@ -12,6 +12,22 @@ enum SmartTargetList
 {
 	// MARK: Use cases
 
+	// MARK: ...SetupInitial
+	enum SetupInitial
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let isFinished: Bool
+		}
+
+		struct ViewModel
+		{
+			let isFinished: Bool
+		}
+	}
+
 	// MARK: ...SaveSmartTargets
 	enum DeleteSmartTargets
 	{

@@ -10,6 +10,7 @@ import Foundation
 // MARK: - SmartTargetListBusinessLogic protocol
 protocol SmartTargetListBusinessLogic
 {
+	func setupInitial(_ request: SmartTargetList.SetupInitial.Request)
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request)
 	func updateSmartTargets(_ request: SmartTargetList.UpdateSmartTargets.Request)
 	func updateSmartTarget(_ request: SmartTargetList.UpdateSmartTarget.Request)
@@ -59,18 +60,25 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 // MARK: - Smart target list business logic
 extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 {
+	func setupInitial(_ request: SmartTargetList.SetupInitial.Request) {
+		didUpdateAllSmartTargets = true
+		oldSmartTargetCollection.replaceSmartTargets(with: smartTargetCollection.smartTargets)
+		let response = SmartTargetList.SetupInitial.Response(isFinished: true)
+		presenter.presentSetupInitial(response)
+	}
+
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request) {
-		if removedIndexSet != request.removedIndexSet,
-			settingsWorker.forceRemovePin ?? true {
+		if removedIndexSet != request.removedIndexSet, settingsWorker.forceRemovePin ?? true {
+			removedIndexSet = request.removedIndexSet
 			let response =
 				SmartTargetList.DeleteSmartTargets.Response(showAlertForceRemovePin: true,
 															result: nil,
 															removedIndexSet: nil)
 			presenter.presentSaveSmartTargets(response)
-			removedIndexSet = request.removedIndexSet
 			request.completionHandler(false)
 		}
 		else {
+			removedIndexSet = nil
 			request.smartTargetsIndexSet.forEach { index in
 				let uuid = self.smartTargetCollection.smartTargets[Int(index)].uid
 				self.smartTargetCollection.remove(atUID: uuid)
