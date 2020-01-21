@@ -87,7 +87,7 @@ enum Constants
 
 	enum Colors
 	{
-		static let selectedCellBackgroundColorInDarkMode = #colorLiteral(red: 0.3045190282, green: 0.3114352223, blue: 0.3184640712, alpha: 1)
+		static let selectedCellBackgroundColorInDarkMode = #colorLiteral(red: 0.1424806493, green: 0.1424806493, blue: 0.1424806493, alpha: 1)
 		static let tableViewBackgroundColorInDarkMode = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
 		static let viewBackgroundColorInDarkMode = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
 		static let navigationBarTintColorInDarkMode = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
