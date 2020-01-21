@@ -10,7 +10,7 @@ extension Array where Element: Hashable
 	func difference(from other: Self) -> Self {
 		let thisSet = Set(self)
 		let otherSet = Set(other)
-		return Array(thisSet.symmetricDifference(otherSet))
+		return Self(thisSet.symmetricDifference(otherSet))
 	}
 }
 
@@ -24,7 +24,7 @@ extension Array where Element: Hashable & Identity
 				result.append(element)
 			}
 		}
-		let newFromOtherSet = otherSet.reduce(into: [Element]()) { result, element in
+		let newFromOtherSet = otherSet.reduce(into: Self()) { result, element in
 			if thisSet.contains(where: { element === $0 }) == false {
 				result.append(element)
 			}

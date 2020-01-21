@@ -11,15 +11,15 @@ struct MenuAction: Equatable
 {
 	let title: String?
 	let style: UIAlertAction.Style
-	let handler: ((MenuAction) -> Void)?
+	let handler: ((Self) -> Void)?
 
-	init(title: String?, style: UIAlertAction.Style, handler: ((MenuAction) -> Void)?) {
+	init(title: String?, style: UIAlertAction.Style, handler: ((Self) -> Void)?) {
 		self.title = title
 		self.style = style
 		self.handler = handler
 	}
 
-	static func == (lhs: MenuAction, rhs: MenuAction) -> Bool {
+	static func == (lhs: Self, rhs: Self) -> Bool {
 		lhs.title == rhs.title
 	}
 }

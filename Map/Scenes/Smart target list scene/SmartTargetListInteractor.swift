@@ -10,6 +10,7 @@ import Foundation
 // MARK: - SmartTargetListBusinessLogic protocol
 protocol SmartTargetListBusinessLogic
 {
+	func setupInitial(_ request: SmartTargetList.SetupInitial.Request)
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request)
 	func updateSmartTargets(_ request: SmartTargetList.UpdateSmartTargets.Request)
 	func updateSmartTarget(_ request: SmartTargetList.UpdateSmartTarget.Request)
@@ -19,24 +20,24 @@ protocol SmartTargetListBusinessLogic
 // MARK: - SmartTargetListDataStore protocol
 protocol SmartTargetListDataStore
 {
-	var oldSmartTargetCollection: ISmartTargetCollection { get }
-	var smartTargetCollection: ISmartTargetCollection { get }
+	var collection: ISmartTargetCollection { get }
 	var editedSmartTarget: SmartTarget? { get set }
 	var didUpdateAllSmartTargets: Bool { get set }
 	var removedIndexSet: IndexSet? { get set }
 }
 
 // MARK: - Class
-final class SmartTargetListInteractor<T: ISmartTargetRepository>: SmartTargetListDataStore
+final class SmartTargetListInteractor<T: ISmartTargetRepository> where T.Element: ISmartTargetCollection
 {
 	// MARK: ...Private properties
 	private let presenter: SmartTargetListPresentationLogic
 	private let dataBaseWorker: DataBaseWorker<T>
 	private let settingsWorker: SettingsWorker
 
+	private let oldSmartTargetCollection: T.Element
+	private let smartTargetCollection: T.Element
+
 	// MARK: ...Map data store
-	let oldSmartTargetCollection: ISmartTargetCollection
-	let smartTargetCollection: ISmartTargetCollection
 	var didUpdateAllSmartTargets = false
 	var editedSmartTarget: SmartTarget?
 	var removedIndexSet: IndexSet?
@@ -45,8 +46,8 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>: SmartTargetLis
 	init(presenter: SmartTargetListPresentationLogic,
 		 dataBaseWorker: DataBaseWorker<T>,
 		 settingsWorker: SettingsWorker,
-		 collection: ISmartTargetCollection,
-		 oldCollection: ISmartTargetCollection) {
+		 collection: T.Element,
+		 oldCollection: T.Element) {
 		self.presenter = presenter
 		self.dataBaseWorker = dataBaseWorker
 		self.settingsWorker = settingsWorker
@@ -58,18 +59,25 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>: SmartTargetLis
 // MARK: - Smart target list business logic
 extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 {
+	func setupInitial(_ request: SmartTargetList.SetupInitial.Request) {
+		didUpdateAllSmartTargets = true
+		oldSmartTargetCollection.replaceSmartTargets(with: smartTargetCollection.smartTargets)
+		let response = SmartTargetList.SetupInitial.Response(isFinished: true)
+		presenter.presentSetupInitial(response)
+	}
+
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request) {
-		if removedIndexSet != request.removedIndexSet,
-			settingsWorker.forceRemovePin ?? true {
+		if removedIndexSet != request.removedIndexSet, settingsWorker.forceRemovePin ?? true {
+			removedIndexSet = request.removedIndexSet
 			let response =
 				SmartTargetList.DeleteSmartTargets.Response(showAlertForceRemovePin: true,
 															result: nil,
 															removedIndexSet: nil)
 			presenter.presentSaveSmartTargets(response)
-			removedIndexSet = request.removedIndexSet
 			request.completionHandler(false)
 		}
 		else {
+			removedIndexSet = nil
 			request.smartTargetsIndexSet.forEach { index in
 				let uuid = self.smartTargetCollection.smartTargets[Int(index)].uid
 				self.smartTargetCollection.remove(atUID: uuid)
@@ -86,10 +94,8 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 	}
 
 	private func saveSmartTargetCollection(completion: @escaping (SmartTargetsResult) -> Void) {
-		guard let collection = smartTargetCollection as? T.Element else { return }
-
-		dataBaseWorker.saveSmartTargets(collection) { result in
-			let result = result.map { $0 as? ISmartTargetCollection ?? SmartTargetCollection() }
+		dataBaseWorker.saveSmartTargets(smartTargetCollection) { result in
+			let result = result.map { $0 as ISmartTargetCollection }
 			completion(result)
 		}
 	}
@@ -124,5 +130,13 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 	func showEmptyView(_ request: SmartTargetList.ShowEmptyView.Request) {
 		let response = SmartTargetList.ShowEmptyView.Response(showEmptyView: (self.smartTargetCollection.count == 0))
 		presenter.presentEmptyView(response)
+	}
+}
+
+// MARK: - Smart target list data store
+extension SmartTargetListInteractor: SmartTargetListDataStore
+{
+	var collection: ISmartTargetCollection {
+		smartTargetCollection.copy() as ISmartTargetCollection
 	}
 }

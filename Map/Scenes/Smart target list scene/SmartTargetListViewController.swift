@@ -9,6 +9,7 @@ import UIKit
 // MARK: - SmartTargetListDisplayLogic protocol
 protocol SmartTargetListDisplayLogic: AnyObject
 {
+	func displaySetupInitial(_ viewModel: SmartTargetList.SetupInitial.ViewModel)
 	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel)
 	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel)
 	func updateEditedSmartTarget(_ viewModel: SmartTargetList.UpdateSmartTarget.ViewModel)
@@ -19,7 +20,7 @@ protocol SmartTargetListDisplayLogic: AnyObject
 final class SmartTargetListViewController: UIViewController
 {
 	// MARK: ...Private properties
-	private var interactor: SmartTargetListBusinessLogic
+	private let interactor: SmartTargetListBusinessLogic
 	var router: SmartTargetListRoutingLogic & SmartTargetListDataPassing
 	private let targetsTableView = UITableView()
 	private let emptyView = EmptyView()
@@ -47,7 +48,7 @@ final class SmartTargetListViewController: UIViewController
 	// MARK: ...View lifecycle
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		router.dataStore?.didUpdateAllSmartTargets = true
+		interactor.setupInitial(.init())
 		updateNavigationBar()
 		checkUserInterfaceStyle()
 		setupTargetsTableView()
@@ -110,6 +111,8 @@ final class SmartTargetListViewController: UIViewController
 // MARK: - Smart target list display logic
 extension SmartTargetListViewController: SmartTargetListDisplayLogic
 {
+	func displaySetupInitial(_ viewModel: SmartTargetList.SetupInitial.ViewModel) { }
+
 	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel) {
 		if viewModel.didDelete, let indexSet = viewModel.removedIndexSet {
 			targetsTableView.deleteSections(indexSet, with: .fade)
@@ -142,7 +145,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 {
 	func numberOfSections(in tableView: UITableView) -> Int {
 		interactor.showEmptyView(.init())
-		return router.dataStore?.smartTargetCollection.smartTargets.count ?? 0
+		return router.dataStore?.collection.smartTargets.count ?? 0
 	}
 
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -155,7 +158,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 			else {
 			return UITableViewCell()
 		}
-		cell.fillLabels(with: router.dataStore?.smartTargetCollection.smartTargets[indexPath.section])
+		cell.fillLabels(with: router.dataStore?.collection.smartTargets[indexPath.section])
 		return cell
 	}
 }
@@ -193,10 +196,11 @@ extension SmartTargetListViewController: UITableViewDelegate
 
 	func tableView(_ tableView: UITableView,
 				   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-		let action = UIContextualAction(style: .destructive,
+		let action = UIContextualAction(style: .normal,
 										title: StaticConstants.deleteButtonTitle) { [weak self] _, _, completion in
 			self?.actionRemove(indexSet: [indexPath.section], completionHandler: completion)
 		}
+		action.backgroundColor = .systemRed
 		return UISwipeActionsConfiguration(actions: [action])
 	}
 }

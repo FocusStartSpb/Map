@@ -40,9 +40,6 @@ protocol MapBusinessLogic
 protocol MapDataStore
 {
 	var temptSmartTarget: SmartTarget? { get set }
-
-	var temptSmartTargetCollection: ISmartTargetCollection { get }
-	var smartTargetCollection: ISmartTargetCollection { get }
 	var didUpdateAllAnnotations: Bool { get set }
 }
 
@@ -66,9 +63,8 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 
 	private var currentCoordinate: CLLocationCoordinate2D?
 
-	let temptSmartTargetCollection: ISmartTargetCollection
-	let smartTargetCollection: ISmartTargetCollection
-	var didUpdateAllAnnotations = false
+	private let temptSmartTargetCollection: T.Element
+	private let smartTargetCollection: T.Element
 
 	private var pendingRequesrWorkItem: DispatchWorkItem?
 	private let dispatchQueueGetAddress =
@@ -88,6 +84,7 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 
 	// MARK: ...Map data store
 	var temptSmartTarget: SmartTarget?
+	var didUpdateAllAnnotations = false
 
 	// MARK: ...Initialization
 	init(presenter: MapPresentationLogic,
@@ -95,8 +92,8 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 		 geocoderWorker: GeocoderWorker<G>,
 		 settingsWorker: SettingsWorker,
 		 notificationWorker: NotificationWorker,
-		 collection: ISmartTargetCollection,
-		 temptCollection: ISmartTargetCollection) {
+		 collection: T.Element,
+		 temptCollection: T.Element) {
 		self.presenter = presenter
 		self.dataBaseWorker = dataBaseWorker
 		self.geocoderWorker = geocoderWorker
@@ -115,7 +112,7 @@ final class MapInteractor<T: ISmartTargetRepository, G: IDecoderGeocoder>: NSObj
 
 	private func saveSmartTargetCollection(_ completion: @escaping (Bool) -> Void) {
 		dispatchQueueSaveSmartTargets.async { [weak self] in
-			guard let smartTargetCollection = self?.smartTargetCollection as? T.Element else { return }
+			guard let smartTargetCollection = self?.smartTargetCollection else { return }
 			self?.dataBaseWorker.saveSmartTargets(smartTargetCollection) { result in
 				let isSaved: Bool
 				if case .success = result {

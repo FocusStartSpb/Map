@@ -10,6 +10,7 @@ import Foundation
 // MARK: - SmartTargetListPresentationLogic
 protocol SmartTargetListPresentationLogic
 {
+	func presentSetupInitial(_ response: SmartTargetList.SetupInitial.Response)
 	func presentSaveSmartTargets(_ response: SmartTargetList.DeleteSmartTargets.Response)
 	func presentUpdateSmartTargets(_ response: SmartTargetList.UpdateSmartTargets.Response)
 	func presentUpdateSmartTarget(_ response: SmartTargetList.UpdateSmartTarget.Response)
@@ -26,6 +27,11 @@ final class SmartTargetListPresenter
 // MARK: - Smart target list presentation logic
 extension SmartTargetListPresenter: SmartTargetListPresentationLogic
 {
+	func presentSetupInitial(_ response: SmartTargetList.SetupInitial.Response) {
+		let viewModel = SmartTargetList.SetupInitial.ViewModel(isFinished: response.isFinished)
+		viewController?.displaySetupInitial(viewModel)
+	}
+
 	func presentSaveSmartTargets(_ response: SmartTargetList.DeleteSmartTargets.Response) {
 		let didSave: Bool
 		let showAlertForceRemovePin: Bool
