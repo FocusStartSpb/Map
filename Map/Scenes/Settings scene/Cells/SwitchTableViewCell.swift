@@ -38,6 +38,11 @@ final class SwitchTableViewCell: UITableViewCell
 		setup()
 	}
 
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
+		updateBackgroundColor()
+	}
+
 	@available(*, unavailable)
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
@@ -47,6 +52,7 @@ final class SwitchTableViewCell: UITableViewCell
 	private func setup() {
 		contentView.addSubview(stack)
 		setConstraints()
+		updateBackgroundColor()
 	}
 
 	private func setConstraints() {
@@ -61,6 +67,16 @@ final class SwitchTableViewCell: UITableViewCell
 										constant: -16).isActive = true
 		stack.alignment = .center
 		stack.distribution = .fillProportionally
+		stack.tintColor = .red
+	}
+
+	private func updateBackgroundColor() {
+		if userInterfaceStyleIsDark {
+			backgroundColor = Constants.Colors.containerViewBackgroundColorInDarkMode
+		}
+		else {
+			backgroundColor = Constants.Colors.containerViewBackgroundColorInLightMode
+		}
 	}
 }
 

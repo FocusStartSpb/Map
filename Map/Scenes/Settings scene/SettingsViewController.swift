@@ -80,7 +80,24 @@ final class SettingsViewController: UIViewController
 		setup()
 	}
 
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
+		updateBackgroundColors()
+	}
+
 	// MARK: ...Setup
+	private func updateBackgroundColors() {
+		if view.userInterfaceStyleIsDark {
+			tableView.backgroundColor = Constants.Colors.tableViewBackgroundColorInDarkMode
+			navigationController?.navigationBar.barTintColor =
+				Constants.Colors.navigationBarTintColorInDarkMode
+		}
+		else {
+			tableView.backgroundColor = Constants.Colors.tableViewBackgroundColorInLightMode
+			navigationController?.navigationBar.barTintColor =
+				Constants.Colors.navigationBarTintColorInLightMode
+		}
+	}
 	private func setup() {
 		title = tabBarItem.title
 
@@ -93,6 +110,7 @@ final class SettingsViewController: UIViewController
 		interactor.getMeasurementSystem(.init())
 
 		setupConstraints()
+		updateBackgroundColors()
 	}
 
 	private func setupConstraints() {

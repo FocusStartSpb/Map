@@ -38,6 +38,11 @@ final class SegmentedControlTableViewCell: UITableViewCell
 		setup()
 	}
 
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
+		updateBackgroundColors()
+	}
+
 	@available(*, unavailable)
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
@@ -47,6 +52,16 @@ final class SegmentedControlTableViewCell: UITableViewCell
 	private func setup() {
 		contentView.addSubview(stack)
 		setConstraints()
+		updateBackgroundColors()
+	}
+
+	private func updateBackgroundColors() {
+		if userInterfaceStyleIsDark {
+			backgroundColor = Constants.Colors.containerViewBackgroundColorInDarkMode
+		}
+		else {
+			backgroundColor = Constants.Colors.containerViewBackgroundColorInLightMode
+		}
 	}
 
 	private func setConstraints() {
