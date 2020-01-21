@@ -298,8 +298,8 @@ final class SmartTargetMenu: UIView
 	/// - Parameters:
 	///   - take: сделать прозрачным или нет
 	///   - value: степень прозрачности от 0 до 1. Значение по умолчанию - 0.5
-	func translucent(_ take: Bool, value: CGFloat = 0.5) {
-		UIView.animate(withDuration: 0.3) { self.alpha = take ? value : 1 }
+	func translucent(_ value: CGFloat = 0.5) {
+		UIView.animate(withDuration: 0.3) { self.alpha = value }
 	}
 
 	func hide(_ completion: (() -> Void)? = nil) {

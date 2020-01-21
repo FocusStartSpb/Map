@@ -249,7 +249,7 @@ extension MapViewController
 		let constant = bottomSmartTargetMenuConstraint.constant + offset
 
 		smartTargetMenu.isEditable = (flag == false)
-		smartTargetMenu.translucent(flag, value: 0.5)
+		smartTargetMenu.translucent(flag ? 0.5 : 1)
 		animateSmartTargetMenu(withBottomOffset: constant, layoutIfNeeded: true)
 	}
 
