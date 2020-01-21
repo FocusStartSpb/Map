@@ -399,7 +399,7 @@ private extension MapViewController
 			interactor.stopMonitoringRegion(monitoringRegionRequest)
 
 			mapView.removeAnnotation(temptPointer)
-			smartTargetMenu?.removeFromSuperview()
+			smartTargetMenu?.hide { [weak self] in self?.smartTargetMenu?.removeFromSuperview() }
 			setupDefaultSettings()
 		}
 	}
