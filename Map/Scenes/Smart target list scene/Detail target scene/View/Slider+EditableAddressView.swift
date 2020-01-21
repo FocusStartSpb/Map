@@ -84,13 +84,14 @@ final class SliderAndEditableAddressView: UIView
 		setupUI()
 	}
 
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
+		self.updateBackgroundColor()
+	}
+
 	@available(*, unavailable)
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
-	}
-
-	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-		self.updateBackgroundColor()
 	}
 
 	private func setupConstraints() {

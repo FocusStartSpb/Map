@@ -95,6 +95,10 @@ enum Constants
 		static let viewBackgroundColorInLightMode = UIColor.white
 		static let tableViewBackgroundColorInLightMode = #colorLiteral(red: 0.9871620841, green: 0.9871620841, blue: 0.9871620841, alpha: 1)
 		static let navigationBarTintColorInLightMode = UIColor.white
+		static let containerViewBackgroundColorInDarkMode = #colorLiteral(red: 0.3623036282, green: 0.3623036282, blue: 0.3623036282, alpha: 1)
+		static let contentViewBackgroundColorInDarkMode = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
+		static let containerViewBackgroundColorInLightMode = #colorLiteral(red: 0.990454598, green: 0.990454598, blue: 0.990454598, alpha: 1)
+		static let contentViewBackgroundColorInLightMode = UIColor.white
 	}
 
 	enum Fonts

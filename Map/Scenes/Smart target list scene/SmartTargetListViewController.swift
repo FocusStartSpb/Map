@@ -102,6 +102,7 @@ final class SmartTargetListViewController: UIViewController
 	}
 
 	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
 		checkUserInterfaceStyle()
 	}
 }
@@ -187,8 +188,7 @@ extension SmartTargetListViewController: UITableViewDelegate
 		UIView.animate(withDuration: 0.2, animations: { cell.containerView.backgroundColor = selectedBackgroundColor })
 		self.router.routeToDetail(indexPathAtRow: indexPath.section)
 		tableView.deselectRow(at: indexPath, animated: false)
-		UIView.animate(withDuration: 0.2, delay: 0.5,
-						   animations: { cell.containerView.backgroundColor = backgroundColorDefault })
+		cell.containerView.backgroundColor = backgroundColorDefault
 	}
 
 	func tableView(_ tableView: UITableView,
