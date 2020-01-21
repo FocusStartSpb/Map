@@ -10,7 +10,6 @@ import Foundation
 // MARK: - SmartTargetListBusinessLogic protocol
 protocol SmartTargetListBusinessLogic
 {
-	func transferSmartTargets(_ request: SmartTargetList.GetSmartTargetsCollection.Request)
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request)
 	func updateSmartTargets(_ request: SmartTargetList.UpdateSmartTargets.Request)
 	func updateSmartTarget(_ request: SmartTargetList.UpdateSmartTarget.Request)
@@ -59,11 +58,6 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>: SmartTargetLis
 // MARK: - Smart target list business logic
 extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 {
-	func transferSmartTargets(_ request: SmartTargetList.GetSmartTargetsCollection.Request) {
-		let response = SmartTargetList.GetSmartTargetsCollection.Response(collection: self.smartTargetCollection)
-		self.presenter.presentSmartTargetCollection(response)
-	}
-
 	func deleteSmartTargets(_ request: SmartTargetList.DeleteSmartTargets.Request) {
 		if removedIndexSet != request.removedIndexSet,
 			settingsWorker.forceRemovePin ?? true {

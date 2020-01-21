@@ -16,14 +16,12 @@ final class SceneBuilder
 
 	// MARK: ...Internal methods
 	private func getMapScene<T: ISmartTargetRepository>
-		(withRepository repository: T,
-		 collection: ISmartTargetCollection,
-		 temptCollection: ISmartTargetCollection)
-		-> MapViewController
-		where T.Element: ISmartTargetCollection {
+		(dataBaseWorker: DataBaseWorker<T>,
+		 collection: T.Element,
+		 temptCollection: T.Element)
+		-> MapViewController where T.Element: ISmartTargetCollection {
 
 		let presenter = MapPresenter()
-		let dataBaseWorker = DataBaseWorker(repository: repository)
 		let decoderService = DecoderService()
 		let geocoderService = GeocoderService()
 		let geocoderWorker = GeocoderWorker(service: geocoderService,
@@ -42,7 +40,6 @@ final class SceneBuilder
 		let viewController = MapViewController(interactor: interactor, router: router)
 
 		presenter.viewController = viewController
-		router.viewController = viewController
 		router.dataStore = interactor
 
 		viewController.tabBarItem = UITabBarItem(title: "Карта", image: #imageLiteral(resourceName: "icons8-map-marker"), selectedImage: #imageLiteral(resourceName: "icons8-map-marker-fill"))
@@ -51,13 +48,12 @@ final class SceneBuilder
 	}
 
 	private func getSmartTargetListScene<T: ISmartTargetRepository>
-		(withRepository repository: T,
-		 collection: ISmartTargetCollection,
-		 temptCollection: ISmartTargetCollection)
+		(dataBaseWorker: DataBaseWorker<T>,
+		 collection: T.Element,
+		 temptCollection: T.Element)
 		-> SmartTargetListViewController where T.Element: ISmartTargetCollection {
 
 		let presenter = SmartTargetListPresenter()
-		let dataBaseWorker = DataBaseWorker(repository: repository)
 		let settingsWorker = SettingsWorker()
 		let interactor = SmartTargetListInteractor(presenter: presenter,
 												   dataBaseWorker: dataBaseWorker,
@@ -92,17 +88,20 @@ final class SceneBuilder
 		return viewController
 	}
 
-	func getInitialController(withCollection collection: ISmartTargetCollection,
-							  temptCollection: ISmartTargetCollection) -> UIViewController {
+	func getInitialController<T: ISmartTargetRepository>
+		(dataBaseWorker: DataBaseWorker<T>,
+		 withCollection collection: T.Element,
+		 temptCollection: T.Element)
+		-> UIViewController where T.Element: ISmartTargetCollection {
 
-		let dataBaseService = DataBaseService<SmartTargetCollection>()
-		let repository = SmartTargetRepository(dataBaseService: dataBaseService)
-		let mapViewController = getMapScene(withRepository: repository,
-											collection: collection,
-											temptCollection: temptCollection)
-		let smartTargetListViewController = getSmartTargetListScene(withRepository: repository,
-																	collection: collection,
-																	temptCollection: temptCollection)
+		let mapViewController =
+			getMapScene(dataBaseWorker: dataBaseWorker,
+						collection: collection,
+						temptCollection: temptCollection)
+		let smartTargetListViewController =
+			getSmartTargetListScene(dataBaseWorker: dataBaseWorker,
+									collection: collection,
+									temptCollection: temptCollection)
 		let settingsViewController = getSettingsScene()
 
 		return getTabBarController {

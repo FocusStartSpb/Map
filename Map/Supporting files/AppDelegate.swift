@@ -23,8 +23,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate
 
 	private func getInitialController() -> UIViewController {
 		let service = DataBaseService<SmartTargetCollection>()
+		let repository = SmartTargetRepository(dataBaseService: service)
+		let dataBaseWorker = DataBaseWorker(repository: repository)
 		let collection = (try? service.read()) ?? SmartTargetCollection()
-		return SceneBuilder().getInitialController(withCollection: collection,
+		return SceneBuilder().getInitialController(dataBaseWorker: dataBaseWorker,
+												   withCollection: collection,
 												   temptCollection: collection.copy())
 	}
 }

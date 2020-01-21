@@ -14,11 +14,10 @@
 		3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B023C364A300700935 /* DetailTargetRouter.swift */; };
 		3A4337B323C364B900700935 /* DetailTargetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4337B223C364B900700935 /* DetailTargetViewController.swift */; };
 		3A7C5B1023C8CA3700FB732A /* ButtonForDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7C5B0F23C8CA3600FB732A /* ButtonForDetailScreen.swift */; };
-		3AAD388023D20AF200873B0B /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAD387F23D20AF200873B0B /* UILabel.swift */; };
+		3AAD388023D20AF200873B0B /* UILabel+TextAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAD387F23D20AF200873B0B /* UILabel+TextAnimation.swift */; };
 		3AAD388223D2397C00873B0B /* Date+Attendance+Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAD388123D2397C00873B0B /* Date+Attendance+Address.swift */; };
 		3AAD388423D24ED300873B0B /* Slider+EditableAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAD388323D24ED300873B0B /* Slider+EditableAddressView.swift */; };
 		3AAD388623D2F51000873B0B /* ButtonsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAD388523D2F51000873B0B /* ButtonsBar.swift */; };
-		3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */; };
 		3ABCDC9323B7B71B0050F4B2 /* SmartTargetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */; };
 		3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */; };
 		3AC77B0023AAA5B400CA1EC5 /* GeocoderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */; };
@@ -57,7 +56,6 @@
 		585AC9A123D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC9A023D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift */; };
 		585AC9A323D0E420008D357A /* MapViewController+MKMapViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585AC9A223D0E420008D357A /* MapViewController+MKMapViewDelegate.swift */; };
 		585BBB8823B219170001F749 /* ButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8723B219170001F749 /* ButtonView.swift */; };
-		585BBB8A23B27DD40001F749 /* UIColor+Adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */; };
 		585BBB8C23B285750001F749 /* SmartTargetAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */; };
 		585F64A123B9881800B66EAA /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585F64A023B9881800B66EAA /* FilesManager.swift */; };
 		585F64A323B988A700B66EAA /* SettingWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585F64A223B988A700B66EAA /* SettingWrapper.swift */; };
@@ -95,11 +93,10 @@
 		3A4337B023C364A300700935 /* DetailTargetRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetRouter.swift; sourceTree = "<group>"; };
 		3A4337B223C364B900700935 /* DetailTargetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTargetViewController.swift; sourceTree = "<group>"; };
 		3A7C5B0F23C8CA3600FB732A /* ButtonForDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonForDetailScreen.swift; sourceTree = "<group>"; };
-		3AAD387F23D20AF200873B0B /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
+		3AAD387F23D20AF200873B0B /* UILabel+TextAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+TextAnimation.swift"; sourceTree = "<group>"; };
 		3AAD388123D2397C00873B0B /* Date+Attendance+Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Attendance+Address.swift"; sourceTree = "<group>"; };
 		3AAD388323D24ED300873B0B /* Slider+EditableAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Slider+EditableAddressView.swift"; sourceTree = "<group>"; };
 		3AAD388523D2F51000873B0B /* ButtonsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsBar.swift; sourceTree = "<group>"; };
-		3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		3ABCDC9223B7B71B0050F4B2 /* SmartTargetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartTargetTableViewCell.swift; sourceTree = "<group>"; };
 		3AC77AFD23AAA55A00CA1EC5 /* GeocoderModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderModel.swift; sourceTree = "<group>"; };
 		3AC77AFF23AAA5B400CA1EC5 /* GeocoderService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeocoderService.swift; sourceTree = "<group>"; };
@@ -140,7 +137,6 @@
 		585AC9A023D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapViewController+NotificationServiceDelegate.swift"; sourceTree = "<group>"; };
 		585AC9A223D0E420008D357A /* MapViewController+MKMapViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapViewController+MKMapViewDelegate.swift"; sourceTree = "<group>"; };
 		585BBB8723B219170001F749 /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
-		585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Adjust.swift"; sourceTree = "<group>"; };
 		585BBB8B23B285750001F749 /* SmartTargetAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartTargetAnnotation.swift; sourceTree = "<group>"; };
 		585F64A023B9881800B66EAA /* FilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManager.swift; sourceTree = "<group>"; };
 		585F64A223B988A700B66EAA /* SettingWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingWrapper.swift; sourceTree = "<group>"; };
@@ -181,14 +177,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3ABCDC8E23B7B6AD0050F4B2 /* TabBarController */ = {
-			isa = PBXGroup;
-			children = (
-				3ABCDC8F23B7B6AD0050F4B2 /* TabBarController.swift */,
-			);
-			path = TabBarController;
-			sourceTree = "<group>";
-		};
 		3ABCDC9123B7B71B0050F4B2 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -299,7 +287,6 @@
 				585F64B223B99C9D00B66EAA /* Settings scene */,
 				584EE5CE23A833DD0013087A /* Map scene */,
 				584EE5E823A834E00013087A /* Smart target list scene */,
-				3ABCDC8E23B7B6AD0050F4B2 /* TabBarController */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -432,8 +419,7 @@
 				58454F3123BE87C400EE0D71 /* Array+Difference.swift */,
 				58A9984723AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift */,
 				582ED16C23AE8458001AD44E /* Decodable+Initialization.swift */,
-				585BBB8923B27DD40001F749 /* UIColor+Adjust.swift */,
-				3AAD387F23D20AF200873B0B /* UILabel.swift */,
+				3AAD387F23D20AF200873B0B /* UILabel+TextAnimation.swift */,
 				5815996723B52DD900232CE2 /* NotificationCenter+Extension.swift */,
 				58551DD523BD08CD00E76885 /* UserPreferences.MeasuringSystem+Extension.swift */,
 				58EEE41A23C4404300CE9229 /* UIViewController+Extension.swift */,
@@ -565,9 +551,8 @@
 				584EE5E223A834D60013087A /* SmartTargetListPresenter.swift in Sources */,
 				585AC99D23D0E20A008D357A /* MapViewController+MapDisplayLogic.swift in Sources */,
 				3AC77AFE23AAA55A00CA1EC5 /* GeocoderModel.swift in Sources */,
-				3ABCDC9023B7B6AD0050F4B2 /* TabBarController.swift in Sources */,
 				3A4337B123C364A300700935 /* DetailTargetRouter.swift in Sources */,
-				3AAD388023D20AF200873B0B /* UILabel.swift in Sources */,
+				3AAD388023D20AF200873B0B /* UILabel+TextAnimation.swift in Sources */,
 				5837D01A23A838E100A6F125 /* Repository.swift in Sources */,
 				585AC9A123D0E3A4008D357A /* MapViewController+NotificationServiceDelegate.swift in Sources */,
 				58EEE41B23C4404300CE9229 /* UIViewController+Extension.swift in Sources */,
@@ -602,7 +587,6 @@
 				585AC99923D0DB49008D357A /* Constants.swift in Sources */,
 				58A9984423AC19A500CAACE8 /* DataBaseService.swift in Sources */,
 				5837D01C23A839E000A6F125 /* DecoderService.swift in Sources */,
-				585BBB8A23B27DD40001F749 /* UIColor+Adjust.swift in Sources */,
 				586F660C23BBF065007D4657 /* MenuAction.swift in Sources */,
 				58A9984823AC2BA600CAACE8 /* CLLocationCoordinate2D+Extension.swift in Sources */,
 				3ADC0C2C23D635E300DAD8D3 /* UIView.swift in Sources */,

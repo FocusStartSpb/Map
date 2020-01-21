@@ -9,7 +9,6 @@ import UIKit
 // MARK: - SmartTargetListDisplayLogic protocol
 protocol SmartTargetListDisplayLogic: AnyObject
 {
-	func getSmartTargetCollection(_ viewModel: SmartTargetList.GetSmartTargetsCollection.ViewModel)
 	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel)
 	func displayUpdateSmartTargets(_ viewModel: SmartTargetList.UpdateSmartTargets.ViewModel)
 	func updateEditedSmartTarget(_ viewModel: SmartTargetList.UpdateSmartTarget.ViewModel)
@@ -20,14 +19,18 @@ protocol SmartTargetListDisplayLogic: AnyObject
 final class SmartTargetListViewController: UIViewController
 {
 	// MARK: ...Private properties
-	private let navigationItemTitle = "List of smart object"
-	private let cellReuseIdentifier = "Cell"
-	private var interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore
+	private var interactor: SmartTargetListBusinessLogic
+	var router: SmartTargetListRoutingLogic & SmartTargetListDataPassing
 	private let targetsTableView = UITableView()
 	private let emptyView = EmptyView()
-	private var targetsCollection: ISmartTargetCollection?
-	// MARK: ...Internal properties
-	var router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)
+
+	private enum StaticConstants
+	{
+		static let navigationItemTitle = "Список локаций"
+		static let reuseIdentifier = "Cell"
+		static let deleteButtonTitle = "Удалить"
+	}
+
 	// MARK: ...Initialization
 	init(interactor: SmartTargetListBusinessLogic & SmartTargetListDataStore,
 		 router: (SmartTargetListRoutingLogic & SmartTargetListDataPassing)) {
@@ -44,7 +47,7 @@ final class SmartTargetListViewController: UIViewController
 	// MARK: ...View lifecycle
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		interactor.didUpdateAllSmartTargets = true
+		router.dataStore?.didUpdateAllSmartTargets = true
 		updateNavigationBar()
 		checkUserInterfaceStyle()
 		setupTargetsTableView()
@@ -53,7 +56,7 @@ final class SmartTargetListViewController: UIViewController
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		tabBarController?.delegate = self
-		interactor.removedIndexSet = nil
+		router.dataStore?.removedIndexSet = nil
 	}
 
 	override func viewDidAppear(_ animated: Bool) {
@@ -62,14 +65,10 @@ final class SmartTargetListViewController: UIViewController
 		interactor.updateSmartTargets(.init())
 	}
 
-	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-		checkUserInterfaceStyle()
-	}
-
 	// MARK: ...Private methods
 	private func updateNavigationBar() {
 		self.navigationController?.navigationBar.prefersLargeTitles = true
-		self.navigationItem.title = self.navigationItemTitle
+		self.navigationItem.title = StaticConstants.navigationItemTitle
 	}
 
 	private func setupTargetsTableView() {
@@ -85,7 +84,7 @@ final class SmartTargetListViewController: UIViewController
 		self.targetsTableView.delegate = self
 		self.targetsTableView.separatorStyle = .none
 		self.targetsTableView.register(SmartTargetTableViewCell.self,
-									   forCellReuseIdentifier: self.cellReuseIdentifier)
+									   forCellReuseIdentifier: StaticConstants.reuseIdentifier)
 		self.targetsTableView.allowsSelectionDuringEditing = true
 	}
 
@@ -101,15 +100,15 @@ final class SmartTargetListViewController: UIViewController
 			self.navigationController?.navigationBar.barTintColor = .white
 		}
 	}
+
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		checkUserInterfaceStyle()
+	}
 }
 
 // MARK: - Smart target list display logic
 extension SmartTargetListViewController: SmartTargetListDisplayLogic
 {
-	func getSmartTargetCollection(_ viewModel: SmartTargetList.GetSmartTargetsCollection.ViewModel) {
-		self.targetsCollection = viewModel.collection
-	}
-
 	func displayDeleteSmartTargets(_ viewModel: SmartTargetList.DeleteSmartTargets.ViewModel) {
 		if viewModel.didDelete, let indexSet = viewModel.removedIndexSet {
 			targetsTableView.deleteSections(indexSet, with: .fade)
@@ -142,8 +141,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 {
 	func numberOfSections(in tableView: UITableView) -> Int {
 		interactor.showEmptyView(.init())
-		interactor.transferSmartTargets(.init())
-		return self.targetsCollection?.count ?? 0
+		return router.dataStore?.smartTargetCollection.smartTargets.count ?? 0
 	}
 
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -151,12 +149,12 @@ extension SmartTargetListViewController: UITableViewDataSource
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		guard let cell = tableView.dequeueReusableCell(withIdentifier: self.cellReuseIdentifier)
+		guard let cell = tableView.dequeueReusableCell(withIdentifier: StaticConstants.reuseIdentifier)
 			as? SmartTargetTableViewCell
 			else {
 			return UITableViewCell()
 		}
-		cell.fillLabels(with: self.targetsCollection?.smartTargets[indexPath.section])
+		cell.fillLabels(with: router.dataStore?.smartTargetCollection.smartTargets[indexPath.section])
 		return cell
 	}
 }
@@ -195,7 +193,7 @@ extension SmartTargetListViewController: UITableViewDelegate
 
 	func tableView(_ tableView: UITableView,
 				   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-		let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
+		let action = UIContextualAction(style: .destructive, title: StaticConstants.deleteButtonTitle) { [weak self] _, _, completion in
 			self?.actionRemove(indexSet: [indexPath.section], completionHandler: completion)
 		}
 		return UISwipeActionsConfiguration(actions: [action])
@@ -212,11 +210,6 @@ extension SmartTargetListViewController: UITabBarControllerDelegate
 				return false
 		}
 		mapViewController.router.dataStore?.didUpdateAllAnnotations = false
-
-		if viewController === mapViewController {
-			router.routeToMap(mapViewController)
-			return false
-		}
 		return true
 	}
 }

@@ -11,22 +11,6 @@ import Foundation
 enum SmartTargetList
 {
 	// MARK: Use cases
-	// MARK: ...GetTargetsCollection
-	enum GetSmartTargetsCollection
-	{
-		struct Request {}
-
-		struct Response
-		{
-			let collection: ISmartTargetCollection?
-		}
-
-		struct ViewModel
-		{
-			let collection: ISmartTargetCollection?
-		}
-	}
-
 	// MARK: ...SaveSmartTargets
 	enum DeleteSmartTargets
 	{
