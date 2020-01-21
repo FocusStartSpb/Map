@@ -85,7 +85,7 @@ extension MapViewController
 		}
 
 		if currentPointer != nil {
-			smartTargetMenu?.translucent(false)
+			smartTargetMenu?.translucent(1)
 			smartTargetMenu?.isEditable = true
 		}
 

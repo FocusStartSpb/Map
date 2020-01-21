@@ -151,7 +151,10 @@ final class MapViewController: UIViewController
 		removeTemptCircle()
 		setTabBarVisible(true)
 
-		addButtonView.isHidden = false
+		UIView.animate(withDuration: 0.3,
+					   animations: { self.addButtonView.alpha = 1 },
+					   completion: { _ in self.addButtonView.isHidden = false })
+
 		isEditSmartTarget = false
 		isAnimateMapView = false
 		isDraggedTemptPointer = false
@@ -249,7 +252,7 @@ extension MapViewController
 		let constant = bottomSmartTargetMenuConstraint.constant + offset
 
 		smartTargetMenu.isEditable = (flag == false)
-		smartTargetMenu.translucent(flag, value: 0.5)
+		smartTargetMenu.translucent(flag ? 0.5 : 1)
 		animateSmartTargetMenu(withBottomOffset: constant, layoutIfNeeded: true)
 	}
 
@@ -285,7 +288,9 @@ private extension MapViewController
 	func actionCreateSmartTarget() {
 		mode = .add
 		isNewPointer = true
-		addButtonView.isHidden = true
+		UIView.animate(withDuration: 0.3,
+					   animations: { self.addButtonView.alpha = 0 },
+					   completion: { _ in self.addButtonView.isHidden = true })
 		mapView.selectedAnnotations
 			.filter { $0 !== currentPointer }
 			.forEach { mapView.deselectAnnotation($0, animated: true) }
@@ -394,7 +399,7 @@ private extension MapViewController
 			interactor.stopMonitoringRegion(monitoringRegionRequest)
 
 			mapView.removeAnnotation(temptPointer)
-			smartTargetMenu?.removeFromSuperview()
+			smartTargetMenu?.hide { [weak self] in self?.smartTargetMenu?.removeFromSuperview() }
 			setupDefaultSettings()
 		}
 	}
