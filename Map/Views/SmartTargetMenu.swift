@@ -311,7 +311,9 @@ final class SmartTargetMenu: UIView
 
 	func show(_ completion: (() -> Void)? = nil) {
 		self.isHidden = false
-		UIView.animate(withDuration: 0.3) { self.alpha = 1 }
+		UIView.animate(withDuration: 0.3,
+					   animations: { self.alpha = 1 },
+					   completion: { _ in completion?() })
 	}
 
 	func highlightTextField(_ flag: Bool) {
