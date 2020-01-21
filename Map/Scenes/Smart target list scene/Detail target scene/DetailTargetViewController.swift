@@ -87,6 +87,7 @@ final class DetailTargetViewController: UIViewController
 	}
 
 	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
 		checkUserInterfaceStyle()
 	}
 

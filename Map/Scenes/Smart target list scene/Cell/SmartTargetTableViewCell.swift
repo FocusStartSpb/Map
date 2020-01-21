@@ -30,11 +30,15 @@ final class SmartTargetTableViewCell: UITableViewCell
 		updateBackgroundColors()
 	}
 
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
+		updateBackgroundColors()
+	}
+
 	@available (*, unavailable)
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
-
 	// MARK: ... Private Methods
 	private func setupContainerView() {
 		self.contentView.addSubview(containerView)
@@ -45,12 +49,6 @@ final class SmartTargetTableViewCell: UITableViewCell
 			self.containerView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
 			self.containerView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
 		])
-		if #available(iOS 13.0, *) {
-			self.containerView.backgroundColor = .systemBackground
-		}
-		else {
-			self.containerView.backgroundColor = .white
-		}
 		self.containerView.layer.cornerRadius = 20
 		self.containerView.layer.shadowOpacity = 0.3
 		self.containerView.layer.shadowOffset = CGSize(width: self.containerView.frame.width,
@@ -90,13 +88,16 @@ final class SmartTargetTableViewCell: UITableViewCell
 	private func setupAddressLabel() {
 		self.containerView.addSubview(addressLabel)
 		self.addressLabel.translatesAutoresizingMaskIntoConstraints = false
+		let topAnchor =
+			self.addressLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor,
+												   constant: 5)
+		topAnchor.priority = .defaultHigh
+		topAnchor.isActive = true
 		NSLayoutConstraint.activate([
 			self.addressLabel.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor,
 													   constant: 5),
-			self.addressLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: 10),
 			self.addressLabel.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor,
 														constant: -5),
-			self.addressLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 10),
 			self.addressLabel.bottomAnchor.constraint(equalTo: self.containerView.bottomAnchor, constant: -5),
 		])
 		self.addressLabel.numberOfLines = 0
@@ -105,25 +106,14 @@ final class SmartTargetTableViewCell: UITableViewCell
 	}
 
 	private func updateBackgroundColors() {
-		if #available(iOS 12.0, *) {
-			if self.traitCollection.userInterfaceStyle == .dark {
-				self.containerView.backgroundColor = #colorLiteral(red: 0.3623036282, green: 0.3623036282, blue: 0.3623036282, alpha: 1)
-				self.contentView.backgroundColor = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
-			}
-			else {
-				self.contentView.backgroundColor = .white
-				self.containerView.backgroundColor = #colorLiteral(red: 0.990454598, green: 0.990454598, blue: 0.990454598, alpha: 1)
-			}
+		if self.userInterfaceStyleIsDark == true {
+			self.containerView.backgroundColor = Constants.Colors.containerViewBackgroundColorInDarkMode
+			self.contentView.backgroundColor = Constants.Colors.contentViewBackgroundColorInDarkMode
 		}
 		else {
-			self.addressLabel.textColor = .gray
-			self.contentView.backgroundColor = .white
-			self.containerView.backgroundColor = #colorLiteral(red: 0.990454598, green: 0.990454598, blue: 0.990454598, alpha: 1)
+			self.containerView.backgroundColor = Constants.Colors.containerViewBackgroundColorInLightMode
+			self.contentView.backgroundColor = Constants.Colors.contentViewBackgroundColorInLightMode
 		}
-	}
-
-	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-		updateBackgroundColors()
 	}
 }
 // MARK: - ISmartTargetTableViewCell

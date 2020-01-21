@@ -81,7 +81,8 @@ extension EmptyView: IEmptyView
 	}
 
 	func leave() {
-		UIView.animate(withDuration: 0.3, animations: { self.alpha = 0 })
-		self.removeFromSuperview()
+		UIView.animate(withDuration: 0.3, animations: { self.alpha = 0 }, completion: { _ in
+			self.removeFromSuperview()
+		})
 	}
 }
