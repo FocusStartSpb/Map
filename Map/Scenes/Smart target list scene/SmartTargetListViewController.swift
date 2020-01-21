@@ -19,7 +19,7 @@ protocol SmartTargetListDisplayLogic: AnyObject
 final class SmartTargetListViewController: UIViewController
 {
 	// MARK: ...Private properties
-	private var interactor: SmartTargetListBusinessLogic
+	private let interactor: SmartTargetListBusinessLogic
 	var router: SmartTargetListRoutingLogic & SmartTargetListDataPassing
 	private let targetsTableView = UITableView()
 	private let emptyView = EmptyView()
@@ -161,7 +161,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 			else {
 			return UITableViewCell()
 		}
-		cell.fillLabels(with: router.dataStore?.smartTargetCollection.smartTargets[indexPath.section])
+		cell.fillLabels(with: router.dataStore?.collection.smartTargets[indexPath.section])
 		return cell
 	}
 }

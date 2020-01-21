@@ -20,24 +20,24 @@ protocol SmartTargetListBusinessLogic
 protocol SmartTargetListDataStore
 {
 	var smartTargetsCount: Int { get }
-	var oldSmartTargetCollection: ISmartTargetCollection { get }
-	var smartTargetCollection: ISmartTargetCollection { get }
+	var collection: ISmartTargetCollection { get }
 	var editedSmartTarget: SmartTarget? { get set }
 	var didUpdateAllSmartTargets: Bool { get set }
 	var removedIndexSet: IndexSet? { get set }
 }
 
 // MARK: - Class
-final class SmartTargetListInteractor<T: ISmartTargetRepository>
+final class SmartTargetListInteractor<T: ISmartTargetRepository> where T.Element: ISmartTargetCollection
 {
 	// MARK: ...Private properties
 	private let presenter: SmartTargetListPresentationLogic
 	private let dataBaseWorker: DataBaseWorker<T>
 	private let settingsWorker: SettingsWorker
 
+	private let oldSmartTargetCollection: T.Element
+	private let smartTargetCollection: T.Element
+
 	// MARK: ...Map data store
-	let oldSmartTargetCollection: ISmartTargetCollection
-	let smartTargetCollection: ISmartTargetCollection
 	var didUpdateAllSmartTargets = false
 	var editedSmartTarget: SmartTarget?
 	var removedIndexSet: IndexSet?
@@ -46,8 +46,8 @@ final class SmartTargetListInteractor<T: ISmartTargetRepository>
 	init(presenter: SmartTargetListPresentationLogic,
 		 dataBaseWorker: DataBaseWorker<T>,
 		 settingsWorker: SettingsWorker,
-		 collection: ISmartTargetCollection,
-		 oldCollection: ISmartTargetCollection) {
+		 collection: T.Element,
+		 oldCollection: T.Element) {
 		self.presenter = presenter
 		self.dataBaseWorker = dataBaseWorker
 		self.settingsWorker = settingsWorker
@@ -87,10 +87,8 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 	}
 
 	private func saveSmartTargetCollection(completion: @escaping (SmartTargetsResult) -> Void) {
-		guard let collection = smartTargetCollection as? T.Element else { return }
-
-		dataBaseWorker.saveSmartTargets(collection) { result in
-			let result = result.map { $0 as? ISmartTargetCollection ?? SmartTargetCollection() }
+		dataBaseWorker.saveSmartTargets(smartTargetCollection) { result in
+			let result = result.map { $0 as ISmartTargetCollection }
 			completion(result)
 		}
 	}
@@ -131,6 +129,10 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 // MARK: - Smart target list data store
 extension SmartTargetListInteractor: SmartTargetListDataStore
 {
+	var collection: ISmartTargetCollection {
+		smartTargetCollection.copy() as ISmartTargetCollection
+	}
+
 	var smartTargetsCount: Int {
 		smartTargetCollection.count
 	}

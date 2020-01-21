@@ -40,7 +40,7 @@ extension SmartTargetListRouter: SmartTargetListRoutingLogic
 	func routeToDetail(indexPathAtRow: Int) {
 		guard
 			let viewController = viewController,
-			let smartTarget = dataStore?.smartTargetCollection.smartTargets[indexPathAtRow] else { return }
+			let smartTarget = dataStore?.collection.smartTargets[indexPathAtRow] else { return }
 
 		let detailViewController = factory.getDetailTargetScene(smartTarget: smartTarget)
 		navigateToDetail(source: viewController, destination: detailViewController)
