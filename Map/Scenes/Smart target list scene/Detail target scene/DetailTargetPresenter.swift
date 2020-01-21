@@ -67,7 +67,7 @@ extension DetailTargetPresenter: IDetailTargetPresenter
 	}
 
 	var totalStay: String {
-		self.smartTarget.timeInside.stringFromTimeInterval()
+		self.smartTarget.timeInside.string
 	}
 
 	var dateOfLastVisit: String {

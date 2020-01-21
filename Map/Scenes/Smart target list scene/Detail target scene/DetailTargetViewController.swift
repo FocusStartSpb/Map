@@ -210,7 +210,7 @@ extension DetailTargetViewController: UITextViewDelegate
 		}
 		let newText = (textView.text as NSString).replacingCharacters(in: range, with: text)
 		let numberOfChars = newText.count
-		return numberOfChars <= 30
+		return numberOfChars <= Constants.maxLenghtOfTitle
 	}
 
 	func textViewDidBeginEditing(_ textView: UITextView) {
