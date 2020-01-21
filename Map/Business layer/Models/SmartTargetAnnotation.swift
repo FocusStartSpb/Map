@@ -22,7 +22,7 @@ final class SmartTargetAnnotation: NSObject, MKAnnotation
 		super.init()
 	}
 
-	func copy() -> SmartTargetAnnotation {
-		SmartTargetAnnotation(uid: uid, title: title, coordinate: coordinate)
+	func copy() -> Self {
+		Self(uid: uid, title: title, coordinate: coordinate)
 	}
 }

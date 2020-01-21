@@ -10,7 +10,7 @@ final class DataBaseWorker<T: ISmartTargetRepository>
 	typealias SmartTargetResult = (Result<T.Element, ServiceError>) -> Void
 
 	// MARK: Private methods
-	private var repository: T
+	private let repository: T
 
 	// MARK: Initialization
 	init(repository: T) {
