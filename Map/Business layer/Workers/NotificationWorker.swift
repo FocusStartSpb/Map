@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import CoreLocation
 
 typealias UpdateNotificationsIfNeeded = (Bool) -> [SmartTarget]
 
@@ -90,8 +89,7 @@ final class NotificationWorker
 		checkRequestNotificationAllowed { [weak self] granted in
 			guard granted else { return }
 			smartTargets.forEach { target in
-				self?.notificationService.addLocationNotification(for: target.region,
-																  title: target.title,
+				self?.notificationService.addLocationNotification(title: target.title,
 																  body: self?.configureBody(by: target) ?? "",
 																  uid: target.uid)
 			}

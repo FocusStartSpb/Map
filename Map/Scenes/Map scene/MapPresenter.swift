@@ -134,20 +134,19 @@ extension MapPresenter: MapPresentationLogic
 			response.difference.removed.contains { annotation.uid == $0.uid } ||
 			response.difference.updated.contains { annotation.uid == $0.uid }
 		}
-		addedAnnotations =
-			(response.difference.added + response.difference.updated).reduce(into: [SmartTargetAnnotation]()) {
-				guard let annotation = response.collection[$1.uid]?.annotation else { return }
-				$0.append(annotation)
-			}
+
+		addedAnnotations = (response.difference.added + response.difference.updated).reduce(into: addedAnnotations) {
+			guard let annotation = response.collection[$1.uid]?.annotation else { return }
+			$0.append(annotation)
+		}
 	}
 
 	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response) {
 
 		let radius: Double
 		switch response.currentRadius {
-		case ...response.userValues.lower: radius = response.userValues.lower
+		case ..<response.userValues.lower: radius = response.userValues.lower
 		case response.userValues.lower...response.userValues.upper: radius = response.currentRadius
-		case ...response.userValues.lower: radius = response.currentRadius
 		default: radius = response.userValues.upper
 		}
 

@@ -36,6 +36,11 @@ final class UneditableTargetsDetails: UIView
 		fatalError("init(coder:) has not been implemented")
 	}
 
+	private func setFont() {
+		self.dateOfCreationLabel.font = Constants.Fonts.ForDetailScreen.dateOfCreationLabel
+		self.addressLabel.font = Constants.Fonts.ForDetailScreen.addressLabel
+	}
+
 	private func setupUI() {
 		self.dateOfCreationLabel.translatesAutoresizingMaskIntoConstraints = false
 		self.attendanceView.translatesAutoresizingMaskIntoConstraints = false
@@ -43,6 +48,7 @@ final class UneditableTargetsDetails: UIView
 		self.addSubview(dateOfCreationLabel)
 		self.addSubview(attendanceView)
 		self.addSubview(addressLabel)
+		self.setFont()
 		NSLayoutConstraint.activate([
 			//dateOfCreationLabel
 			self.dateOfCreationLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),

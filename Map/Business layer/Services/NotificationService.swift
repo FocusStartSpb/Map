@@ -89,8 +89,7 @@ final class NotificationService: NSObject
 	}()
 
 	// MARK: ...Internal methods
-	func addLocationNotification(for region: CLRegion, title: String, body: String, uid: String) {
-//		let trigger = UNLocationNotificationTrigger(region: region, repeats: true)
+	func addLocationNotification(title: String, body: String, uid: String) {
 		let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
 		let identifierNotification = Identifier.notification(uid).value
 		let content = createContent(title: title, body: body)
@@ -121,9 +120,9 @@ final class NotificationService: NSObject
 		center.removeAllPendingNotificationRequests()
 	}
 
-	func updateLocationNotification(for region: CLRegion, title: String, body: String, uid: String) {
+	func updateLocationNotification(title: String, body: String, uid: String) {
 		removePendingNotification(at: uid)
-		addLocationNotification(for: region, title: title, body: body, uid: uid)
+		addLocationNotification(title: title, body: body, uid: uid)
 	}
 
 	func getPendingNotificationUIDs(completionHandler: @escaping ([String]) -> Void) {

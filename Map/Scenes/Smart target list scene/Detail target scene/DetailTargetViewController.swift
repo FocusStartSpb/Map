@@ -8,48 +8,9 @@ import MapKit
 final class DetailTargetViewController: UIViewController
 {
 	// MARK: - Private properties
-	private enum ScreenProperties
-	{
-		static let width = UIScreen.main.bounds.width
-		static let height = UIScreen.main.bounds.height
-	}
-
-	private enum FontForDetailScreen
-	{
-		static let titleTextView = UIFont.systemFont(ofSize: 25, weight: .semibold)
-	}
-
-	private func hideUneditableDetails() {
-		self.uneditableDetails.hide()
-		self.uneditableDetailsHeightAnchor?.isActive = false
-		self.uneditableDetailHeightAnchorEqualZero?.isActive = true
-	}
-
-	private func showSliderAndEditableAddress() {
-		self.sliderAndEditableAddressZeroHeightAnchor?.isActive = false
-		self.sliderAndEditableAddressHeightAnchor?.isActive = true
-		self.sliderAndEditableAddress.show()
-	}
-	private func showUneditableDetails() {
-		self.uneditableDetailHeightAnchorEqualZero?.isActive = false
-		self.uneditableDetailsHeightAnchor?.isActive = true
-		self.uneditableDetails.show()
-	}
-
-	private func hideSliderAndEditableAddress() {
-		self.sliderAndEditableAddress.hide()
-		self.sliderAndEditableAddressHeightAnchor?.isActive = false
-		self.sliderAndEditableAddressZeroHeightAnchor?.isActive = true
-	}
 
 	var presenter: IDetailTargetPresenter
 	private let router: IDetailTargetRouter
-	private var userInterfaceIsDark: Bool {
-		if #available(iOS 12.0, *) {
-			return self.traitCollection.userInterfaceStyle == .dark ? true : false
-		}
-		return false
-	}
 
 	private(set) lazy var mapView: MKMapView = {
 		let mapView = MKMapView()
@@ -91,16 +52,13 @@ final class DetailTargetViewController: UIViewController
 		get { self.sliderAndEditableAddress.address }
 		set {
 			self.uneditableDetails.setAddress(text: newValue)
-			newValue == nil ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
 			self.sliderAndEditableAddress.address = newValue ?? ""
 		}
 	}
 
 	var radius: Double {
 		get { Double(sliderAndEditableAddress.sliderValue) }
-		set {
-			sliderAndEditableAddress.sliderValue = Float(newValue)
-		}
+		set { sliderAndEditableAddress.sliderValue = Float(newValue) }
 	}
 
 	init(presenter: IDetailTargetPresenter,
@@ -158,6 +116,42 @@ final class DetailTargetViewController: UIViewController
 		setSmartTargetRegion(coordinate: presenter.editCoordinate, animated: false)
 	}
 
+	private func checkUserInterfaceStyle() {
+		if self.view.userInterfaceStyleIsDark == true {
+			self.view.backgroundColor = Constants.Colors.viewBackgroundColorInDarkMode
+			self.navigationController?.navigationBar.barTintColor = Constants.Colors.navigationBarTintColorInDarkMode
+		}
+		else {
+			self.view.backgroundColor = Constants.Colors.viewBackgroundColorInLightMode
+			self.navigationController?.navigationBar.barTintColor = Constants.Colors.navigationBarTintColorInLightMode
+		}
+	}
+
+	// MARK: ...Animations
+	private func hideUneditableDetails() {
+		self.uneditableDetails.hide()
+		self.uneditableDetailsHeightAnchor?.isActive = false
+		self.uneditableDetailHeightAnchorEqualZero?.isActive = true
+	}
+
+	private func showSliderAndEditableAddress() {
+		self.sliderAndEditableAddressZeroHeightAnchor?.isActive = false
+		self.sliderAndEditableAddressHeightAnchor?.isActive = true
+		self.sliderAndEditableAddress.show()
+	}
+	private func showUneditableDetails() {
+		self.uneditableDetailHeightAnchorEqualZero?.isActive = false
+		self.uneditableDetailsHeightAnchor?.isActive = true
+		self.uneditableDetails.show()
+	}
+
+	private func hideSliderAndEditableAddress() {
+		self.sliderAndEditableAddress.hide()
+		self.sliderAndEditableAddressHeightAnchor?.isActive = false
+		self.sliderAndEditableAddressZeroHeightAnchor?.isActive = true
+	}
+
+	// MARK: ...Buttons Action
 	private func editButtonAction() {
 		if self.smartTargetEditable == true {
 			self.impactFeedbackGenerator.impactOccurred()
@@ -199,17 +193,6 @@ final class DetailTargetViewController: UIViewController
 			self.hideSliderAndEditableAddress()
 			self.scrollView.layoutIfNeeded()
 		})
-	}
-
-	private func checkUserInterfaceStyle() {
-		if self.userInterfaceIsDark == true {
-			self.view.backgroundColor = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
-			self.navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
-		}
-		else {
-			self.view.backgroundColor = #colorLiteral(red: 0.9871620841, green: 0.9871620841, blue: 0.9871620841, alpha: 1)
-			self.navigationController?.navigationBar.barTintColor = .white
-		}
 		self.smartTargetEditable = false
 	}
 
@@ -225,7 +208,9 @@ extension DetailTargetViewController: UITextViewDelegate
 			textView.resignFirstResponder()
 			return false
 		}
-		return true
+		let newText = (textView.text as NSString).replacingCharacters(in: range, with: text)
+		let numberOfChars = newText.count
+		return numberOfChars <= Constants.maxLenghtOfTitle
 	}
 
 	func textViewDidBeginEditing(_ textView: UITextView) {
@@ -233,7 +218,15 @@ extension DetailTargetViewController: UITextViewDelegate
 	}
 
 	func textViewDidEndEditing(_ textView: UITextView) {
-		self.mapView.isUserInteractionEnabled = true
+		if textView.text.isEmpty == true {
+			self.buttonsBar.setWarningTitle()
+			self.titleTextViewEditable()
+			self.mapView.isUserInteractionEnabled = false
+		}
+		else {
+			self.buttonsBar.resetEditOrSaveButton()
+			self.mapView.isUserInteractionEnabled = true
+		}
 	}
 }
 
@@ -255,9 +248,8 @@ extension DetailTargetViewController
 	private func titleTextViewEditable() {
 		self.titleTextView.isUserInteractionEnabled = true
 		UIView.animate(withDuration: 0.3, animations: {
-			self.titleTextView.backgroundColor = self.userInterfaceIsDark ? #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1) : #colorLiteral(red: 0.896545194, green: 0.896545194, blue: 0.896545194, alpha: 1)
+			self.titleTextView.backgroundColor = self.view.userInterfaceStyleIsDark ? #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1) : #colorLiteral(red: 0.896545194, green: 0.896545194, blue: 0.896545194, alpha: 1)
 			self.titleTextView.returnKeyType = .done
-			self.titleTextView.delegate = self
 		})
 	}
 
@@ -271,7 +263,7 @@ extension DetailTargetViewController
 
 	private func setupTitleTextView() {
 		self.scrollView.addSubview(titleTextView)
-		titleTextView.font = FontForDetailScreen.titleTextView
+		titleTextView.font = Constants.Fonts.ForDetailScreen.titleTextView
 		titleTextView.translatesAutoresizingMaskIntoConstraints = false
 		NSLayoutConstraint.activate([
 			self.titleTextView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16),
@@ -283,7 +275,8 @@ extension DetailTargetViewController
 		self.titleTextView.isScrollEnabled = false
 		self.titleTextView.textAlignment = .center
 		self.titleTextView.layer.cornerRadius = 10
-		titleTextViewNotEditable()
+		self.titleTextViewNotEditable()
+		self.titleTextView.delegate = self
 	}
 	// MARK: - mapViewEditableOrNotEditable
 	private func mapViewEditable() {
@@ -324,12 +317,12 @@ extension DetailTargetViewController
 														  constant: 20)
 		topAnchor.priority = .required
 		self.mapViewHeightAnchorEditMode =
-			self.mapView.heightAnchor.constraint(greaterThanOrEqualToConstant: ScreenProperties.height / 1.5)
+			self.mapView.heightAnchor.constraint(greaterThanOrEqualToConstant: Constants.ScreenProperties.height / 1.5)
 		self.mapViewHeightAnchor =
-			self.mapView.heightAnchor.constraint(greaterThanOrEqualToConstant: ScreenProperties.height / 2)
+			self.mapView.heightAnchor.constraint(greaterThanOrEqualToConstant: Constants.ScreenProperties.height / 2)
 		NSLayoutConstraint.activate([
 			topAnchor,
-			self.mapView.widthAnchor.constraint(equalToConstant: ScreenProperties.width),
+			self.mapView.widthAnchor.constraint(equalToConstant: Constants.ScreenProperties.width),
 			self.mapView.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
 			self.mapView.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor),
 		])

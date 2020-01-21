@@ -9,7 +9,7 @@ import UIKit
 
 extension MapViewController
 {
-	var notificationCenter: NotificationCenter { .default }
+	private var notificationCenter: NotificationCenter { .default }
 
 	private var keyboardNotifications: [NSNotification.Name: Selector] {
 		[

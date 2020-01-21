@@ -20,23 +20,16 @@ protocol SmartTargetListDisplayLogic: AnyObject
 final class SmartTargetListViewController: UIViewController
 {
 	// MARK: ...Private properties
-	private var interactor: SmartTargetListBusinessLogic
+	private let interactor: SmartTargetListBusinessLogic
 	var router: SmartTargetListRoutingLogic & SmartTargetListDataPassing
 	private let targetsTableView = UITableView()
 	private let emptyView = EmptyView()
-	private var userInterfaceIsDark: Bool {
-		if #available(iOS 12.0, *) {
-			return self.traitCollection.userInterfaceStyle == .dark ? true : false
-		}
-		return false
-	}
 
 	private enum StaticConstants
 	{
 		static let navigationItemTitle = "Список локаций"
 		static let reuseIdentifier = "Cell"
-		static let selectedCellBackgroundColorInDarkMode = #colorLiteral(red: 0.3045190282, green: 0.3114352223, blue: 0.3184640712, alpha: 1)
-		static let selectedCellBackgroundColorInLightMode = #colorLiteral(red: 0.7502671557, green: 0.7502671557, blue: 0.7502671557, alpha: 1)
+		static let deleteButtonTitle = "Удалить"
 	}
 
 	// MARK: ...Initialization
@@ -97,7 +90,7 @@ final class SmartTargetListViewController: UIViewController
 	}
 
 	private func checkUserInterfaceStyle() {
-		if self.userInterfaceIsDark == true {
+		if self.view.userInterfaceStyleIsDark == true {
 			self.targetsTableView.backgroundColor = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
 			self.view.backgroundColor = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
 			self.navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
@@ -151,7 +144,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 {
 	func numberOfSections(in tableView: UITableView) -> Int {
 		interactor.showEmptyView(.init())
-		return router.dataStore?.smartTargetsCount ?? 0
+		return router.dataStore?.collection.smartTargets.count ?? 0
 	}
 
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -164,7 +157,7 @@ extension SmartTargetListViewController: UITableViewDataSource
 			else {
 			return UITableViewCell()
 		}
-		cell.fillLabels(with: router.dataStore?.smartTargetCollection.smartTargets[indexPath.section])
+		cell.fillLabels(with: router.dataStore?.collection.smartTargets[indexPath.section])
 		return cell
 	}
 }
@@ -187,11 +180,11 @@ extension SmartTargetListViewController: UITableViewDelegate
 		guard let cell = tableView.cellForRow(at: indexPath) as? SmartTargetTableViewCell else { return }
 		let backgroundColorDefault = cell.containerView.backgroundColor
 		var selectedBackgroundColor: UIColor {
-			if userInterfaceIsDark {
-				return StaticConstants.selectedCellBackgroundColorInDarkMode
+			if self.view.userInterfaceStyleIsDark {
+				return Constants.Colors.selectedCellBackgroundColorInDarkMode
 			}
 			else {
-				return StaticConstants.selectedCellBackgroundColorInLightMode
+				return Constants.Colors.selectedCellBackgroundColorInLightMode
 			}
 		}
 		UIView.animate(withDuration: 0.2, animations: { cell.containerView.backgroundColor = selectedBackgroundColor })
@@ -203,7 +196,8 @@ extension SmartTargetListViewController: UITableViewDelegate
 
 	func tableView(_ tableView: UITableView,
 				   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-		let action = UIContextualAction(style: .normal, title: "Удалить") { [weak self] _, _, completion in
+		let action = UIContextualAction(style: .normal,
+										title: StaticConstants.deleteButtonTitle) { [weak self] _, _, completion in
 			self?.actionRemove(indexSet: [indexPath.section], completionHandler: completion)
 		}
 		action.backgroundColor = .systemRed
