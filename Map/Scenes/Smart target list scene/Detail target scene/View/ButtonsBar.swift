@@ -11,12 +11,15 @@ protocol IButtonBar
 {
 	func addActionForCancelButton(action: @escaping TapAction)
 	func addActionForEditButton(action: @escaping TapAction)
+	func resetEditOrSaveButton()
+	func setWarningTitle()
 }
 
 final class ButtonsBar: UIView
 {
 	private let titleForEditButtonNoEditableMode = "Редактировать"
 	private let titleForEditButtonEditableMode = "Сохранить"
+	private let warningTitle = "Заголовок не может быть пустым"
 	private let titleForCancelButton = "Отменить"
 	private let editOrSaveButton = ButtonForDetailScreen(backgroundColor: .systemBlue, frame: .zero)
 	private var editOrSaveButtonLeadingToView: NSLayoutConstraint?
@@ -86,11 +89,8 @@ final class ButtonsBar: UIView
 			self.editOrSaveButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -16),
 		])
 	}
-}
-@objc private extension ButtonsBar
-{
-	private func cancelButtonAction() {
-		self.cancelButtonTap?()
+
+	private func cancelButtonHide() {
 		UIView.animate(withDuration: 0.3, animations: {
 			self.cancelButtonWidthAnchor?.isActive = false
 			self.cancelButtonWidthAnchorEqualZero?.isActive = true
@@ -101,21 +101,32 @@ final class ButtonsBar: UIView
 		})
 	}
 
-	private func editButtonAction() {
-		self.editOrSaveButtonTap?()
+	private func editOrSaveButtonShow() {
 		UIView.animate(withDuration: 0.3, animations: {
-			if self.editOrSaveButton.titleLabel?.text == self.titleForEditButtonNoEditableMode {
-				self.editOrSaveButton.setTitle(self.titleForEditButtonEditableMode, for: .normal)
-				self.cancelButtonWidthAnchorEqualZero?.isActive = false
-				self.cancelButtonWidthAnchor?.isActive = true
-				self.editOrSaveButtonLeadingToView?.isActive = false
-				self.editOrSaveButtonLeadingToCancelButton?.isActive = true
-				self.layoutIfNeeded()
-			}
-			else {
-				return
-			}
+			self.editOrSaveButton.setTitle(self.titleForEditButtonEditableMode, for: .normal)
+			self.cancelButtonWidthAnchorEqualZero?.isActive = false
+			self.cancelButtonWidthAnchor?.isActive = true
+			self.editOrSaveButtonLeadingToView?.isActive = false
+			self.editOrSaveButtonLeadingToCancelButton?.isActive = true
+			self.layoutIfNeeded()
 		})
+	}
+}
+@objc private extension ButtonsBar
+{
+	func cancelButtonAction() {
+		self.cancelButtonTap?()
+		cancelButtonHide()
+	}
+
+	func editButtonAction() {
+		self.editOrSaveButtonTap?()
+		if self.editOrSaveButton.titleLabel?.text == self.titleForEditButtonNoEditableMode {
+			self.editOrSaveButtonShow()
+		}
+		else {
+			return
+		}
 	}
 }
 
@@ -127,5 +138,17 @@ extension ButtonsBar: IButtonBar
 
 	func addActionForEditButton(action: @escaping TapAction) {
 		self.editOrSaveButtonTap = action
+	}
+
+	func resetEditOrSaveButton() {
+		self.editOrSaveButton.reset(title: self.titleForEditButtonNoEditableMode)
+		self.editOrSaveButtonShow()
+	}
+
+	func setWarningTitle() {
+		self.cancelButtonHide()
+		self.editOrSaveButton.setTitle(self.warningTitle, for: .disabled)
+		self.editOrSaveButton.isEnabled = false
+		self.editOrSaveButton.backgroundColor = .red
 	}
 }

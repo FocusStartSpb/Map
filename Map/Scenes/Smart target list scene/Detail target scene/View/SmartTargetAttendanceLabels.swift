@@ -23,6 +23,7 @@ final class SmartTargetAttendanceLabels: UIView
 		static let totalNumbersOfVisitsText = "Общее количество посещений: "
 		static let totalStayText = "Общее время прибывания: "
 		static let dateOfLastVisitText = "Дата последнего посещения: "
+		static let newLineSymbol = "\n"
 	}
 
 	private let showOrHideDetailsView = UIView()
@@ -67,7 +68,8 @@ final class SmartTargetAttendanceLabels: UIView
 
 	private func labelsSettings(label: UILabel) {
 		label.textAlignment = .center
-		label.font = .systemFont(ofSize: 20, weight: .light)
+		label.font = Constants.Fonts.ForDetailScreen.attendanceLabels
+		label.numberOfLines = 2
 		label.adjustsFontSizeToFitWidth = true
 		label.minimumScaleFactor = 0.01
 	}
@@ -154,9 +156,12 @@ final class SmartTargetAttendanceLabels: UIView
 extension SmartTargetAttendanceLabels: ISmartTargetAttendanceLabels
 {
 	func setText(numberOfVisits: String, totalStay: String, dateOfLastVisit: String) {
-		self.totalNumbersOfVisitsLabel.text = StaticTextForLabels.totalNumbersOfVisitsText + numberOfVisits
-		self.totalStayLabel.text = StaticTextForLabels.totalStayText + totalStay
-		self.dateOfLastVisitLabel.text = StaticTextForLabels.dateOfLastVisitText + dateOfLastVisit
+		self.totalNumbersOfVisitsLabel.text = StaticTextForLabels.totalNumbersOfVisitsText +
+			StaticTextForLabels.newLineSymbol + numberOfVisits
+		self.totalStayLabel.text = StaticTextForLabels.totalStayText +
+		StaticTextForLabels.newLineSymbol + totalStay
+		self.dateOfLastVisitLabel.text = StaticTextForLabels.dateOfLastVisitText +
+			StaticTextForLabels.newLineSymbol + dateOfLastVisit
 	}
 
 	func hide() {

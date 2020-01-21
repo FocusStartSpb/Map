@@ -14,13 +14,6 @@ protocol ISmartTargetTableViewCell
 
 final class SmartTargetTableViewCell: UITableViewCell
 {
-	private enum FontsForCell
-	{
-		static let timeOfCreationFont = UIFont.systemFont(ofSize: 15, weight: .light)
-		static let titleLabelFont = UIFont.systemFont(ofSize: 20, weight: .bold)
-		static let addressLabelFont = UIFont.systemFont(ofSize: 20, weight: .regular)
-	}
-
 	let containerView = UIView()
 	private let selectedView = UIView()
 	private let timeOfCreationLabel = UILabel()
@@ -74,7 +67,7 @@ final class SmartTargetTableViewCell: UITableViewCell
 			self.timeOfCreationLabel.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor),
 			self.timeOfCreationLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 7),
 		])
-		self.timeOfCreationLabel.font = FontsForCell.timeOfCreationFont
+		self.timeOfCreationLabel.font = Constants.Fonts.ForCells.timeOfCreation
 		self.timeOfCreationLabel.textAlignment = .center
 	}
 
@@ -90,7 +83,7 @@ final class SmartTargetTableViewCell: UITableViewCell
 			self.titleLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 10),
 		])
 		self.titleLabel.numberOfLines = 0
-		self.titleLabel.font = FontsForCell.titleLabelFont
+		self.titleLabel.font = Constants.Fonts.ForCells.titleLabel
 		self.titleLabel.textAlignment = .center
 	}
 
@@ -107,7 +100,7 @@ final class SmartTargetTableViewCell: UITableViewCell
 			self.addressLabel.bottomAnchor.constraint(equalTo: self.containerView.bottomAnchor, constant: -5),
 		])
 		self.addressLabel.numberOfLines = 0
-		self.addressLabel.font = FontsForCell.addressLabelFont
+		self.addressLabel.font = Constants.Fonts.ForCells.addressLabel
 		self.addressLabel.textAlignment = .center
 	}
 

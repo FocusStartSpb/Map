@@ -19,7 +19,6 @@ protocol SmartTargetListBusinessLogic
 // MARK: - SmartTargetListDataStore protocol
 protocol SmartTargetListDataStore
 {
-	var smartTargetsCount: Int { get }
 	var oldSmartTargetCollection: ISmartTargetCollection { get }
 	var smartTargetCollection: ISmartTargetCollection { get }
 	var editedSmartTarget: SmartTarget? { get set }
@@ -28,7 +27,7 @@ protocol SmartTargetListDataStore
 }
 
 // MARK: - Class
-final class SmartTargetListInteractor<T: ISmartTargetRepository>
+final class SmartTargetListInteractor<T: ISmartTargetRepository>: SmartTargetListDataStore
 {
 	// MARK: ...Private properties
 	private let presenter: SmartTargetListPresentationLogic
@@ -123,15 +122,7 @@ extension SmartTargetListInteractor: SmartTargetListBusinessLogic
 	}
 
 	func showEmptyView(_ request: SmartTargetList.ShowEmptyView.Request) {
-		let response = SmartTargetList.ShowEmptyView.Response(showEmptyView: (self.smartTargetsCount == 0))
+		let response = SmartTargetList.ShowEmptyView.Response(showEmptyView: (self.smartTargetCollection.count == 0))
 		presenter.presentEmptyView(response)
-	}
-}
-
-// MARK: - Smart target list data store
-extension SmartTargetListInteractor: SmartTargetListDataStore
-{
-	var smartTargetsCount: Int {
-		smartTargetCollection.count
 	}
 }

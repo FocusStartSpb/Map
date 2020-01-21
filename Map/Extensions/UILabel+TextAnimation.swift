@@ -12,7 +12,7 @@ extension UILabel
 	func setTextAnimation(_ text: String?) {
 		if text == nil { self.text = text }
 		var newText = ""
-		UIView.transition(with: self, duration: 1, options: .transitionCrossDissolve, animations: {
+		UIView.transition(with: self, duration: 0.3, options: .transitionCrossDissolve, animations: {
 			text?.forEach {
 				newText += "\($0)"
 				self.text = newText
