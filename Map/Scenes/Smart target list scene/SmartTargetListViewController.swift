@@ -193,7 +193,8 @@ extension SmartTargetListViewController: UITableViewDelegate
 
 	func tableView(_ tableView: UITableView,
 				   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-		let action = UIContextualAction(style: .destructive, title: StaticConstants.deleteButtonTitle) { [weak self] _, _, completion in
+		let action = UIContextualAction(style: .destructive,
+										title: StaticConstants.deleteButtonTitle) { [weak self] _, _, completion in
 			self?.actionRemove(indexSet: [indexPath.section], completionHandler: completion)
 		}
 		return UISwipeActionsConfiguration(actions: [action])
