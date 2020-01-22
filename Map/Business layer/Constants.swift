@@ -93,7 +93,7 @@ enum Constants
 		static let navigationBarTintColorInDarkMode = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
 		static let selectedCellBackgroundColorInLightMode = #colorLiteral(red: 0.7502671557, green: 0.7502671557, blue: 0.7502671557, alpha: 1)
 		static let viewBackgroundColorInLightMode = UIColor.white
-		static let tableViewBackgroundColorInLightMode = #colorLiteral(red: 0.9871620841, green: 0.9871620841, blue: 0.9871620841, alpha: 1)
+		static let tableViewBackgroundColorInLightMode = #colorLiteral(red: 0.9194850393, green: 0.9194850393, blue: 0.9194850393, alpha: 1)
 		static let navigationBarTintColorInLightMode = UIColor.white
 		static let containerViewBackgroundColorInDarkMode = #colorLiteral(red: 0.3623036282, green: 0.3623036282, blue: 0.3623036282, alpha: 1)
 		static let contentViewBackgroundColorInDarkMode = #colorLiteral(red: 0.2204069229, green: 0.2313892178, blue: 0.253805164, alpha: 1)
@@ -116,6 +116,11 @@ enum Constants
 			static let dateOfCreationLabel = UIFont.systemFont(ofSize: 20, weight: .light)
 			static let addressLabel = UIFont.systemFont(ofSize: 20, weight: .light)
 			static let attendanceLabels = UIFont.systemFont(ofSize: 20, weight: .light)
+		}
+
+		enum ForEmptyView
+		{
+			static let labelFont = UIFont.systemFont(ofSize: 20, weight: .regular)
 		}
 	}
 

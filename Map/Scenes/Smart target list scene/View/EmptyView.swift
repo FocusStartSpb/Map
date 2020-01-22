@@ -19,10 +19,10 @@ final class EmptyView: UIView
 		let label = UILabel()
 		label.text =
 		"""
-		В данный момент у вас нет сохраненных таргетов.
+		В данный момент у вас нет сохраненных локаций.
 		Перейдите, пожалуйста, на вкладку с картой и создайте их.
 		"""
-		label.font = UIFont.systemFont(ofSize: 30, weight: .semibold)
+		label.font = Constants.Fonts.ForEmptyView.labelFont
 		label.adjustsFontSizeToFitWidth = true
 		label.numberOfLines = 0
 		label.minimumScaleFactor = 0.01

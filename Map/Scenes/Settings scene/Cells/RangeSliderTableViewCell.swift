@@ -80,12 +80,18 @@ final class RangeSliderTableViewCell: UITableViewCell
 		setFrames()
 	}
 
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
+		updateBackgroundColor()
+	}
+
 	// MARK: ...Private methods
 	private func setup() {
 		contentView.addSubview(label)
 		contentView.addSubview(rangeSlider)
 		contentView.addSubview(lowerValuelabel)
 		contentView.addSubview(upperValuelabel)
+		updateBackgroundColor()
 	}
 
 	private func setFrames() {
@@ -118,6 +124,15 @@ final class RangeSliderTableViewCell: UITableViewCell
 		upperValuelabel.text =
 			"\(Int(values.upper * sliderFactor))" +
 			((sliderValueSymbol.isEmpty == false) ? " \(sliderValueSymbol)" : "")
+	}
+
+	private func updateBackgroundColor() {
+		if userInterfaceStyleIsDark {
+			backgroundColor = Constants.Colors.containerViewBackgroundColorInDarkMode
+		}
+		else {
+			backgroundColor = Constants.Colors.containerViewBackgroundColorInLightMode
+		}
 	}
 }
 
