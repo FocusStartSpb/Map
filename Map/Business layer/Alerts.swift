@@ -45,6 +45,15 @@ enum Alerts
 		showBasicAlert(on: vc, with: "Внимание", message: "Повторное действие удалит сохраненную локацию", handler: handler)
 	}
 
+	static func showMaxSmartTargetsAlert(on vc: UIViewController, handler: @escaping TapAction) {
+		showBasicAlert(on: vc, with: "Внимание",
+					   message: """
+								Превышен лимит созданных локаций.
+								Пожалуйста удалите какую-нибудь локацию, чтобы создать новую.
+								""",
+					   handler: handler)
+	}
+
 	static func showActionsForPinAlert(on vc: UIViewController,
 									   removeHandler: @escaping TapAction,
 									   cancelChangesHandler: @escaping TapAction,
