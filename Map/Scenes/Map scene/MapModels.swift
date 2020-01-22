@@ -167,6 +167,22 @@ enum Map
 		}
 	}
 
+	// MARK: ...MaxRegions
+	enum CanCreateSmartTarget
+	{
+		struct Request { }
+
+		struct Response
+		{
+			let monitoredRegionsCount: Int
+		}
+
+		struct ViewModel
+		{
+			let canCreate: Bool
+		}
+	}
+
 	// MARK: - Settings
 
 	// MARK: ...GetCurrentRadius

@@ -22,6 +22,8 @@ protocol MapPresentationLogic
 
 	func presentUpdateAnnotations(_ response: Map.UpdateAnnotations.Response)
 
+	func presentCanCreateSmartTarget(_ response: Map.CanCreateSmartTarget.Response)
+
 	// Notifications
 	func presentSetNotificationServiceDelegate(_ response: Map.SetNotificationServiceDelegate.Response)
 
@@ -139,6 +141,12 @@ extension MapPresenter: MapPresentationLogic
 			guard let annotation = response.collection[$1.uid]?.annotation else { return }
 			$0.append(annotation)
 		}
+	}
+
+	func presentCanCreateSmartTarget(_ response: Map.CanCreateSmartTarget.Response) {
+		let viewModel =
+			Map.CanCreateSmartTarget.ViewModel(canCreate: response.monitoredRegionsCount < Constants.maxSmartTargets)
+		viewController?.displayCanCreateSmartTarget(viewModel)
 	}
 
 	func presentGetCurrentRadius(_ response: Map.GetCurrentRadius.Response) {

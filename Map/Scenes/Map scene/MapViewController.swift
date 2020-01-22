@@ -49,7 +49,11 @@ final class MapViewController: UIViewController
 	private(set) lazy var cancelAction = MenuAction(title: "Отмена", style: .cancel, handler: actionChooseActionForPin)
 
 	// Editing properties
-	var mode: Mode = .none
+	var mode: Mode = .none {
+		didSet {
+			animateAddButtonHidden(mode != .none)
+		}
+	}
 	var isEditSmartTarget = false
 	var isDraggedTemptPointer = false
 	var isNewPointer = false
@@ -151,10 +155,6 @@ final class MapViewController: UIViewController
 		removeTemptCircle()
 		setTabBarVisible(true)
 
-		UIView.animate(withDuration: 0.3,
-					   animations: { self.addButtonView.alpha = 1 },
-					   completion: { _ in self.addButtonView.isHidden = false })
-
 		isEditSmartTarget = false
 		isAnimateMapView = false
 		isDraggedTemptPointer = false
@@ -212,6 +212,24 @@ final class MapViewController: UIViewController
 		setupSmartTargetMenuConstraints()
 
 		animateShowMenu()
+	}
+
+	func createSmartTarget() {
+		mode = .add
+		isNewPointer = true
+		mapView.selectedAnnotations
+			.filter { $0 !== currentPointer }
+			.forEach { mapView.deselectAnnotation($0, animated: true) }
+		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
+		isEditSmartTarget = true
+		router.dataStore?.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate)
+		addCurrentPointer(at: mapView.centerCoordinate)
+		showSmartTargetMenu()
+		if regionIsChanging == false {
+			let request = Map.Address.Request(coordinate: mapView.centerCoordinate)
+			interactor.getAddress(request)
+			impactFeedbackGenerator.prepare()
+		}
 	}
 }
 
@@ -276,6 +294,13 @@ extension MapViewController
 			}
 		}
 	}
+
+	func animateAddButtonHidden(_ hide: Bool) {
+		if hide == false { self.addButtonView.isHidden = hide }
+		UIView.animate(withDuration: 0.3,
+					   animations: { self.addButtonView.alpha = hide ? 0 : 1 },
+					   completion: { _ in self.addButtonView.isHidden = hide })
+	}
 }
 
 // MARK: - Actions
@@ -286,24 +311,8 @@ private extension MapViewController
 	}
 
 	func actionCreateSmartTarget() {
-		mode = .add
-		isNewPointer = true
-		UIView.animate(withDuration: 0.3,
-					   animations: { self.addButtonView.alpha = 0 },
-					   completion: { _ in self.addButtonView.isHidden = true })
-		mapView.selectedAnnotations
-			.filter { $0 !== currentPointer }
-			.forEach { mapView.deselectAnnotation($0, animated: true) }
-		addTemptCircle(at: mapView.centerCoordinate, with: circleRadius)
-		isEditSmartTarget = true
-		router.dataStore?.temptSmartTarget = SmartTarget(title: "", coordinates: mapView.centerCoordinate)
-		addCurrentPointer(at: mapView.centerCoordinate)
-		showSmartTargetMenu()
-		if regionIsChanging == false {
-			let request = Map.Address.Request(coordinate: mapView.centerCoordinate)
-			interactor.getAddress(request)
-			impactFeedbackGenerator.prepare()
-		}
+		animateAddButtonHidden(true)
+		interactor.canCreateSmartTarget(.init())
 	}
 
 	func actionSave(_ sender: Any) {

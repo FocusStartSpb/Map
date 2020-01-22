@@ -22,6 +22,8 @@ protocol MapBusinessLogic
 
 	func updateAnnotations(_ request: Map.UpdateAnnotations.Request)
 
+	func canCreateSmartTarget(_ request: Map.CanCreateSmartTarget.Request)
+
 	// Notifications
 	func setNotificationServiceDelegate(_ request: Map.SetNotificationServiceDelegate.Request)
 
@@ -272,6 +274,12 @@ extension MapInteractor: MapBusinessLogic
 		temptSmartTargetCollection.replaceSmartTargets(with: smartTargetCollection.smartTargets)
 		presenter.presentUpdateAnnotations(response)
 		didUpdateAllAnnotations = true
+	}
+
+	func canCreateSmartTarget(_ request: Map.CanCreateSmartTarget.Request) {
+		let monitoredRegionsCount = locationManager.monitoredRegions.count
+		let response = Map.CanCreateSmartTarget.Response(monitoredRegionsCount: monitoredRegionsCount)
+		presenter.presentCanCreateSmartTarget(response)
 	}
 
 	func getCurrentRadius(_ request: Map.GetCurrentRadius.Request) {

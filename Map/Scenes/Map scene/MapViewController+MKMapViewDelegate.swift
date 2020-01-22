@@ -55,7 +55,6 @@ extension MapViewController
 		setTabBarVisible(false)
 		let request = Map.GetSmartTarget.Request(uid: annotation.uid)
 		interactor.getSmartTarget(request)
-		addButtonView.isHidden = true
 		if currentPointer?.coordinate == mapView.centerCoordinate {
 			isEditSmartTarget = true
 		}
