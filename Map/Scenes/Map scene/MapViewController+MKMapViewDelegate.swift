@@ -10,6 +10,7 @@ import MapKit
 extension MapViewController
 {
 	func showLocation(coordinate: CLLocationCoordinate2D) {
+		guard CLLocationCoordinate2DIsValid(coordinate) else { return }
 		let zoomRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: Constants.Distance.latitudalMeters,
 											longitudinalMeters: Constants.Distance.longtitudalMeters)
 		mapView.setRegion(zoomRegion, animated: true)
