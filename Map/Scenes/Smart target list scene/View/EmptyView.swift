@@ -32,7 +32,7 @@ final class EmptyView: UIView
 
 	private let sadTargetImageView: UIImageView = {
 		let imageView = UIImageView()
-		imageView.image = #imageLiteral(resourceName: "sadTarget-1")
+		imageView.image = #imageLiteral(resourceName: "cryingPin")
 		imageView.contentMode = .scaleAspectFit
 		return imageView
 	}()
