@@ -20,6 +20,8 @@ protocol MapDisplayLogic: AnyObject
 
 	func displayUpdateAnnotations(_ viewModel: Map.UpdateAnnotations.ViewModel)
 
+	func displayCanCreateSmartTarget(_ viewModel: Map.CanCreateSmartTarget.ViewModel)
+
 	// Notifications
 	func displaySetNotificationServiceDelegate(_ viewModel: Map.SetNotificationServiceDelegate.ViewModel)
 
@@ -77,6 +79,16 @@ extension MapViewController: MapDisplayLogic
 		guard viewModel.needUpdate else { return }
 		mapView.removeAnnotations(viewModel.removedAnnotations)
 		mapView.addAnnotations(viewModel.addedAnnotations)
+	}
+
+	func displayCanCreateSmartTarget(_ viewModel: Map.CanCreateSmartTarget.ViewModel) {
+		guard viewModel.canCreate else {
+			Alerts.showMaxSmartTargetsAlert(on: self) { [weak self] in
+				self?.animateAddButtonHidden(false)
+			}
+			return
+		}
+		createSmartTarget()
 	}
 
 	func displayGetCurrentRadius(_ viewModel: Map.GetCurrentRadius.ViewModel) {
