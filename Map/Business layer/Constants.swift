@@ -132,4 +132,6 @@ enum Constants
 			return .gray
 		}
 	}()
+
+	static let maxSmartTargets = 20
 }
