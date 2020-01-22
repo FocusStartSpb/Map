@@ -20,7 +20,7 @@ final class EmptyView: UIView
 		label.text =
 		"""
 		В данный момент у вас нет сохраненных локаций.
-		Перейдите, пожалуйста, на вкладку с картой и создайте их.
+		Пожалуйста, перейдите на вкладку\n с картой и создайте их.
 		"""
 		label.font = Constants.Fonts.ForEmptyView.labelFont
 		label.adjustsFontSizeToFitWidth = true
